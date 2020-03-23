@@ -8,8 +8,10 @@
 package org.springframework.samples.petclinic.web;
 
 import java.util.Map;
+import java.util.Optional;
 
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Visit;
@@ -96,6 +98,32 @@ public class VisitController {
 		Iterable<Visit> visits = this.visitService.findAllPending();
 		modelMap.addAttribute("visits", visits);
 		return view;
+		
 	}
+	
+	@GetMapping(path = "/listAllAccepted")
+	public String listAllAccepted(final ModelMap modelMap) {
+		String view = "visits/listAllAccepted";
+		Iterable<Visit> visits = this.visitService.findAllPending();
+		modelMap.addAttribute("visits", visits);
+		return view;
+		
+	}
+	
+	@GetMapping(path = "/delete/{visitId}")
+	public String DeleteAcceptedVisit(@PathVariable("visitId") int visitId, final ModelMap modelMap ) {
+		String view = "visits/listAllAccepted"; //Vuelve al listado despues de borrar
+		Optional<Visit> visit = visitService.findById(visitId);
+		if(visit.isPresent()) {
+			visitService.delete(visit.get());
+			modelMap.addAttribute("message", "Succesfully deleted");
+		}else {
+			modelMap.addAttribute("message", "Visit does not exists");
+			view = listAllAccepted(modelMap);	
+		}
+		return view;
+		
+	}
+	
 
 }
