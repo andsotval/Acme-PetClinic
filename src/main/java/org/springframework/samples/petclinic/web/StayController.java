@@ -17,7 +17,7 @@ public class StayController {
 	
 	@GetMapping(value = "/listAllPending")
 	public String listAllPending(final ModelMap modelMap) {
-		String view = "visits/listAllPending";
+		String view = "stays/listAllPending";
 		Iterable<Stay> stays = this.stayService.findAllPending();
 		modelMap.addAttribute("stays", stays);
 		return view;

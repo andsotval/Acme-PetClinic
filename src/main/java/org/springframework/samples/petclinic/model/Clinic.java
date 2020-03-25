@@ -40,8 +40,8 @@ public class Clinic extends NamedEntity {
 	@JoinColumn(name = "manager_id", referencedColumnName = "id")
 	private Manager		manager;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clinic", fetch = FetchType.EAGER)
-	private Set<Stay>	stay;
+	//@OneToMany(cascade = CascadeType.ALL, mappedBy = "clinic", fetch = FetchType.EAGER)
+	//private Set<Stay>	stay;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clinic", fetch = FetchType.EAGER)
 	private Set<Visit>	visit;
