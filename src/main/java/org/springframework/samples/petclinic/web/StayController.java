@@ -3,9 +3,7 @@ package org.springframework.samples.petclinic.web;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Stay;
-import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.StayService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -34,7 +32,7 @@ public class StayController {
 	@GetMapping(value = "/listAllAccepted")
 	public String listAllAccepted(final ModelMap modelMap) {
 		String view = "stays/list";
-		Iterable<Stay> stays = this.stayService.findAllAccepted();
+		Iterable<Stay> stays = this.stayService.findAllbyAcceptance(true);
 		modelMap.addAttribute("stays", stays);
 		return view;
 		

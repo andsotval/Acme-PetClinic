@@ -45,4 +45,10 @@ public interface VisitRepository extends CrudRepository<Visit, Integer> {
 
 	List<Visit> findByPetId(Integer petId);
 
+	@Query("SELECT v FROM Visit v WHERE v.isAccepted = ?1")
+	Iterable<Visit> findAllbyAcceptance(boolean bool);
+	
+	@Query("SELECT v FROM Visit v WHERE v.isAccepted = null")
+	Iterable<Visit> findAllPending();
+
 }

@@ -26,15 +26,22 @@
                 </td>
                 <td>
                 <c:if test="${visit.isAccepted == null}">
-                	<spring:url value="/visits/accept/{visitId}" var="visitUrlAccept">
-                        <spring:param name="visitId" value="${visit.id}"/>
-                    </spring:url>
-                	<a href="${fn:escapeXml(visitUrlAccept)}"><span class="glyphicon glyphicon-ok" aria-hidden="true" ></span></a>
+	                	<spring:url value="/visits/accept/{visitId}" var="visitUrlAccept">
+	                        <spring:param name="visitId" value="${visit.id}"/>
+	                    </spring:url>
+	                    <a href="${fn:escapeXml(visitUrlAccept)}"><span class="glyphicon glyphicon-ok" aria-hidden="true" ></span></a>
+	                </c:if>
+	                <c:if test="${visit.isAccepted == true}">
+	                	<spring:url value="/visits/changeDate/{visitId}" var="visitUrlChangeDate">
+	                        <spring:param name="visitId" value="${visit.id}"/>
+	                    </spring:url>
+	                    <a href="${fn:escapeXml(visitUrlChangeDate)}"><span class="glyphicon glyphicon-time" aria-hidden="true" ></span></a>	
+	                </c:if>
                 	<spring:url value="/visits/cancel/{visitId}" var="visitUrlCancel">
-                        <spring:param name="visitId" value="${visit.id}"/>
-                    </spring:url>
-                	<a href="${fn:escapeXml(visitUrlCancel)}"><span class="glyphicon glyphicon-remove" aria-hidden="true"  href="${fn:escapeXml(visitUrlCancel)}"></span></a>
-                </c:if>
+	                    <spring:param name="visitId" value="${visit.id}"/>
+	                </spring:url>
+	                <a href="${fn:escapeXml(visitUrlCancel)}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+	                
                 </td>
             </tr>
         </c:forEach>
