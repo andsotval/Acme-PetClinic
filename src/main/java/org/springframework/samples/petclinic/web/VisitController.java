@@ -12,15 +12,23 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.PetService;
+import org.springframework.samples.petclinic.service.VetService;
+import org.springframework.samples.petclinic.service.VisitService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * @author Juergen Hoeller
@@ -29,9 +37,14 @@ import org.springframework.web.bind.annotation.PostMapping;
  * @author Michael Isvy
  */
 @Controller
+@RequestMapping("/visits")
 public class VisitController {
 
-	private final PetService petService;
+	private final PetService	petService;
+	@Autowired
+	private VisitService		visitService;
+	@Autowired
+	private VetService			vetService;
 
 
 	@Autowired
@@ -83,5 +96,43 @@ public class VisitController {
 	//		model.put("visits", this.petService.findPetById(petId).getVisits());
 	//		return "visitList";
 	//	}
+
+	@GetMapping(value = "/listAllPending")
+	public String listAllPending(final ModelMap modelMap) {
+		String view = "visits/list";
+
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		User user = (User) authentication.getPrincipal();
+
+		System.out.println(user.getUsername());
+
+		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
+		Iterable<Visit> visits = this.visitService.findAllPendingByVet(vet);
+
+		modelMap.addAttribute("visits", visits);
+		return view;
+
+	}
+
+	@GetMapping(path = "/accept/{visitId}")
+	public String acceptVisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
+		Visit visit = this.visitService.findById(visitId);
+
+		this.visitService.acceptVisit(visit);
+
+		return "redirect:/visits/listAllAccepted";
+
+	}
+
+	@GetMapping(path = "/cancel/{visitId}")
+	public String cancelVisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
+		Visit visit = this.visitService.findById(visitId);
+
+		this.visitService.cancelVisit(visit);
+
+		return "redirect:/visits/listAllAccepted";
+
+	}
 
 }
