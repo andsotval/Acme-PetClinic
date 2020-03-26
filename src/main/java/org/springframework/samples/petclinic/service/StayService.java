@@ -14,7 +14,7 @@ public class StayService {
 	
 	@Transactional
 	public Iterable<Stay> findAllPending() {
-		return stayRepository.findAll();
+		return stayRepository.findAllPending();
 	}
 	
 

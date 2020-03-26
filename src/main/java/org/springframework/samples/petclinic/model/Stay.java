@@ -35,7 +35,6 @@ public class Stay extends BaseEntity {
 	private String		description;
 
 	@Column(name = "is_accepted")
-	@NotNull
 	private Boolean		isAccepted;
 
 	//@ManyToOne

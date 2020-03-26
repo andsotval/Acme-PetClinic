@@ -1,6 +1,6 @@
 <%@ page session="false" trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
@@ -13,6 +13,8 @@
             <th>Start Date</th>
             <th>Finish Date</th>
             <th>Description</th>
+            <th>Accept</th>
+            <th>Decline</th>
         </tr>
         </thead>
         <tbody>
@@ -26,6 +28,18 @@
                 </td>
                 <td>
                     <c:out value="${stay.description} "/>
+                </td>
+                 <td>
+                	<spring:url value="/stays/accept/{stayId}" var="stayAcceptUrl">
+                        <spring:param name="stayId" value="${stay.id}"/>
+                    </spring:url>
+                	<a href="${fn:escapeXml(stayAcceptUrl)}">Accept</a>
+                </td>
+                 <td>
+                	<spring:url value="/stays/decline/{stayId}" var="stayDeclineUrl">
+                        <spring:param name="stayId" value="${stay.id}"/>
+                    </spring:url>
+                	<a href="${fn:escapeXml(stayDeclineUrl)}">Decline</a>
                 </td>
             </tr>
         </c:forEach>
