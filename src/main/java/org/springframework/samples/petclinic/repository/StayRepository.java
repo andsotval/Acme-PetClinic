@@ -10,5 +10,8 @@ public interface StayRepository extends CrudRepository<Stay, Integer>{
 	
 	@Query("SELECT s FROM Stay s WHERE s.isAccepted = null")
 	Iterable<Stay> findAllPending();
+	
+	@Query("SELECT s FROM Stay s WHERE s.isAccepted = true")
+	Iterable<Stay> findAllAccepted();
 
 }

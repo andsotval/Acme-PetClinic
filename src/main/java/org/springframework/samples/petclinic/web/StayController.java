@@ -23,5 +23,14 @@ public class StayController {
 		return view;
 		
 	}
+	
+	@GetMapping(value = "/listAllAccepted")
+	public String listAllAccepted(final ModelMap modelMap) {
+		String view = "stays/listAllAccepted";
+		Iterable<Stay> stays = this.stayService.findAllAccepted();
+		modelMap.addAttribute("stays", stays);
+		return view;
+		
+	}
 
 }

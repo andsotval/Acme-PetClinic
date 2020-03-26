@@ -8,14 +8,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StayService {
-	
+
 	@Autowired
 	private StayRepository stayRepository;
-	
+
 	@Transactional
 	public Iterable<Stay> findAllPending() {
 		return stayRepository.findAllPending();
 	}
-	
+
+	@Transactional
+	public Iterable<Stay> findAllAccepted() {
+		return stayRepository.findAllAccepted();
+	}
 
 }
