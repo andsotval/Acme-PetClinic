@@ -101,14 +101,7 @@ public class VisitController {
 	public String listAllPending(final ModelMap modelMap) {
 		String view = "visits/list";
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		User user = (User) authentication.getPrincipal();
-
-		System.out.println(user.getUsername());
-
-		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
-		Iterable<Visit> visits = this.visitService.findAllPendingByVet(vet);
+		Iterable<Visit> visits = this.visitService.findAllAccepted();
 
 		modelMap.addAttribute("visits", visits);
 		return view;
