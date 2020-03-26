@@ -104,3 +104,10 @@ INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES
 INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (2, 8, '2013-01-02', 'rabies shot',false,2);
 INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (3, 8, '2013-01-03', 'neutered',true,3);
 INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (4, 7, '2013-01-04', 'spayed',false,4);
+
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted) VALUES (1, '2013-01-01', '2019-01-01','stay pendiente', null);
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted) VALUES (2, '2013-01-01', '2019-01-01','stay pendiente', null);
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted) VALUES (3, '2013-01-01', '2019-01-01','stay rechazada', false);
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted) VALUES (4, '2013-01-01', '2019-01-01','stay aceptada', true);
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted) VALUES (5, '2013-01-01', '2019-01-01','stay rechazada', false);
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted) VALUES (6, '2013-01-01', '2019-01-01','stay aceptada', true);

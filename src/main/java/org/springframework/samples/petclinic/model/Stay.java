@@ -35,15 +35,14 @@ public class Stay extends BaseEntity {
 	private String		description;
 
 	@Column(name = "is_accepted")
-	@NotNull
 	private Boolean		isAccepted;
 
-	@ManyToOne
-	@JoinColumn(name = "clinic_id")
-	private Clinic		clinic;
+	//@ManyToOne
+	//@JoinColumn(name = "clinic_id")
+	//private Clinic		clinic;
 
-	@ManyToOne
-	@JoinColumn(name = "pet_id", referencedColumnName = "id")
-	private Pet			pet;
+	//@ManyToOne
+	//@JoinColumn(name = "pet_id", referencedColumnName = "id")
+	//private Pet			pet;
 
 }
