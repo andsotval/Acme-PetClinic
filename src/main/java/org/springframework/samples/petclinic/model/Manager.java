@@ -41,4 +41,4 @@ public class Manager extends Person {
 	private String	mail;
 
 }
-//
+///
