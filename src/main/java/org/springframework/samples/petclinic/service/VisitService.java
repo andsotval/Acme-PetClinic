@@ -26,11 +26,6 @@ public class VisitService {
 		return this.visitRepository.findAllPendingByVet(listInteger);
 	}
 
-	@Transactional
-	public Iterable<Visit> findAllAccepted() {
-		return this.visitRepository.findAll();
-	}
-
 	public Visit findById(final int id) {
 		return this.visitRepository.findByVisitId(id);
 	}
@@ -55,6 +50,16 @@ public class VisitService {
 	public void acceptVisit(final Visit visit) {
 		visit.setIsAccepted(true);
 		this.save(visit);
+	}
+
+	@Transactional
+	public Iterable<Visit> findAllbyAcceptance(boolean bool) {
+		return this.visitRepository.findAllbyAcceptance(bool);
+	}
+	
+	@Transactional
+	public Iterable<Visit> findAllPending() {
+		return this.visitRepository.findAllPending();
 	}
 
 }
