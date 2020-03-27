@@ -1,4 +1,7 @@
+
 package org.springframework.samples.petclinic.service;
+
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Stay;
@@ -12,40 +15,41 @@ public class StayService {
 	@Autowired
 	private StayRepository stayRepository;
 
-	@Transactional
+
+	@Transactional(readOnly = true)
 	public Iterable<Stay> findAllPending() {
 		return stayRepository.findAllPending();
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public Iterable<Stay> findAllbyAcceptance(Boolean bool) {
 		return stayRepository.findAllbyAcceptance(bool);
 	}
-	
-	@Transactional
-	public Stay findById(final int id) {
-		return this.stayRepository.findByStayId(id);
+
+	@Transactional(readOnly = true)
+	public Optional<Stay> findById(final int id) {
+		return stayRepository.findById(id);
 	}
 
 	@Transactional
 	public void delete(final Stay stay) {
-		this.stayRepository.delete(stay);
+		stayRepository.delete(stay);
 	}
 
 	@Transactional
 	public void save(final Stay stay) {
-		this.stayRepository.save(stay);
+		stayRepository.save(stay);
 	}
 
 	@Transactional
 	public void cancelStay(final Stay stay) {
 		stay.setIsAccepted(false);
-		this.save(stay);
+		save(stay);
 	}
 
 	@Transactional
 	public void acceptStay(final Stay stay) {
 		stay.setIsAccepted(true);
-		this.save(stay);
+		save(stay);
 	}
 }

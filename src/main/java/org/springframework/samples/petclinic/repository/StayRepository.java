@@ -1,3 +1,4 @@
+
 package org.springframework.samples.petclinic.repository;
 
 import org.springframework.data.jpa.repository.Query;
@@ -6,15 +7,12 @@ import org.springframework.samples.petclinic.model.Stay;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface StayRepository extends CrudRepository<Stay, Integer>{
-	
+public interface StayRepository extends CrudRepository<Stay, Integer> {
+
 	@Query("SELECT s FROM Stay s WHERE s.isAccepted = null")
 	Iterable<Stay> findAllPending();
-	
+
 	@Query("SELECT s FROM Stay s WHERE s.isAccepted = ?1")
 	Iterable<Stay> findAllbyAcceptance(boolean bool);
-	
-	@Query("SELECT s FROM Stay s WHERE s.id = ?1")
-	Stay findByStayId(Integer stayId);
 
 }
