@@ -63,7 +63,7 @@ public class Vet extends Person {
 	@Pattern(regexp = "")
 	private String			mail;
 
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "vet_specialties", joinColumns = @JoinColumn(name = "vet_id"), inverseJoinColumns = @JoinColumn(name = "specialty_id"))
 	private Set<Specialty>	specialties;
 
