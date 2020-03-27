@@ -43,7 +43,7 @@ public class Provider extends Person {
 	@Pattern(regexp = "")
 	private String	mail;
 
-	@ManyToOne(optional = false, fetch = FetchType.EAGER)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "manager_id", nullable = false)
 	private Manager	manager;
 
