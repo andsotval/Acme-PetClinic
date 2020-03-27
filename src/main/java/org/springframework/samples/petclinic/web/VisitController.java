@@ -14,6 +14,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.PetService;
+import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.samples.petclinic.service.VisitService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -39,8 +40,8 @@ public class VisitController {
 	@Autowired
 	private VisitService		visitService;
 	
-	//@Autowired
-	//private VetService			vetService;
+	@Autowired
+	private VetService			vetService;
 
 
 	@Autowired
@@ -93,18 +94,18 @@ public class VisitController {
 	//		return "visitList";
 	//	}
 
-	@GetMapping(value = "/listAllPending")
-	public String listAllPending(final ModelMap modelMap) {
-		String view = "visits/list";
+	@GetMapping(value = "{vetId}/listAllPending")
+	public String listAllPending(@PathVariable("vetId") int vetId, final ModelMap modelMap) {
+		String view = "visits/{vetId}/list";
 		Iterable<Visit> visits = this.visitService.findAllPending();
 		modelMap.addAttribute("visits", visits);
 		return view;
 		
 	}
 	
-	@GetMapping(value = "/listAllAccepted")
+	@GetMapping(value = "{vetId}/listAllAccepted")
 	public String listAllAccepted(final ModelMap modelMap) {
-		String view = "visits/list";
+		String view = "visits/{vetId}/list";
 		Iterable<Visit> visits = this.visitService.findAllbyAcceptance(true);
 		modelMap.addAttribute("visits", visits);
 		return view;

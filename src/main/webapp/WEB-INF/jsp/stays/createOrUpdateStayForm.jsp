@@ -22,11 +22,14 @@
            		<petclinic:inputField label="Description" name="description"/>	
                 <petclinic:inputField label="Start Date of the Stay" name="startDate"/>
                 <petclinic:inputField label="Finish Date of the Stay" name="finishDate"/>
+                <petclinic:inputField label="Clinic" name="clinic.id"/>                
             </div>
             
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <input type="hidden" name="id" value="${stay.id}"/>
+                    <input type="hidden" name="clinic" value="${stay.clinic.id}"/>
+                    <input type="hidden" name="pet" value="${stay.pet}"/>
                     <button class="btn btn-default" type="submit">Save Stay</button>
                 </div>
             </div>

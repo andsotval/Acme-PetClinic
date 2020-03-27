@@ -61,7 +61,7 @@ public class StayController {
 	@GetMapping(path = "/changeDate/{stayId}")
 	public String changeDateStay(@PathVariable("stayId") final int stayId, final ModelMap modelMap) {
 		Stay stay = this.stayService.findById(stayId);
-		modelMap.addAttribute(stay);
+		modelMap.addAttribute("stay", stay);
 		return "/stays/createOrUpdateStayForm";
 	}
 	

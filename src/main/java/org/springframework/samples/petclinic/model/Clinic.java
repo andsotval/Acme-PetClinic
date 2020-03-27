@@ -40,16 +40,16 @@ public class Clinic extends NamedEntity {
 	@JoinColumn(name = "manager_id", referencedColumnName = "id")
 	private Manager		manager;
 
-	//@OneToMany(cascade = CascadeType.ALL, mappedBy = "clinic", fetch = FetchType.EAGER)
-	//private Set<Stay>	stay;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clinic", fetch = FetchType.LAZY)
+	private Set<Stay>	stay;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clinic", fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clinic", fetch = FetchType.LAZY)
 	private Set<Visit>	visit;
 
-	@OneToMany(mappedBy = "clinic", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY)
 	private Set<Vet>	vet;
 
-	@OneToMany(mappedBy = "clinic", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY)
 	private Set<Owner>	owner;
 
 }
