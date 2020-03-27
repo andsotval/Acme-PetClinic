@@ -17,11 +17,9 @@
 package org.springframework.samples.petclinic.repository;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 
 /**
@@ -40,14 +38,14 @@ public interface VisitRepository extends CrudRepository<Visit, Integer> {
 	@Query("SELECT v FROM Visit v WHERE v.id = ?1")
 	Visit findByVisitId(Integer visitId);
 
-	@Query("SELECT v FROM Visit v INNER JOIN Clinic c ON c.id=v.clinic.id WHERE v.isAccepted IS NULL AND c.vet IN (?1)")
-	Iterable<Visit> findAllPendingByVet(Set<Vet> vets);
+	@Query("SELECT v FROM Visit v INNER JOIN Clinic c ON c.id=v.clinic.id WHERE v.isAccepted IS NULL AND ?1 IN (SELECT v2.id FROM Vet v2 WHERE v2.clinic.id=c.id) ")
+	Iterable<Visit> findAllPendingByVet(Integer vetId);
 
 	List<Visit> findByPetId(Integer petId);
 
 	@Query("SELECT v FROM Visit v WHERE v.isAccepted = ?1")
 	Iterable<Visit> findAllbyAcceptance(boolean bool);
-	
+
 	@Query("SELECT v FROM Visit v WHERE v.isAccepted = null")
 	Iterable<Visit> findAllPending();
 

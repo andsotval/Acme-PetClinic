@@ -12,8 +12,10 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.PetService;
+import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.samples.petclinic.service.VisitService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,8 +44,8 @@ public class VisitController {
 	@Autowired
 	private VisitService		visitService;
 
-	//@Autowired
-	//private VetService			vetService;
+	@Autowired
+	private VetService			vetService;
 
 
 	@Autowired
@@ -103,8 +105,9 @@ public class VisitController {
 
 		User user = (User) authentication.getPrincipal();
 
-		System.out.println(user.getUsername());
-		Iterable<Visit> visits = this.visitService.findAllPending();
+		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
+
+		Iterable<Visit> visits = this.visitService.findAllPendingByVet(vet);
 		modelMap.addAttribute("visits", visits);
 		return view;
 
