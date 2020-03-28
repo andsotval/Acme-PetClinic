@@ -16,7 +16,6 @@
 package org.springframework.samples.petclinic.service;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -56,16 +55,5 @@ public class VetService {
 	public Collection<Vet> findVets() throws DataAccessException {
 		return vetRepository.findAll();
 	}	
-	@Transactional(readOnly = true)	
-	public Collection<Vet> findVetsAvailable() throws DataAccessException {
-		 Collection<Vet> res= Collections.emptyList();
-		 Collection<Vet> vets= vetRepository.findAll();
-		 for(Vet v:vets) {
-			 if (v.getClinic()==null);
-			 res.add(v);
-		 }
-		 
-		 return res;
-	}
 
 }
