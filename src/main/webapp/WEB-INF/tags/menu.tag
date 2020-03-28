@@ -39,6 +39,14 @@
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>Veterinarians</span>
 				</petclinic:menuItem>
+				
+				<sec:authorize access="hasAuthority('manager')">
+				<petclinic:menuItem active="${name eq 'providers'}" url="/providers/listAvailable"
+					title="providers">
+					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+					<span>Providers</span>
+				</petclinic:menuItem>
+				</sec:authorize>
 
 				<petclinic:menuItem active="${name eq 'error'}" url="/oups"
 					title="trigger a RuntimeException to see how it is handled">
