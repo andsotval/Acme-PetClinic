@@ -7,7 +7,7 @@
 
 <petclinic:layout pageName="vetsAvailable">
     <h2>Vets</h2>
-
+ 
     <table id="vetsAvailableTable" class="table table-striped">
         <thead>
         <tr>
