@@ -5,20 +5,18 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
-<petclinic:layout pageName="vetsAvailable">
+<petclinic:layout pageName="managers">
     <h2>Vets</h2>
  
     <table id="vetsAvailableTable" class="table table-striped">
         <thead>
         <tr>
-            <th style="width: 150px;">Address</th>
-            <th style="width: 200px;">Telephone</th>
-            <th>City</th>
-            <th style="width: 120px">Mail</th>
+            <th>Name</th>
+            <th>Specialties</th>
         </tr>
         </thead>
         <tbody>
-        <c:forEach items="${vets}" var="vet">
+        <c:forEach items="${vets2}" var="vet">
             <tr>
                 <td>
                     <c:out value="${vet.firstName} ${vet.lastName}"/>

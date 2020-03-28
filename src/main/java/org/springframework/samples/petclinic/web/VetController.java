@@ -69,7 +69,7 @@ public class VetController {
 	public String vetsAvailableList(ModelMap modelMap) {
 		String vista="managers/vetsAvailableList";
 		Iterable<Vet> vets= vetService.findVetsAvailable();
-		modelMap.addAttribute("vets", vets);
+		modelMap.addAttribute("vets2", vets);
 		return vista;
 	}
 	
