@@ -67,5 +67,9 @@ public class VetService {
 		 
 		 return res;
 	}
+	@Transactional(readOnly = true)
+	public Iterable<Vet> findAvailableVets(){
+		return vetRepository.findAvailableVets();
+	}
 
 } 

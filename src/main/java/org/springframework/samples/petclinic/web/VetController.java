@@ -19,11 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Manager;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Vets;
-import org.springframework.samples.petclinic.service.ManagerService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
@@ -35,6 +35,7 @@ import java.util.Map;
  * @author Arjen Poutsma
  */
 @Controller
+@RequestMapping("/vets")
 public class VetController {
 
 	private final VetService vetService;
@@ -44,7 +45,7 @@ public class VetController {
 		this.vetService = clinicService;
 	}
 
-	@GetMapping(value = { "/vets" })
+	@GetMapping(value = { "/vetsList" })
 	public String showVetList(Map<String, Object> model) {
 		// Here we are returning an object of type 'Vets' rather than a collection of Vet
 		// objects
@@ -65,9 +66,9 @@ public class VetController {
 		return vets;
 	}
 	
-	@GetMapping(value = "/vets/vetsAvailableList")
+	@GetMapping(value = "/vetsAvailable")
 	public String vetsAvailableList(ModelMap modelMap) {
-		String vista="vets/vetsAvailableList";
+		String vista="vets/vetsAvailable";
 		Iterable<Vet> vets= vetService.findVetsAvailable();
 		modelMap.addAttribute("vets2", vets);
 		return vista;
