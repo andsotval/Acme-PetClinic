@@ -21,6 +21,8 @@ import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.model.Clinic;
+import org.springframework.samples.petclinic.model.Manager;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
@@ -61,5 +63,16 @@ public class VetService {
 	public Iterable<Vet> findAvailableVets(){
 		return vetRepository.findAvailableVets();
 	}
+	
+	@Transactional
+	public void addProvider(final Vet vet, final Clinic clinic){
+		vet.setClinic(clinic);
+		saveProvider(vet);
+	}
+
+	@Transactional
+		public void saveProvider(final Vet vet){
+			this.vetRepository.save(vet);
+		}
 
 } 

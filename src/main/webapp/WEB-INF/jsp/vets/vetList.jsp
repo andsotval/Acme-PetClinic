@@ -18,7 +18,7 @@
         <c:forEach items="${vets.vetList}" var="vet">
             <tr>
                 <td>
-                    <c:out value="${vet.firstName} ${vet.lastName}"/>
+                    <c:out value="${order.firstName} ${vet.lastName}"/>
                 </td>
                 <td>
                     <c:forEach var="specialty" items="${vet.specialties}">

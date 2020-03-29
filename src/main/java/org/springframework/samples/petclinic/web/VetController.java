@@ -16,17 +16,27 @@
 package org.springframework.samples.petclinic.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.Manager;
+import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Vets;
 import org.springframework.samples.petclinic.service.VetService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
+
+import javax.validation.Valid;
 
 /**
  * @author Juergen Hoeller
@@ -37,7 +47,10 @@ import java.util.Map;
 @Controller
 @RequestMapping("/vets")
 public class VetController {
-
+	
+	private static final String VIEWS_VET_CREATE_OR_UPDATE_FORM = "vets/createOrUpdateVetForm";
+	
+	private final ClinicService clinicService;
 	private final VetService vetService;
 
 	@Autowired
@@ -73,6 +86,42 @@ public class VetController {
 		modelMap.addAttribute("vets2", vets);
 		return vista;
 	}
+	
+	@GetMapping(value = "/addVet/{vetId}")
+	public String initAddVetToClinic(@PathVariable("vetId") Integer vetId, Model model) {
+
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User user = (User) authentication.getPrincipal();
+		Clinic clinic = this.clinicService.findClinicByName(clinic.getClinic()).get();
+		Vet vet = this.vetService.findVetById(vetId).get();
+		vet.setClinic(clinic);
+
+		model.addAttribute(vet);
+		model.addAttribute(clinic);
+
+		return VIEWS_VET_CREATE_OR_UPDATE_FORM;
+	}
+
+	@PostMapping(value = "/addVet/{vetId}")
+	public String proccessAddProviderToManager(@Valid Vet vet, @Valid Clinic clinic, BindingResult result,
+			@PathVariable("vetId") Integer vetId) {
+
+		if (vet != null && clinic != null) {
+			clinic.setId(vet.getClinic().getId());
+			
+			vet.getUser().setId(this.vetService.findVetById(vetId).get().getUser().getId());
+			vet.setClinic(clinic);
+			vet.setId(vetId);
+			
+			this.vetService.saveProvider(vet);
+		} else {
+			return VIEWS_VET_CREATE_OR_UPDATE_FORM;
+		}
+
+		return "redirect:/vets/listAvailable";
+	}
+	
+	
 	
 	
 
