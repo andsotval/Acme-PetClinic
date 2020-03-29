@@ -1,9 +1,6 @@
 
 package org.springframework.samples.petclinic.service;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
@@ -20,10 +17,7 @@ public class VisitService {
 
 	@Transactional
 	public Iterable<Visit> findAllPendingByVet(final Vet vet) {
-		Set<Vet> listInteger = new HashSet<Vet>();
-
-		listInteger.add(vet);
-		return this.visitRepository.findAllPendingByVet(listInteger);
+		return this.visitRepository.findAllPendingByVet(vet.getId());
 	}
 
 	public Visit findById(final int id) {
@@ -53,10 +47,10 @@ public class VisitService {
 	}
 
 	@Transactional
-	public Iterable<Visit> findAllbyAcceptance(boolean bool) {
+	public Iterable<Visit> findAllbyAcceptance(final boolean bool) {
 		return this.visitRepository.findAllbyAcceptance(bool);
 	}
-	
+
 	@Transactional
 	public Iterable<Visit> findAllPending() {
 		return this.visitRepository.findAllPending();

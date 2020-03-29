@@ -12,10 +12,14 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.samples.petclinic.service.VisitService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -39,7 +43,7 @@ public class VisitController {
 	private final PetService	petService;
 	@Autowired
 	private VisitService		visitService;
-	
+
 	@Autowired
 	private VetService			vetService;
 
@@ -94,22 +98,28 @@ public class VisitController {
 	//		return "visitList";
 	//	}
 
-	@GetMapping(value = "{vetId}/listAllPending")
-	public String listAllPending(@PathVariable("vetId") int vetId, final ModelMap modelMap) {
-		String view = "visits/{vetId}/list";
-		Iterable<Visit> visits = this.visitService.findAllPending();
+	@GetMapping(value = "/listAllPending")
+	public String listAllPending(final ModelMap modelMap) {
+		String view = "visits/list";
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		User user = (User) authentication.getPrincipal();
+
+		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
+
+		Iterable<Visit> visits = this.visitService.findAllPendingByVet(vet);
 		modelMap.addAttribute("visits", visits);
 		return view;
-		
+
 	}
-	
-	@GetMapping(value = "{vetId}/listAllAccepted")
+
+	@GetMapping(value = "/listAllAccepted")
 	public String listAllAccepted(final ModelMap modelMap) {
-		String view = "visits/{vetId}/list";
+		String view = "visits/list";
 		Iterable<Visit> visits = this.visitService.findAllbyAcceptance(true);
 		modelMap.addAttribute("visits", visits);
 		return view;
-		
+
 	}
 
 	@GetMapping(path = "/accept/{visitId}")
@@ -131,27 +141,26 @@ public class VisitController {
 		return "redirect:/visits/listAllAccepted";
 
 	}
-	
+
 	@GetMapping(path = "/changeDate/{visitId}")
 	public String changeDatevisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
 		Visit visit = this.visitService.findById(visitId);
 		modelMap.addAttribute(visit);
 		return "/visits/createOrUpdateVisitForm";
 	}
-	
+
 	@PostMapping(path = "/save")
-	public String updatevisit(@Valid Visit visit, BindingResult result, final ModelMap modelMap) {
+	public String updatevisit(@Valid final Visit visit, final BindingResult result, final ModelMap modelMap) {
 		String view = "/visits/createOrUpdateVisitForm";
-		if(result.hasErrors()) {
-			modelMap.addAttribute("Visit", visit);
+		if (result.hasErrors()) {
+			modelMap.addAttribute("visit", visit);
 			return view;
-		}else {
+		} else {
 			visit.setIsAccepted(true);
 			this.visitService.save(visit);
 			modelMap.addAttribute("message", "Visit succesfully updated");
-			view = listAllAccepted(modelMap);
+			view = this.listAllAccepted(modelMap);
 			return "redirect:/visits/listAllAccepted";
 		}
 	}
-
 }
