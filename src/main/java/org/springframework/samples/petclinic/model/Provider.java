@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,10 +34,12 @@ public class Provider extends Person {
 	private String	city;
 
 	@Column(name = "telephone")
+	@Pattern(regexp = "[+]346[0-9]{8}")
 	@NotEmpty
 	private String	telephone;
 
 	@Column(name = "mail")
+	@Pattern(regexp = "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$")
 	@NotEmpty
 	private String	mail;
 
