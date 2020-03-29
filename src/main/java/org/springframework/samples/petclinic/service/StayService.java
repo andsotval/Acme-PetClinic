@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Stay;
+import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.repository.StayRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,41 +19,41 @@ public class StayService {
 
 
 	@Transactional(readOnly = true)
-	public Iterable<Stay> findAllPending() {
+	public Iterable<Stay> findAllPendingByVet(final Vet vet) {
 		LocalDate actualDate = LocalDate.now();
-		return stayRepository.findAllPending(actualDate);
+		return this.stayRepository.findAllPendingByVet(actualDate, vet.getId());
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Stay> findAllAccepted() {
+	public Iterable<Stay> findAllAcceptedByVet(final Vet vet) {
 		LocalDate actualDate = LocalDate.now();
-		return stayRepository.findAllAccepted(actualDate);
+		return this.stayRepository.findAllAcceptedByVet(actualDate, vet.getId());
 	}
 
 	@Transactional(readOnly = true)
 	public Optional<Stay> findById(final int id) {
-		return stayRepository.findById(id);
+		return this.stayRepository.findById(id);
 	}
 
 	@Transactional
 	public void delete(final Stay stay) {
-		stayRepository.delete(stay);
+		this.stayRepository.delete(stay);
 	}
 
 	@Transactional
 	public void save(final Stay stay) {
-		stayRepository.save(stay);
+		this.stayRepository.save(stay);
 	}
 
 	@Transactional
 	public void cancelStay(final Stay stay) {
 		stay.setIsAccepted(false);
-		save(stay);
+		this.save(stay);
 	}
 
 	@Transactional
 	public void acceptStay(final Stay stay) {
 		stay.setIsAccepted(true);
-		save(stay);
+		this.save(stay);
 	}
 }

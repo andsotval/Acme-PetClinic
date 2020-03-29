@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.samples.petclinic.model.Stay;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.VisitRepository;
@@ -19,14 +18,9 @@ public class VisitService {
 	private VisitRepository visitRepository;
 
 
-	@Transactional
-	public Iterable<Visit> findAllPendingByVet(final Vet vet) {
-		return this.visitRepository.findAllPendingByVet(vet.getId());
-	}
-
 	@Transactional(readOnly = true)
 	public Optional<Visit> findById(final int id) {
-		return visitRepository.findById(id);
+		return this.visitRepository.findById(id);
 	}
 
 	@Transactional
@@ -51,26 +45,29 @@ public class VisitService {
 		this.save(visit);
 	}
 
-	/*@Transactional
-	public Iterable<Visit> findAllbyAcceptance(final boolean bool) {
-		return this.visitRepository.findAllbyAcceptance(bool);
-	}*/
+	/*
+	 * @Transactional
+	 * public Iterable<Visit> findAllbyAcceptance(final boolean bool) {
+	 * return this.visitRepository.findAllbyAcceptance(bool);
+	 * }
+	 */
 
-	/*@Transactional
-	public Iterable<Visit> findAllPending() {
-		return this.visitRepository.findAllPending();
-	}
-	*/
+	/*
+	 * @Transactional
+	 * public Iterable<Visit> findAllPending() {
+	 * return this.visitRepository.findAllPending();
+	 * }
+	 */
 	@Transactional(readOnly = true)
-	public Iterable<Visit> findAllPending() {
+	public Iterable<Visit> findAllPendingByVet(final Vet vet) {
 		LocalDate actualDate = LocalDate.now();
-		return visitRepository.findAllPending(actualDate);
+		return this.visitRepository.findAllPendingByVet(actualDate, vet.getId());
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Visit> findAllAccepted() {
+	public Iterable<Visit> findAllAcceptedByVet(final Vet vet) {
 		LocalDate actualDate = LocalDate.now();
-		return visitRepository.findAllAccepted(actualDate);
+		return this.visitRepository.findAllAcceptedByVet(actualDate, vet.getId());
 	}
 
 }

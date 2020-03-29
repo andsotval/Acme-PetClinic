@@ -5,7 +5,12 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Stay;
+import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.service.StayService;
+import org.springframework.samples.petclinic.service.VetService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -23,11 +28,21 @@ public class StayController {
 	@Autowired
 	private StayService			stayService;
 
+	@Autowired
+	private VetService			vetService;
+
 
 	@GetMapping(value = "/listAllPending")
 	public String listAllPending(final ModelMap modelMap) {
 		String view = "stays/list";
-		Iterable<Stay> stays = stayService.findAllPending();
+
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		User user = (User) authentication.getPrincipal();
+
+		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
+
+		Iterable<Stay> stays = this.stayService.findAllPendingByVet(vet);
 		modelMap.addAttribute("stays", stays);
 		return view;
 
@@ -36,7 +51,14 @@ public class StayController {
 	@GetMapping(value = "/listAllAccepted")
 	public String listAllAccepted(final ModelMap modelMap) {
 		String view = "stays/list";
-		Iterable<Stay> stays = stayService.findAllAccepted();
+
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		User user = (User) authentication.getPrincipal();
+
+		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
+
+		Iterable<Stay> stays = this.stayService.findAllAcceptedByVet(vet);
 		modelMap.addAttribute("stays", stays);
 		return view;
 
@@ -44,9 +66,9 @@ public class StayController {
 
 	@GetMapping(path = "/accept/{stayId}")
 	public String acceptStay(@PathVariable("stayId") final int stayId, final ModelMap modelMap) {
-		Stay stay = stayService.findById(stayId).get();
+		Stay stay = this.stayService.findById(stayId).get();
 
-		stayService.acceptStay(stay);
+		this.stayService.acceptStay(stay);
 
 		return "redirect:/stays/listAllAccepted";
 
@@ -54,9 +76,9 @@ public class StayController {
 
 	@GetMapping(path = "/cancel/{stayId}")
 	public String cancelStay(@PathVariable("stayId") final int stayId, final ModelMap modelMap) {
-		Stay stay = stayService.findById(stayId).get();
+		Stay stay = this.stayService.findById(stayId).get();
 
-		stayService.cancelStay(stay);
+		this.stayService.cancelStay(stay);
 
 		return "redirect:/stays/listAllAccepted";
 
@@ -64,36 +86,36 @@ public class StayController {
 
 	@GetMapping(path = "/changeDate/{stayId}")
 	public String changeDateStay(@PathVariable("stayId") final int stayId, final ModelMap modelMap) {
-		Stay stay = stayService.findById(stayId).get();
+		Stay stay = this.stayService.findById(stayId).get();
 		modelMap.addAttribute("stay", stay);
 		return StayController.VIEWS_STAY_CREATE_OR_UPDATE_FORM;
 	}
 
 	@PostMapping(path = "/save/{stayId}")
-	public String updateStay(@PathVariable("stayId") final int stayId, @Valid Stay entity, BindingResult result,
-		final ModelMap modelMap) {
+	public String updateStay(@PathVariable("stayId") final int stayId, @Valid final Stay entity, final BindingResult result, final ModelMap modelMap) {
 		String view = StayController.VIEWS_STAY_CREATE_OR_UPDATE_FORM;
 
-		if (!stayService.findById(stayId).isPresent())
+		if (!this.stayService.findById(stayId).isPresent()) {
 			return "redirect:/oups";
+		}
 
-		Stay stay = stayService.findById(stayId).get();
+		Stay stay = this.stayService.findById(stayId).get();
 		stay.setDescription(entity.getDescription());
 		stay.setStartDate(entity.getStartDate());
 		stay.setFinishDate(entity.getFinishDate());
 
-		if (result.hasErrors())
+		if (result.hasErrors()) {
 			modelMap.addAttribute("stay", stay);
-		else if (!entity.getStartDate().isBefore(entity.getFinishDate())) {
+		} else if (!entity.getStartDate().isBefore(entity.getFinishDate())) {
 			result.rejectValue("startDate", "startLaterFinish", "the start date cannot be later than the finish date");
 			modelMap.addAttribute("stay", stay);
 		} else if (entity.getFinishDate().isAfter(entity.getStartDate().plusDays(7L))) {
 			result.rejectValue("finishDate", "sevenDays", "you cannot book a stay longer than seven days");
 			modelMap.addAttribute("stay", stay);
 		} else {
-			stayService.save(stay);
+			this.stayService.save(stay);
 			modelMap.addAttribute("message", "Stay succesfully updated");
-			view = listAllAccepted(modelMap);
+			view = this.listAllAccepted(modelMap);
 			return "redirect:/stays/listAllAccepted";
 		}
 

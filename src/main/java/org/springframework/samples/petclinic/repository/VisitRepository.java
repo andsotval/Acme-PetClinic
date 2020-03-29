@@ -39,21 +39,12 @@ public interface VisitRepository extends CrudRepository<Visit, Integer> {
 	@Query("SELECT v FROM Visit v WHERE v.id = ?1")
 	Visit findByVisitId(Integer visitId);
 
-	@Query("SELECT v FROM Visit v INNER JOIN Clinic c ON c.id=v.clinic.id WHERE v.isAccepted IS NULL AND ?1 IN (SELECT v2.id FROM Vet v2 WHERE v2.clinic.id=c.id) ")
-	Iterable<Visit> findAllPendingByVet(Integer vetId);
+	@Query("SELECT v FROM Visit v INNER JOIN Clinic c ON c.id=v.clinic.id WHERE v.isAccepted IS NULL AND ?2 IN (SELECT v2.id FROM Vet v2 WHERE v2.clinic.id=c.id) AND v.date > ?1 ")
+	Iterable<Visit> findAllPendingByVet(LocalDate actualDate, Integer vetId);
+
+	@Query("SELECT v FROM Visit v INNER JOIN Clinic c ON c.id=v.clinic.id WHERE v.isAccepted = true AND ?2 IN (SELECT v2.id FROM Vet v2 WHERE v2.clinic.id=c.id) AND v.date > ?1 ")
+	Iterable<Visit> findAllAcceptedByVet(LocalDate actualDate, Integer vetId);
 
 	List<Visit> findByPetId(Integer petId);
-
-	//@Query("SELECT v FROM Visit v WHERE v.isAccepted = ?1")
-	//Iterable<Visit> findAllbyAcceptance(boolean bool);
-
-	//@Query("SELECT v FROM Visit v WHERE v.isAccepted = null")
-	//Iterable<Visit> findAllPending();
-	
-	@Query("SELECT v FROM Visit v WHERE v.isAccepted = null AND v.date > ?1")
-	Iterable<Visit> findAllPending(LocalDate actualDate);
-
-	@Query("SELECT v FROM Visit v WHERE v.isAccepted = true AND v.date > ?1")
-	Iterable<Visit> findAllAccepted(LocalDate actualDate);
 
 }
