@@ -56,17 +56,7 @@ public class VetService {
 	public Collection<Vet> findVets() throws DataAccessException {
 		return vetRepository.findAll();
 	}	
-	@Transactional(readOnly = true)	
-	public Collection<Vet> findVetsAvailable() throws DataAccessException {
-		 Collection<Vet> res= Collections.emptyList();
-		 Collection<Vet> vets= vetRepository.findAll();
-		 for(Vet v:vets) {
-			 if (v.getClinic()==null);
-			 res.add(v);
-		 }
-		 
-		 return res;
-	}
+	
 	@Transactional(readOnly = true)
 	public Iterable<Vet> findAvailableVets(){
 		return vetRepository.findAvailableVets();

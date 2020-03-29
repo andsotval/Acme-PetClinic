@@ -69,7 +69,7 @@ public class VetController {
 	@GetMapping(value = "/vetsAvailable")
 	public String vetsAvailableList(ModelMap modelMap) {
 		String vista="vets/vetsAvailable";
-		Iterable<Vet> vets= vetService.findVetsAvailable();
+		Iterable<Vet> vets= vetService.findAvailableVets();
 		modelMap.addAttribute("vets2", vets);
 		return vista;
 	}
