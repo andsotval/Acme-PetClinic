@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/providers")
 public class ProviderController {
 
-	private static final String VIEWS_PROVIDER_CREATE_OR_UPDATE_FORM = "providers/createOrUpdateProviderForm";
+	private static final String VIEWS_PROVIDER_ADD_FORM = "providers/addProviderForm";
 
 	private final ManagerService managerService;
 	private final ProviderService providerService;
@@ -34,7 +34,7 @@ public class ProviderController {
 		this.providerService = providerService;
 
 	}
-
+	
 	@GetMapping(value = "/listAvailable")
 	public String listAvailable(ModelMap model) {
 		Iterable<Provider> providerList = this.providerService.findAvailableProviders();
@@ -48,31 +48,30 @@ public class ProviderController {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User user = (User) authentication.getPrincipal();
 		Manager manager = this.managerService.findManagerByUsername(user.getUsername()).get();
+		
 		Provider provider = this.providerService.findProviderById(providerId).get();
-		provider.setManager(manager);
+		if(provider.getManager() == null) {
+			provider.setManager(manager);
+		} else {
+			model.addAttribute("message", "No es posible añadir un Provider que ya esta asignado a otro Manager");
+			return "redirect:/providers/listAvailable";
+		}
 
-		model.addAttribute(provider);
-		model.addAttribute(manager);
+		model.addAttribute("provider", provider);
+		model.addAttribute("manager", manager);
 
-		return VIEWS_PROVIDER_CREATE_OR_UPDATE_FORM;
+		return VIEWS_PROVIDER_ADD_FORM;
 	}
 
 	@PostMapping(value = "/addProvider/{providerId}")
-	public String proccessAddProviderToManager(@Valid Provider provider, @Valid Manager manager, BindingResult result,
-			@PathVariable("providerId") Integer providerId) {
-
-		if (provider != null && manager != null) {
-			manager.setId(provider.getManager().getId());
-			
-			provider.getUser().setId(this.providerService.findProviderById(providerId).get().getUser().getId());
-			provider.setManager(manager);
-			provider.setId(providerId);
-			
+	public String proccessAddProviderToManager(@Valid Provider provider, @Valid Manager manager, @PathVariable("providerId") Integer providerId, BindingResult result) {
+		
+		if (!result.hasErrors()) {			
 			this.providerService.saveProvider(provider);
 		} else {
-			return VIEWS_PROVIDER_CREATE_OR_UPDATE_FORM;
+			return VIEWS_PROVIDER_ADD_FORM;
 		}
-
+		
 		return "redirect:/providers/listAvailable";
 	}
 
