@@ -19,6 +19,7 @@ import java.util.Collection;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.samples.petclinic.model.Vet;
 
 /**
@@ -32,7 +33,7 @@ import org.springframework.samples.petclinic.model.Vet;
  * @author Sam Brannen
  * @author Michael Isvy
  */
-public interface VetRepository {
+public interface VetRepository extends CrudRepository<Vet, Integer>{
 
 	/**
 	 * Retrieve all <code>Vet</code>s from the data store.
@@ -42,6 +43,9 @@ public interface VetRepository {
 	
 	@Query("SELECT vet FROM Vet vet WHERE vet.clinic = null")
 	Collection<Vet> findAvailableVets();
+	
+	@Query("SELECT v FROM Vet v WHERE v.user.username = ?1")
+	Vet findByVetByUsername(String username);
 	
 	
 

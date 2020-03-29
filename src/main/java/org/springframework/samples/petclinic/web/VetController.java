@@ -22,6 +22,7 @@ import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Vets;
 import org.springframework.samples.petclinic.service.ClinicService;
+import org.springframework.samples.petclinic.service.ManagerService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,15 +50,18 @@ import javax.validation.Valid;
 @RequestMapping("/vets")
 public class VetController {
 	
-	private static final String VIEWS_VET_CREATE_OR_UPDATE_FORM = "vets/createOrUpdateVetForm";
 	
 	private final ClinicService clinicService;
 	private final VetService vetService;
+	private final ManagerService managerService;
 
 	@Autowired
-	public VetController(VetService clinicService) {
-		this.vetService = clinicService;
+	public VetController(VetService vetService,ClinicService clinicService,ManagerService managerService) {
+		this.vetService = vetService;
+		this.clinicService=clinicService;
+		this.managerService=managerService;
 	}
+	
 
 	@GetMapping(value = { "/vetsList" })
 	public String showVetList(Map<String, Object> model) {
@@ -88,39 +92,23 @@ public class VetController {
 		return vista;
 	}
 	
-	@GetMapping(value = "/addVet/{vetId}")
-	public String initAddVetToClinic(@PathVariable("vetId") Integer vetId, Model model) {
-
+	@GetMapping(path = "/accept/{vetId}")
+	public String acceptVet(@PathVariable("vetId") final int vetId, final ModelMap modelMap) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
 		User user = (User) authentication.getPrincipal();
-		Clinic clinic = this.clinicService.findClinicByName(clinic.getClinic()).get();
-		Vet vet = this.vetService.findVetById(vetId).get();
+
+		Manager manager = this.managerService.findManagerByUsername(user.getUsername()).get();
+		Clinic clinic = this.clinicService.findClinicByManager(manager);
+		Vet vet = vetService.findById(vetId).get();
+		
 		vet.setClinic(clinic);
+		this.vetService.save(vet);
 
-		model.addAttribute(vet);
-		model.addAttribute(clinic);
+		return "redirect:/vets/vetsAvailable";
 
-		return VIEWS_VET_CREATE_OR_UPDATE_FORM;
 	}
-
-	@PostMapping(value = "/addVet/{vetId}")
-	public String proccessAddProviderToManager(@Valid Vet vet, @Valid Clinic clinic, BindingResult result,
-			@PathVariable("vetId") Integer vetId) {
-
-		if (vet != null && clinic != null) {
-			clinic.setId(vet.getClinic().getId());
-			
-			vet.getUser().setId(this.vetService.findVetById(vetId).get().getUser().getId());
-			vet.setClinic(clinic);
-			vet.setId(vetId);
-			
-			this.vetService.saveProvider(vet);
-		} else {
-			return VIEWS_VET_CREATE_OR_UPDATE_FORM;
-		}
-
-		return "redirect:/vets/listAvailable";
-	}
+	
 	
 	
 	

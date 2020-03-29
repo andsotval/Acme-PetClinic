@@ -17,6 +17,7 @@ package org.springframework.samples.petclinic.service;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,6 +27,7 @@ import org.springframework.samples.petclinic.model.Manager;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
+import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.OwnerRepository;
@@ -33,6 +35,8 @@ import org.springframework.samples.petclinic.repository.PetRepository;
 import org.springframework.samples.petclinic.repository.VetRepository;
 import org.springframework.samples.petclinic.repository.VisitRepository;
 import org.springframework.samples.petclinic.service.exceptions.DuplicatedPetNameException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -65,14 +69,17 @@ public class VetService {
 	}
 	
 	@Transactional
-	public void addVet(final Vet vet, final Clinic clinic){
-		vet.setClinic(clinic);
-		saveVet(vet);
+	public void save(final Vet vet) {
+		vetRepository.save(vet);
 	}
-
+	
+	@Transactional(readOnly = true)
+	public Optional<Vet> findById(final int id) {
+		return this.vetRepository.findById(id);
+	}
+	
 	@Transactional
-	public void saveVet(final Vet vet){
-		this.vetRepository.save(vet);
+	public Vet findByVetByUsername(final String username) {
+		return this.vetRepository.findByVetByUsername(username);
 	}
-
 } 
