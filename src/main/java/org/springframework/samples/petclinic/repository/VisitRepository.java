@@ -16,6 +16,7 @@
 
 package org.springframework.samples.petclinic.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
@@ -43,10 +44,16 @@ public interface VisitRepository extends CrudRepository<Visit, Integer> {
 
 	List<Visit> findByPetId(Integer petId);
 
-	@Query("SELECT v FROM Visit v WHERE v.isAccepted = ?1")
-	Iterable<Visit> findAllbyAcceptance(boolean bool);
+	//@Query("SELECT v FROM Visit v WHERE v.isAccepted = ?1")
+	//Iterable<Visit> findAllbyAcceptance(boolean bool);
 
-	@Query("SELECT v FROM Visit v WHERE v.isAccepted = null")
-	Iterable<Visit> findAllPending();
+	//@Query("SELECT v FROM Visit v WHERE v.isAccepted = null")
+	//Iterable<Visit> findAllPending();
+	
+	@Query("SELECT v FROM Visit v WHERE v.isAccepted = null AND v.date > ?1")
+	Iterable<Visit> findAllPending(LocalDate actualDate);
+
+	@Query("SELECT v FROM Visit v WHERE v.isAccepted = true AND v.date > ?1")
+	Iterable<Visit> findAllAccepted(LocalDate actualDate);
 
 }

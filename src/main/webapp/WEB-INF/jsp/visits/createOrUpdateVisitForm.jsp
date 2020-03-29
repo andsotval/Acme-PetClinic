@@ -16,7 +16,7 @@
     
     <jsp:body>
         <h2>Stay</h2>
-			<form:form modelAttribute="visit" class="form-horizontal" action="/visits/save">
+			<form:form modelAttribute="visit" class="form-horizontal" action="/visits/save/${visit.id}">
             <div class="form-group has-feedback">
            		<petclinic:inputField label="Description" name="description"/>	
                 <petclinic:inputField label="Date of the Visit" name="date"/>
