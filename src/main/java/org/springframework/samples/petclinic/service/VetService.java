@@ -65,14 +65,14 @@ public class VetService {
 	}
 	
 	@Transactional
-	public void addProvider(final Vet vet, final Clinic clinic){
+	public void addVet(final Vet vet, final Clinic clinic){
 		vet.setClinic(clinic);
-		saveProvider(vet);
+		saveVet(vet);
 	}
 
 	@Transactional
-		public void saveProvider(final Vet vet){
-			this.vetRepository.save(vet);
-		}
+	public void saveVet(final Vet vet){
+		this.vetRepository.save(vet);
+	}
 
 } 

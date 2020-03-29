@@ -7,5 +7,5 @@ import org.springframework.samples.petclinic.model.Clinic;
 
 public interface ClinicRepository {
 	@Query("SELECT clinic FROM Clinic clinic WHERE clinic.name=?1")
-	Optional<Clinic> findManagerByName(String name);
+	Optional<Clinic> findClinicByName(String name);
 }
