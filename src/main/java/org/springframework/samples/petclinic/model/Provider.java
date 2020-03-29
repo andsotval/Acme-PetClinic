@@ -14,7 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -35,12 +34,10 @@ public class Provider extends Person {
 
 	@Column(name = "telephone")
 	@NotEmpty
-	@Pattern(regexp = "")
 	private String	telephone;
 
 	@Column(name = "mail")
 	@NotEmpty
-	@Pattern(regexp = "")
 	private String	mail;
 
 	@ManyToOne(optional = true, fetch = FetchType.EAGER)

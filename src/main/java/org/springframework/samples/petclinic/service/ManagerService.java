@@ -28,7 +28,7 @@ public class ManagerService {
 	public Optional<Manager> findManagerById(final int id) {
 		return this.managerRepository.findById(id);
 	}
-
+	@Transactional
 	public Optional<Manager> findManagerByUsername(String user) {
 		return this.managerRepository.findManagerByUsername(user);
 	}
