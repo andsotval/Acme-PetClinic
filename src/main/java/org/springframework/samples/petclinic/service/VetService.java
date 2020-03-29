@@ -50,6 +50,7 @@ import org.springframework.util.StringUtils;
 @Service
 public class VetService {
 
+	
 	private VetRepository vetRepository;
 
 
@@ -70,7 +71,7 @@ public class VetService {
 	
 	@Transactional
 	public void save(final Vet vet) {
-		vetRepository.save(vet);
+		this.vetRepository.save(vet);
 	}
 	
 	@Transactional(readOnly = true)

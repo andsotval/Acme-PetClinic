@@ -18,7 +18,6 @@ package org.springframework.samples.petclinic.web;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.Manager;
-import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Vets;
 import org.springframework.samples.petclinic.service.ClinicService;
@@ -26,6 +25,7 @@ import org.springframework.samples.petclinic.service.ManagerService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -94,16 +94,23 @@ public class VetController {
 	
 	@GetMapping(path = "/accept/{vetId}")
 	public String acceptVet(@PathVariable("vetId") final int vetId, final ModelMap modelMap) {
+		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 		User user = (User) authentication.getPrincipal();
 
 		Manager manager = this.managerService.findManagerByUsername(user.getUsername()).get();
-		Clinic clinic = this.clinicService.findClinicByManager(manager);
+		
+		Clinic clinic = this.clinicService.findClinicByManagerId(manager.getId());
+		
 		Vet vet = vetService.findById(vetId).get();
 		
-		vet.setClinic(clinic);
-		this.vetService.save(vet);
+		if(vet.getClinic() == null) {
+			vet.setClinic(clinic);
+			this.vetService.save(vet);
+		}else {
+			return "redirect:/oups";
+		}
 
 		return "redirect:/vets/vetsAvailable";
 

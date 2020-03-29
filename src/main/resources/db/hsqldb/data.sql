@@ -96,9 +96,9 @@ INSERT INTO pet(id,name,birth_date,type_id,owner_id) VALUES (12, 'Lucky', '2010-
 INSERT INTO pet(id,name,birth_date,type_id,owner_id) VALUES (13, 'Sly', '2012-06-08', 1, 10);
 
 INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (1, 'Clinic1', 'AddresClinic1', 'CityClinic1','999999999',1);
-INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (2, 'Clinic2', 'AddresClinic2', 'CityClinic2','999999999',1);
-INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (3, 'Clinic3', 'AddresClinic3', 'CityClinic3','999999999',1);
-INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (4, 'Clinic4', 'AddresClinic4', 'CityClinic4','999999999',1);
+INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (2, 'Clinic2', 'AddresClinic2', 'CityClinic2','999999999',null);
+INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (3, 'Clinic3', 'AddresClinic3', 'CityClinic3','999999999',null);
+INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (4, 'Clinic4', 'AddresClinic4', 'CityClinic4','999999999',null);
 
 INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (1, 7, '2013-01-01', 'rabies shot',true,1);
 INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (2, 8, '2013-01-02', 'rabies shot',false,2);

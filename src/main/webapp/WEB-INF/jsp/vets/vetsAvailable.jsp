@@ -29,7 +29,7 @@
                 </td>
                 <td>
                 	<c:if test="${vet.clinic == null}">
-	                	<spring:url value="/vet/accept/{vetId}" var="vetUrlAccept">
+	                	<spring:url value="/vets/accept/{vetId}" var="vetUrlAccept">
 	                        <spring:param name="vetId" value="${vet.id}"/>
 	                    </spring:url>
 	                    <a href="${fn:escapeXml(vetUrlAccept)}"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true" ></span></a>
