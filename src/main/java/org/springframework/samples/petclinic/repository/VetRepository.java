@@ -42,5 +42,7 @@ public interface VetRepository {
 	
 	@Query("SELECT vet FROM Vet vet WHERE vet.clinic = null")
 	Collection<Vet> findAvailableVets();
+	
+	
 
 }

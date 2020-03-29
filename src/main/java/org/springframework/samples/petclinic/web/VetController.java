@@ -21,6 +21,7 @@ import org.springframework.samples.petclinic.model.Manager;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Vets;
+import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
