@@ -1,6 +1,7 @@
 
 package org.springframework.samples.petclinic.service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,14 @@ public class StayService {
 
 	@Transactional(readOnly = true)
 	public Iterable<Stay> findAllPending() {
-		return stayRepository.findAllPending();
+		LocalDate actualDate = LocalDate.now();
+		return stayRepository.findAllPending(actualDate);
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Stay> findAllbyAcceptance(Boolean bool) {
-		return stayRepository.findAllbyAcceptance(bool);
+	public Iterable<Stay> findAllAccepted() {
+		LocalDate actualDate = LocalDate.now();
+		return stayRepository.findAllAccepted(actualDate);
 	}
 
 	@Transactional(readOnly = true)

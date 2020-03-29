@@ -105,9 +105,9 @@ INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES
 INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (3, 8, '2013-01-03', 'neutered',true,3);
 INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (4, 7, '2013-01-04', 'spayed',false,4);
 
-INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (1, '2013-01-01', '2019-01-01','stay pendiente', null,1,1);
-INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (2, '2013-01-01', '2019-01-01','stay pendiente', null,1,2);
-INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (3, '2013-01-01', '2019-01-01','stay rechazada', false,1,3);
-INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (4, '2013-01-01', '2019-01-01','stay aceptada', true,2,3);
-INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (5, '2013-01-01', '2019-01-01','stay rechazada', false,2,4);
-INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (6, '2013-01-01', '2019-01-01','stay aceptada', true,3,4);
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (1, '2020-06-09', '2020-06-12','stay pendiente', null,1,1);
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (2, '2020-06-09', '2020-06-12','stay pendiente', null,1,2);
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (3, '2020-06-09', '2020-06-13','stay rechazada', false,1,3);
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (4, '2020-06-09', '2020-06-14','stay aceptada', true,2,3);
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (5, '2020-06-09', '2020-06-15','stay rechazada', false,2,4);
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (6, '2020-06-09', '2020-06-11','stay aceptada', true,3,4);

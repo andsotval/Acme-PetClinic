@@ -16,7 +16,7 @@
     </jsp:attribute>
     
     <jsp:body>
-        <h2>Stay</h2>
+        <h2>Update Stay</h2>
 			<form:form modelAttribute="stay" class="form-horizontal" action="/stays/save/${stay.id}">
             <div class="form-group has-feedback">
            		<petclinic:inputField label="Description" name="description"/>	
@@ -32,6 +32,7 @@
                     <button class="btn btn-default" type="submit">Save Stay</button>
                 </div>
             </div>
+            
         </form:form>
     </jsp:body>
 

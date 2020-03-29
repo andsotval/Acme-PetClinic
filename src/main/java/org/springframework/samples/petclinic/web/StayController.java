@@ -36,7 +36,7 @@ public class StayController {
 	@GetMapping(value = "/listAllAccepted")
 	public String listAllAccepted(final ModelMap modelMap) {
 		String view = "stays/list";
-		Iterable<Stay> stays = stayService.findAllbyAcceptance(true);
+		Iterable<Stay> stays = stayService.findAllAccepted();
 		modelMap.addAttribute("stays", stays);
 		return view;
 
