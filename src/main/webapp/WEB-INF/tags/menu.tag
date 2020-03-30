@@ -34,13 +34,21 @@
 					<span>Find owners</span>
 				</petclinic:menuItem>
 
-				<petclinic:menuItem active="${name eq 'vets'}" url="/vets"
+				<sec:authorize access="!hasAuthority('manager')">
+				<petclinic:menuItem active="${name eq 'vets'}" url="/vets/vetsList"
 					title="veterinarians">
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>Veterinarians</span>
 				</petclinic:menuItem>
+				</sec:authorize>
 				
 				<sec:authorize access="hasAuthority('manager')">
+				
+				<petclinic:menuItem active="${name eq 'vets'}" url="/vets/vetsAvailable"
+					title="veterinarians">
+					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+					<span>Veterinarians</span>
+				</petclinic:menuItem>
 
 				<petclinic:menuItem active="${name eq 'providers'}" url="/providers/listAvailable"
 					title="providers">
