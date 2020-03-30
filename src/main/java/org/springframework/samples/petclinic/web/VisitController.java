@@ -160,8 +160,8 @@ public class VisitController {
 		return "/visits/createOrUpdateVisitForm";
 	}
 
-	@PostMapping(path = "/save")
-	public String updatevisit(@Valid final Visit visit, final BindingResult result, final ModelMap modelMap) {
+	/*@PostMapping(path = "/save")
+	public String newVisit(@Valid final Visit visit, final BindingResult result, final ModelMap modelMap) {
 		String view = "/visits/createOrUpdateVisitForm";
 		if (result.hasErrors()) {
 			modelMap.addAttribute("visit", visit);
@@ -173,10 +173,10 @@ public class VisitController {
 			view = this.listAllAccepted(modelMap);
 			return "redirect:/visits/listAllAccepted";
 		}
-	}
+	}*/
 
 	@PostMapping(path = "/save/{visitId}")
-	public String updateVtay(@PathVariable("visitId") final int visitId, @Valid final Visit entity, final BindingResult result, final ModelMap modelMap) {
+	public String updateVisit(@PathVariable("visitId") final int visitId, @Valid final Visit entity, final BindingResult result, final ModelMap modelMap) {
 
 		String view = VisitController.VIEWS_VISIT_CREATE_OR_UPDATE_FORM;
 
