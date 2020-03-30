@@ -36,6 +36,21 @@ class VisitControllerTests {
 
 	@Autowired
 	private VisitController visitController;
+	
+	//listAllPending (todas las visits devueltas tienen que tener isAcepted a null)
+	
+	//listAllAccepted (todas las visits devueltas tienen que tener isAcepted a true)
+	
+	//acceptVisit (pasarle una visit con isAccepted a null y te la actualice a true)
+	
+	//cancelVisit (pasarle una visit con isAccepted a null y te la actualice a false)
+	
+	//changeDateVisit (la visit que entra es la misma que sale)
+	
+	//updateVisit (actualizar parametros (date description) y comprobar que se ha guardado bien)
+	//date tiene que ser mínimo, dentro de 2 dias
+	
+	
 
 	@MockBean
 	private PetService clinicService;

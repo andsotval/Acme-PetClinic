@@ -100,7 +100,17 @@ INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (2, 'Clinic
 INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (3, 'Clinic3', 'AddresClinic3', 'CityClinic3','999999999',1);
 INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (4, 'Clinic4', 'AddresClinic4', 'CityClinic4','999999999',1);
 
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (1, 7, '2013-01-01', 'rabies shot',true,1);
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (2, 8, '2013-01-02', 'rabies shot',false,2);
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (3, 8, '2013-01-03', 'neutered',true,3);
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (4, 7, '2013-01-04', 'spayed',false,4);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (1, 7, '2020-06-09', 'visit aceptada',true,1);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (2, 8, '2020-06-09', 'visit rechazada',false,2);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (3, 8, '2020-06-09', 'visit aceptada',true,3);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (4, 7, '2020-06-09', 'visit pendiente',null,4);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (5, 8, '2020-06-09', 'visit pendiente',null,2);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (6, 8, '2020-06-09', 'visit pendiente',null,3);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (7, 7, '2020-06-09', 'visit pendiente',null,4);
+
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (1, '2020-06-09', '2020-06-12','stay pendiente', null,1,1);
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (2, '2020-06-09', '2020-06-12','stay pendiente', null,1,2);
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (3, '2020-06-09', '2020-06-13','stay rechazada', false,1,3);
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (4, '2020-06-09', '2020-06-14','stay aceptada', true,2,3);
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (5, '2020-06-09', '2020-06-15','stay rechazada', false,2,4);
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (6, '2020-06-09', '2020-06-11','stay aceptada', true,3,4);

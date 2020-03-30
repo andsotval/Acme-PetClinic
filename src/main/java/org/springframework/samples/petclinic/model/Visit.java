@@ -15,7 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -48,7 +47,6 @@ public class Visit extends BaseEntity {
 	private String		description;
 
 	@Column(name = "is_accepted")
-	@NotNull
 	private Boolean		isAccepted;
 
 	@ManyToOne
