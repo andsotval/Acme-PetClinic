@@ -1,4 +1,3 @@
-
 -- ADMIN
 
 INSERT INTO user(id, username,password,enabled) VALUES (1,'admin','admin',TRUE);

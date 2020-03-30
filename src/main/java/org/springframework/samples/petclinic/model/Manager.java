@@ -33,6 +33,7 @@ public class Manager extends Person {
 	@Column(name = "telephone")
 //	@Pattern(regexp = "6[0-9]{8}")
 	@NotEmpty
+
 	private String	telephone;
 
 	@Column(name = "mail")
@@ -40,4 +41,4 @@ public class Manager extends Person {
 	@NotEmpty
 	private String	mail;
 
-}////
+}

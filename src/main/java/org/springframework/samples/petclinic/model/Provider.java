@@ -43,8 +43,8 @@ public class Provider extends Person {
 	@NotEmpty
 	private String	mail;
 
-	@ManyToOne(optional = true, fetch = FetchType.EAGER)
-	@JoinColumn(name = "manager_id", nullable = true)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@JoinColumn(name = "manager_id", nullable = false)
 	private Manager	manager;
 
 	//	@OneToMany(cascade = CascadeType.ALL, mappedBy = "provider", fetch = FetchType.EAGER)

@@ -97,6 +97,5 @@ public class Vet extends Person {
 	public void addSpecialty(final Specialty specialty) {
 		this.getSpecialtiesInternal().add(specialty);
 	}
-
 }
 

@@ -48,10 +48,12 @@
         </tbody>
     </table>
 
+	<a class="btn btn-default" href='<spring:url value="/visits/listAllAccepted" htmlEscape="true"/>'>List of all visits accepted</a>
+
     <table class="table-buttons">
         <tr>
             <td>
-
+            
             </td>            
         </tr>
     </table>
