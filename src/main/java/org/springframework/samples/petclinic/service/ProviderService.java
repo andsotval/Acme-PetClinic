@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProviderService {
-	
+
 	private ProviderRepository providerRepository;
 
 	@Autowired
@@ -24,13 +24,25 @@ public class ProviderService {
 	}
 
 	@Transactional(readOnly = true)
+	public Iterable<Provider> findAvailableProviders() {
+		return this.providerRepository.findAvailableProviders();
+	}
+  
+  @Transactional(readOnly = true)
 	public Optional<Provider> findProviderById(final int providerId) {
 		return this.providerRepository.findById(providerId);
 	}
 
-	@Transactional(readOnly = true)
+
+
+  @Transactional(readOnly = true)
 	public Iterable<Provider> findProvidersByManagerId(final int managerId) {
 		return this.providerRepository.findProvidersByManagerId(managerId);
+  }
+  
+  @Transactional
+	public void saveProvider(final Provider provider) {
+		this.providerRepository.save(provider);
 	}
 
 }

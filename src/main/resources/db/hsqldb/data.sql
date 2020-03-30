@@ -1,3 +1,4 @@
+
 -- ADMIN
 
 -- One admin user, named admin with password admin and authority admin
@@ -27,6 +28,7 @@ INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, 
 -- VETS
 
 -- One vet user, named vet1 with password vet1
+
 -- INSERT INTO user(id, username,password,enabled) VALUES (4, 'vet1','vet1',TRUE);
 -- INSERT INTO authority VALUES ('vet1','veterinarian');
 -- INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (1, 4, 'juanito', 'juan', 'C/ Juan numero 1', 'Malaga', '600000002', 'juan@gmail.com');
@@ -46,21 +48,25 @@ INSERT INTO provider(id, user_id, first_name, last_name, address, city, telephon
 -- One Provider user, named provider3 with password provider3
 INSERT INTO user(id, username,password,enabled) VALUES (7, 'provider3','provider3',TRUE);
 INSERT INTO authority VALUES ('provider3','provider');
+--INSERT INTO provider(id, user_id, first_name, last_name, address, city, telephone, mail, manager_id) VALUES (3, 7, 'carlos', 'gutierrez', 'C/ Carlos numero 1', 'Cuenca', '600001239', 'carlos@gmail.com', null);
 INSERT INTO provider(id, user_id, first_name, last_name, address, city, telephone, mail, manager_id) VALUES (3, 7, 'carlos', 'gutierrez', 'C/ Carlos numero 1', 'Cuenca', '600001239', 'carlos@gmail.com', 2);
 
 -- One Provider user, named provider3 with password provider3
 INSERT INTO user(id, username,password,enabled) VALUES (9, 'provider4','provider4',TRUE);
 INSERT INTO authority VALUES ('provider4','provider');
+--INSERT INTO provider(id, user_id, first_name, last_name, address, city, telephone, mail, manager_id) VALUES (4, 9, 'pepe', 'gutierrez', 'C/ pepe numero 1', 'Londres', '600001200', 'pepe@gmail.com', null);
 INSERT INTO provider(id, user_id, first_name, last_name, address, city, telephone, mail, manager_id) VALUES (4, 9, 'pepe', 'gutierrez', 'C/ pepe numero 1', 'Londres', '600001200', 'pepe@gmail.com', 2);
 
 -- One Provider user, named provider3 with password provider3
 INSERT INTO user(id, username,password,enabled) VALUES (10, 'provider5','provider5',TRUE);
 INSERT INTO authority VALUES ('provider5','provider');
+--INSERT INTO provider(id, user_id, first_name, last_name, address, city, telephone, mail, manager_id) VALUES (5, 10, 'jose', 'gutierrez', 'C/ jose numero 1', 'Paris', '600001211', 'jose@gmail.com', null);
 INSERT INTO provider(id, user_id, first_name, last_name, address, city, telephone, mail, manager_id) VALUES (5, 10, 'jose', 'gutierrez', 'C/ jose numero 1', 'Paris', '600001211', 'jose@gmail.com', 2);
 
 -- One Provider user, named provider3 with password provider3
 INSERT INTO user(id, username,password,enabled) VALUES (11, 'provider6','provider6',TRUE);
 INSERT INTO authority VALUES ('provider6','provider');
+--INSERT INTO provider(id, user_id, first_name, last_name, address, city, telephone, mail, manager_id) VALUES (6, 11, 'maria', 'ortiz', 'C/ maria numero 1', 'Pamplona', '600007788', 'maria@gmail.com', null);
 INSERT INTO provider(id, user_id, first_name, last_name, address, city, telephone, mail, manager_id) VALUES (6, 11, 'maria', 'ortiz', 'C/ maria numero 1', 'Pamplona', '600007788', 'maria@gmail.com', 2);
 
 -- PRODUCTS
