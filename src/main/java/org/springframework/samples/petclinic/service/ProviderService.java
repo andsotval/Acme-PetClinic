@@ -1,3 +1,4 @@
+
 package org.springframework.samples.petclinic.service;
 
 import java.util.Optional;
@@ -13,6 +14,7 @@ public class ProviderService {
 
 	private ProviderRepository providerRepository;
 
+
 	@Autowired
 	public ProviderService(ProviderRepository providerRepository) {
 		this.providerRepository = providerRepository;
@@ -20,29 +22,27 @@ public class ProviderService {
 
 	@Transactional(readOnly = true)
 	public Iterable<Provider> findAllProviders() {
-		return this.providerRepository.findAll();
+		return providerRepository.findAll();
 	}
 
 	@Transactional(readOnly = true)
 	public Iterable<Provider> findAvailableProviders() {
-		return this.providerRepository.findAvailableProviders();
+		return providerRepository.findAvailableProviders();
 	}
-  
-  @Transactional(readOnly = true)
+
+	@Transactional(readOnly = true)
 	public Optional<Provider> findProviderById(final int providerId) {
-		return this.providerRepository.findById(providerId);
+		return providerRepository.findById(providerId);
 	}
 
-
-
-  @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public Iterable<Provider> findProvidersByManagerId(final int managerId) {
-		return this.providerRepository.findProvidersByManagerId(managerId);
-  }
-  
-  @Transactional
+		return providerRepository.findProvidersByManagerId(managerId);
+	}
+
+	@Transactional
 	public void saveProvider(final Provider provider) {
-		this.providerRepository.save(provider);
+		providerRepository.save(provider);
 	}
 
 }
