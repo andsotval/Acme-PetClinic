@@ -51,7 +51,10 @@
         </c:forEach>
         </tbody>
     </table>
-
+    
+    	<a class="btn btn-default" href='<spring:url value="/stays/listAllAccepted" htmlEscape="true"/>'>List of all stays accepted</a>
+    
+    
     <table class="table-buttons">
         <tr>
             <td>

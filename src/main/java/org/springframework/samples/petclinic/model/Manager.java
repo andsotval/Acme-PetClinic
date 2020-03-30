@@ -32,12 +32,12 @@ public class Manager extends Person {
 
 	@Column(name = "telephone")
 	@NotEmpty
-	@Pattern(regexp = "")
+//	@Pattern(regexp = "")
 	private String	telephone;
 
 	@Column(name = "mail")
 	@NotEmpty
-	@Pattern(regexp = "")
+//	@Pattern(regexp = "")
 	private String	mail;
 
 }

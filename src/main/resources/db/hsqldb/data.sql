@@ -11,9 +11,15 @@ INSERT INTO user(id, username,password,enabled) VALUES (3, 'owner1','owner1',TRU
 INSERT INTO authority VALUES ('owner1','owner');
 INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (1, 3, 'encarni', 'carni', 'C/ Carni numero 1', 'Cadiz', '600000001', 'carni@gmail.com');
 -- One vet user, named vet1 with passwor vet1
+
+INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (1, 'Clinic1', 'AddresClinic1', 'CityClinic1','999999999',1);
+INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (2, 'Clinic2', 'AddresClinic2', 'CityClinic2','999999999',1);
+INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (3, 'Clinic3', 'AddresClinic3', 'CityClinic3','999999999',1);
+INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (4, 'Clinic4', 'AddresClinic4', 'CityClinic4','999999999',1);
+
 INSERT INTO user(id, username,password,enabled) VALUES (4, 'vet1','vet1',TRUE);
 INSERT INTO authority VALUES ('vet1','veterinarian');
-INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (1, 4, 'juanito', 'juan', 'C/ Juan numero 1', 'Malaga', '600000002', 'juan2@gmail.com');
+INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (1, 4, 'juanito', 'juan', 'C/ Juan numero 1', 'Malaga', '600000002', 'juan2@gmail.com', 1);
 INSERT INTO user(id, username,password,enabled) VALUES (5, 'vet2','vet2',TRUE);
 INSERT INTO authority VALUES ('vet2','veterinarian');
 INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (2, 5, 'juanito', 'juan', 'C/ Juan numero 1', 'Malaga', '600000002', 'juan3@gmail.com');
@@ -95,21 +101,16 @@ INSERT INTO pet(id,name,birth_date,type_id,owner_id) VALUES (11, 'Freddy', '2010
 INSERT INTO pet(id,name,birth_date,type_id,owner_id) VALUES (12, 'Lucky', '2010-06-24', 2, 10);
 INSERT INTO pet(id,name,birth_date,type_id,owner_id) VALUES (13, 'Sly', '2012-06-08', 1, 10);
 
-INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (1, 'Clinic1', 'AddresClinic1', 'CityClinic1','999999999',1);
-INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (2, 'Clinic2', 'AddresClinic2', 'CityClinic2','999999999',1);
-INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (3, 'Clinic3', 'AddresClinic3', 'CityClinic3','999999999',1);
-INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (4, 'Clinic4', 'AddresClinic4', 'CityClinic4','999999999',1);
-
 INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (1, 7, '2020-06-09', 'visit aceptada',true,1);
 INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (2, 8, '2020-06-09', 'visit rechazada',false,2);
 INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (3, 8, '2020-06-09', 'visit aceptada',true,3);
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (4, 7, '2020-06-09', 'visit pendiente',null,4);
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (5, 8, '2020-06-09', 'visit pendiente',null,2);
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (6, 8, '2020-06-09', 'visit pendiente',null,3);
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (7, 7, '2020-06-09', 'visit pendiente',null,4);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (4, 7, '2020-06-09', 'visit pendiente',null,1);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (5, 8, '2020-06-09', 'visit pendiente',null,1);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (6, 8, '2020-06-09', 'visit pendiente',null,1);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (7, 7, '2020-06-09', 'visit pendiente',null,1);
 
 INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (1, '2020-06-09', '2020-06-12','stay pendiente', null,1,1);
-INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (2, '2020-06-09', '2020-06-12','stay pendiente', null,1,2);
+INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (2, '2020-06-09', '2020-06-12','stay pendiente', true,1,2);
 INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (3, '2020-06-09', '2020-06-13','stay rechazada', false,1,3);
 INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (4, '2020-06-09', '2020-06-14','stay aceptada', true,2,3);
 INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pet_id) VALUES (5, '2020-06-09', '2020-06-15','stay rechazada', false,2,4);
