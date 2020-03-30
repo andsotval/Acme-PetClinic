@@ -55,12 +55,12 @@ public class Vet extends Person {
 
 	@Column(name = "telephone")
 	@NotEmpty
-//	@Pattern(regexp = "6[0-9]{8}")
+	@Pattern(regexp = "6[0-9]{8}")
 	private String			telephone;
 
 	@Column(name = "mail")
 	@NotEmpty
-//	@Pattern(regexp = "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$")
+	@Pattern(regexp = "^([a-zA-Z0-9_\\\\-\\\\.]+)@([a-zA-Z0-9_\\\\-\\\\.]+)\\\\.([a-zA-Z]{2,5})$")
 	private String			mail;
 
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -97,5 +97,6 @@ public class Vet extends Person {
 	public void addSpecialty(final Specialty specialty) {
 		this.getSpecialtiesInternal().add(specialty);
 	}
+
 }
 
