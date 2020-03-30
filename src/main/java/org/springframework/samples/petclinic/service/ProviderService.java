@@ -20,20 +20,27 @@ public class ProviderService {
 
 	@Transactional(readOnly = true)
 	public Iterable<Provider> findAllProviders() {
-		return providerRepository.findAll();
+		return this.providerRepository.findAll();
 	}
 
 	@Transactional(readOnly = true)
 	public Iterable<Provider> findAvailableProviders() {
-		return providerRepository.findAvailableProviders();
+		return this.providerRepository.findAvailableProviders();
+	}
+  
+  @Transactional(readOnly = true)
+	public Optional<Provider> findProviderById(final int providerId) {
+		return this.providerRepository.findById(providerId);
 	}
 
-	@Transactional(readOnly = true)
-	public Optional<Provider> findProviderById(final int id) {
-		return this.providerRepository.findById(id);
-	}
 
-	@Transactional
+
+  @Transactional(readOnly = true)
+	public Iterable<Provider> findProvidersByManagerId(final int managerId) {
+		return this.providerRepository.findProvidersByManagerId(managerId);
+  }
+  
+  @Transactional
 	public void saveProvider(final Provider provider) {
 		this.providerRepository.save(provider);
 	}

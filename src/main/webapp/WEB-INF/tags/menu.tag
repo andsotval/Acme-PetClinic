@@ -41,11 +41,19 @@
 				</petclinic:menuItem>
 				
 				<sec:authorize access="hasAuthority('manager')">
+
 				<petclinic:menuItem active="${name eq 'providers'}" url="/providers/listAvailable"
 					title="providers">
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>Providers</span>
+         </petclinic:menuItem>
+
+				<petclinic:menuItem active="${name eq 'orders'}" url="/orders/list"
+					title="orders">
+					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+					<span>Orders</span>
 				</petclinic:menuItem>
+        
 				</sec:authorize>
 
 				<petclinic:menuItem active="${name eq 'error'}" url="/oups"
@@ -66,7 +74,7 @@
 				</sec:authorize>
 				<sec:authorize access="isAuthenticated()">
 					<li class="dropdown"><a href="#" class="dropdown-toggle"
-						data-toggle="dropdown"> <span class="glyphicon glyphicon-user"></span> 
+						data-toggle="dropdown"> <span class="glyphicon glyphicon-user"></span>Â 
 							<strong><sec:authentication property="name" /></strong> <span
 							class="glyphicon glyphicon-chevron-down"></span>
 					</a>

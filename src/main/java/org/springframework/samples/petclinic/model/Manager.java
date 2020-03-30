@@ -40,4 +40,4 @@ public class Manager extends Person {
 	@NotEmpty
 	private String	mail;
 
-}
+}////
