@@ -16,8 +16,7 @@
 
 package org.springframework.samples.petclinic.service;
 
-import static org.junit.Assert.assertEquals;
-
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -25,68 +24,43 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.stereotype.Service;
 
-
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 class VisitServiceTests {
 
 	@Autowired
 	protected VisitService	visitService;
-	
+
 	@Autowired
 	protected VetService	vetService;
 
+
 	@Test
-	public void testCancelVisitPositive() {
+	public void testCancelVisit() {
 		int id = 1;
 		Visit visit = this.visitService.findById(id).get();
 		this.visitService.cancelVisit(visit);
 		visit = this.visitService.findById(visit.getId()).get();
-		assert(visit.getIsAccepted() == false);
+		assert visit.getIsAccepted() == false;
 	}
-	
+
 	@Test
-	public void testCancelVisitNegative() {
-		int id = 1;
-		Visit visit = this.visitService.findById(id).get();
-		this.visitService.cancelVisit(visit);
-		visit = this.visitService.findById(visit.getId()).get();
-		assert(visit.getIsAccepted() != false);
-	}
-	
-	@Test
-	public void testAcceptVisitPositive() {
+	public void testAcceptVisit() {
 		int id = 1;
 		Visit visit = this.visitService.findById(id).get();
 		this.visitService.acceptVisit(visit);
 		visit = this.visitService.findById(visit.getId()).get();
-		assert(visit.getIsAccepted() == true);
+		assert visit.getIsAccepted() == true;
 	}
-	
-	@Test
-	public void testAcceptVisitNegative() {
-		int id = 1;
-		Visit visit = this.visitService.findById(id).get();
-		this.visitService.acceptVisit(visit);
-		visit = this.visitService.findById(visit.getId()).get();
-		assert(visit.getIsAccepted() != true);
-	}
-	
+
 	@Test
 	public void testFindAllPendingByVet() {
-		this.vetService.findVets()
-			.forEach(v -> this.visitService.findAllPendingByVet(v)
-					.forEach(visit -> assertEquals(visit.getIsAccepted(), null)));
+		this.vetService.findVets().forEach(v -> this.visitService.findAllPendingByVet(v).forEach(visit -> Assert.assertEquals(visit.getIsAccepted(), null)));
 	}
-	
-	
+
 	@Test
 	public void testFindAllAcceptedByVet() {
-		this.vetService.findVets()
-			.forEach(v -> this.visitService.findAllAcceptedByVet(v)
-					.forEach(visit -> assertEquals(visit.getIsAccepted(), true)));
-		
+		this.vetService.findVets().forEach(v -> this.visitService.findAllAcceptedByVet(v).forEach(visit -> Assert.assertEquals(visit.getIsAccepted(), true)));
+
 	}
-	
-	
 
 }
