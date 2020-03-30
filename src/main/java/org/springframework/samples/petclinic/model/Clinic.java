@@ -33,7 +33,7 @@ public class Clinic extends NamedEntity {
 
 	@Column(name = "telephone")
 	@NotEmpty
-	@Pattern(regexp = "")
+	@Pattern(regexp = "9[0-9]{8}")
 	private String		telephone;
 
 	@OneToOne

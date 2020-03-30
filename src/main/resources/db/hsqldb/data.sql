@@ -72,36 +72,29 @@ INSERT INTO product(id, name, price, is_available, provider_id) VALUES (14, 'Pip
 INSERT INTO product(id, name, price, is_available, provider_id) VALUES (15, 'Jaula para pajaro', 33.35, false, 6);
 INSERT INTO product(id, name, price, is_available, provider_id) VALUES (16, 'Pecera', 81.60, true, 6);
 
--- CLINICS
-
-INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (1, 'Clinic1', 'AddresClinic1', 'CityClinic1','911111111',1);
-INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (2, 'Clinic2', 'AddresClinic2', 'CityClinic2','922222222',null);
-INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (3, 'Clinic3', 'AddresClinic3', 'CityClinic3','933333333',null);
-INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (4, 'Clinic4', 'AddresClinic4', 'CityClinic4','944444444',null);
-
 -- VETS
 
 INSERT INTO user(id, username,password,enabled) VALUES (14, 'vet1','vet1',TRUE);
 INSERT INTO authority VALUES ('vet1','veterinarian');
-INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (1, 14, 'Juan', 'Cardona', 'C/Ordesa, 7', 'Malaga', '670336994', 'vet1@gmail.com', 1);
+INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (1, 14, 'Juan', 'Cardona', 'C/Ordesa, 7', 'Malaga', '670336994', 'vet1@gmail.com');
 INSERT INTO user(id, username,password,enabled) VALUES (15, 'vet2','vet2',TRUE);
 INSERT INTO authority VALUES ('vet2','veterinarian');
-INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (2, 15, 'Paula', 'Barrios', 'Av. de la Constitución, 54, 1ºE', 'Roma', '670024855', 'vet2@gmail.com', 2);
+INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (2, 15, 'Paula', 'Barrios', 'Av. de la Constitución, 54, 1ºE', 'Roma', '670024855', 'vet2@gmail.com');
 INSERT INTO user(id, username,password,enabled) VALUES (16, 'vet3','vet3',TRUE);
 INSERT INTO authority VALUES ('vet3','veterinarian');
-INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (3, 16, 'Raquel', 'Vega', 'Plaza Bobinadora, 36', 'Copenhague', '677750226', 'vet3@gmail.com', null);
+INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (3, 16, 'Raquel', 'Vega', 'Plaza Bobinadora, 36', 'Copenhague', '677750226', 'vet3@gmail.com');
 INSERT INTO user(id, username,password,enabled) VALUES (17, 'vet4','vet4',TRUE);
 INSERT INTO authority VALUES ('vet4','veterinarian');
-INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (4, 17, 'Jorge', 'Ruiz', 'C/Botica', 'Moscú', '633364795', 'vet4@gmail.com', 4);
+INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (4, 17, 'Jorge', 'Ruiz', 'C/Botica', 'Moscú', '633364795', 'vet4@gmail.com');
 INSERT INTO user(id, username,password,enabled) VALUES (18, 'vet5','vet5',TRUE);
 INSERT INTO authority VALUES ('vet5','veterinarian');
-INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (5, 18, 'Carmen', 'Ponce', 'Av. de España, 87, Portal A, 5ºC', 'La Rioja', '600142733', 'vet5@gmail.com', null);
+INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (5, 18, 'Carmen', 'Ponce', 'Av. de España, 87, Portal A, 5ºC', 'La Rioja', '600142733', 'vet5@gmail.com');
 INSERT INTO user(id, username,password,enabled) VALUES (19, 'vet6','vet6',TRUE);
 INSERT INTO authority VALUES ('vet6','veterinarian');
-INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (6, 19, 'Lourdes', 'Villegas', 'C/Andalucia, 34', 'Bilbao', '679123162', 'vet6@gmail.com', 3);
+INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (6, 19, 'Lourdes', 'Villegas', 'C/Andalucia, 34', 'Bilbao', '679123162', 'vet6@gmail.com');
 INSERT INTO user(id, username,password,enabled) VALUES (20, 'vet7','vet7',TRUE);
 INSERT INTO authority VALUES ('vet7','veterinarian');
-INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (7, 20, 'Daniel', 'Valdivia', 'C/Ruiz Gijon, 1', 'Granada', '678945210', 'vet7@gmail.com', null);
+INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (7, 20, 'Daniel', 'Valdivia', 'C/Ruiz Gijon, 1', 'Granada', '678945210', 'vet7@gmail.com');
 
 -- SPECIALTIES
 
@@ -178,6 +171,13 @@ INSERT INTO pet(id,name,birth_date,type_id,owner_id) VALUES (10, 'Mulligan', '20
 INSERT INTO pet(id,name,birth_date,type_id,owner_id) VALUES (11, 'Freddy', '2010-03-09', 5, 9);
 INSERT INTO pet(id,name,birth_date,type_id,owner_id) VALUES (12, 'Lucky', '2010-06-24', 2, 10);
 INSERT INTO pet(id,name,birth_date,type_id,owner_id) VALUES (13, 'Sly', '2012-06-08', 1, 10);
+
+-- CLINICS
+
+INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (1, 'Clinic1', 'AddresClinic1', 'CityClinic1','911111111',1);
+INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (2, 'Clinic2', 'AddresClinic2', 'CityClinic2','922222222',2);
+INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (3, 'Clinic3', 'AddresClinic3', 'CityClinic3','933333333',null);
+INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (4, 'Clinic4', 'AddresClinic4', 'CityClinic4','944444444',null);
 
 -- VISITS
 
