@@ -15,14 +15,25 @@
  */
 package org.springframework.samples.petclinic.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.samples.petclinic.model.Vets;
-import org.springframework.samples.petclinic.service.VetService;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.model.Clinic;
+import org.springframework.samples.petclinic.model.Manager;
+import org.springframework.samples.petclinic.model.Vet;
+import org.springframework.samples.petclinic.model.Vets;
+import org.springframework.samples.petclinic.service.ClinicService;
+import org.springframework.samples.petclinic.service.ManagerService;
+import org.springframework.samples.petclinic.service.VetService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @author Juergen Hoeller
@@ -31,16 +42,23 @@ import java.util.Map;
  * @author Arjen Poutsma
  */
 @Controller
+@RequestMapping("/vets")
 public class VetController {
-
+	
+	
+	private final ClinicService clinicService;
 	private final VetService vetService;
+	private final ManagerService managerService;
 
 	@Autowired
-	public VetController(VetService clinicService) {
-		this.vetService = clinicService;
+	public VetController(VetService vetService,ClinicService clinicService,ManagerService managerService) {
+		this.vetService = vetService;
+		this.clinicService=clinicService;
+		this.managerService=managerService;
 	}
+	
 
-	@GetMapping(value = { "/vets" })
+	@GetMapping(value = { "/vetsList" })
 	public String showVetList(Map<String, Object> model) {
 		// Here we are returning an object of type 'Vets' rather than a collection of Vet
 		// objects
@@ -60,5 +78,42 @@ public class VetController {
 		vets.getVetList().addAll(this.vetService.findVets());
 		return vets;
 	}
+	
+	@GetMapping(value = "/vetsAvailable")
+	public String vetsAvailableList(ModelMap modelMap) {
+		String vista="vets/vetsAvailable";
+		Iterable<Vet> vets= vetService.findAvailableVets();
+		modelMap.addAttribute("vets2", vets);
+		return vista;
+	}
+	
+	@GetMapping(path = "/accept/{vetId}")
+	public String acceptVet(@PathVariable("vetId") final int vetId, final ModelMap modelMap) {
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-}
+		User user = (User) authentication.getPrincipal();
+
+		Manager manager = this.managerService.findManagerByUsername(user.getUsername()).get();
+		
+		Clinic clinic = this.clinicService.findClinicByManagerId(manager.getId());
+		
+		Vet vet = vetService.findById(vetId).get();
+		
+		if(vet.getClinic() == null) {
+			vet.setClinic(clinic);
+			this.vetService.save(vet);
+		}else {
+			return "redirect:/oups";
+		}
+
+		return "redirect:/vets/vetsAvailable";
+
+	}
+	
+	
+	
+	
+	
+
+} 

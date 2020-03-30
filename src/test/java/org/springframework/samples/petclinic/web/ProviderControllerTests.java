@@ -19,14 +19,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
 import org.springframework.samples.petclinic.model.Authorities;
-import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.Manager;
-import org.springframework.samples.petclinic.model.Specialty;
+import org.springframework.samples.petclinic.model.Provider;
 import org.springframework.samples.petclinic.model.User;
-import org.springframework.samples.petclinic.model.Vet;
-import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.samples.petclinic.service.ManagerService;
-import org.springframework.samples.petclinic.service.VetService;
+import org.springframework.samples.petclinic.service.ProviderService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,20 +31,17 @@ import org.springframework.test.web.servlet.MockMvc;
 /**
  * Test class for the {@link VetController}
  */
-@WebMvcTest(controllers = VetController.class,
+@WebMvcTest(controllers = ProviderController.class,
 	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
 	excludeAutoConfiguration = SecurityConfiguration.class)
-class VetControllerTests {
+class ProviderControllerTests {
 
-	private static final int	TEST_VET_ID		= 1;
+	private static final int	TEST_PROVIDER_ID	= 1;
 
-	private static final int	TEST_MANAGER_ID	= 3;
-
-	@MockBean
-	private ClinicService		clinicService;
+	private static final int	TEST_MANAGER_ID		= 3;
 
 	@MockBean
-	private VetService			vetService;
+	private ProviderService		providerService;
 
 	@MockBean
 	private ManagerService		managerService;
@@ -59,18 +53,18 @@ class VetControllerTests {
 	@BeforeEach
 	void setup() {
 
-		Vet james = new Vet();
-		james.setId(TEST_VET_ID);
+		Provider james = new Provider();
+		james.setId(TEST_PROVIDER_ID);
 		james.setFirstName("James");
 		james.setLastName("Carter");
 		james.setAddress("110 W. Liberty St.");
 		james.setCity("Madison");
 		james.setTelephone("6085551023");
 
-		Optional<Vet> opt = Optional.of(james);
-		BDDMockito.given(vetService.findById(TEST_VET_ID)).willReturn(opt);
+		Optional<Provider> opt = Optional.of(james);
+		BDDMockito.given(providerService.findProviderById(TEST_PROVIDER_ID)).willReturn(opt);
 
-		Vet helen = new Vet();
+		Provider helen = new Provider();
 		helen.setFirstName("Helen");
 		helen.setLastName("Leary");
 		helen.setAddress("110 W. Liberty St.");
@@ -78,11 +72,7 @@ class VetControllerTests {
 		helen.setTelephone("6085551023");
 		helen.setId(2);
 
-		Specialty radiology = new Specialty();
-		radiology.setId(1);
-		radiology.setName("radiology");
-		james.addSpecialty(radiology);
-		BDDMockito.given(vetService.findVets()).willReturn(Lists.newArrayList(james, helen));
+		BDDMockito.given(providerService.findAvailableProviders()).willReturn(Lists.newArrayList(james, helen));
 
 		User user = new User();
 		user.setEnabled(true);
@@ -104,18 +94,13 @@ class VetControllerTests {
 		Optional<Manager> manager = Optional.of(pepe);
 		BDDMockito.given(managerService.findManagerByUsername("pepito")).willReturn(manager);
 
-		Clinic clinic = new Clinic();
-		clinic.setId(1);
-		clinic.setCity("Sevilla");
-		BDDMockito.given(clinicService.findClinicByManagerId(TEST_MANAGER_ID)).willReturn(clinic);
-
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
-	void testShowVetsAvailable() throws Exception {
-		mockMvc.perform(get("/vets/vetsAvailable")).andExpect(status().isOk())
-			.andExpect(model().attributeExists("vets2")).andExpect(view().name("vets/vetsAvailable"));
+	void testShowProvidersAvailable() throws Exception {
+		mockMvc.perform(get("/providers/listAvailable")).andExpect(status().isOk())
+			.andExpect(model().attributeExists("providers")).andExpect(view().name("providers/providersList"));
 	}
 
 	@WithMockUser(value = "pepito", authorities = {
@@ -123,8 +108,8 @@ class VetControllerTests {
 	})
 	@Test
 	void testAcceptVet() throws Exception {
-		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET_ID)).andExpect(status().isFound())
-			.andExpect(view().name("redirect:/vets/vetsAvailable"));
+		mockMvc.perform(get("/providers/addProvider/{providerId}", TEST_PROVIDER_ID)).andExpect(status().isFound())
+			.andExpect(view().name("redirect:/providers/listAvailable"));
 	}
 
 }

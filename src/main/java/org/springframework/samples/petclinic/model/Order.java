@@ -27,6 +27,7 @@ public class Order extends BaseEntity {
 
 	@Column(name = "order_date")
 	@DateTimeFormat(pattern = "yyyy/MM/dd")
+	@NotNull
 	private LocalDate		date;
 
 	@Column(name = "is_accepted")
@@ -37,7 +38,7 @@ public class Order extends BaseEntity {
 	@NotEmpty
 	private Set<Product>	product;
 
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "manager_id", nullable = false)
 	private Manager			manager;
 }

@@ -31,13 +31,13 @@ public class Manager extends Person {
 	private String	city;
 
 	@Column(name = "telephone")
+//	@Pattern(regexp = "6[0-9]{8}")
 	@NotEmpty
-	@Pattern(regexp = "")
 	private String	telephone;
 
 	@Column(name = "mail")
+//	@Pattern(regexp = "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$")
 	@NotEmpty
-	@Pattern(regexp = "")
 	private String	mail;
 
-}
+}////
