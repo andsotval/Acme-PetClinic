@@ -16,9 +16,13 @@
 
 package org.springframework.samples.petclinic.service;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.stereotype.Service;
 
 
@@ -27,16 +31,61 @@ class VisitServiceTests {
 
 	@Autowired
 	protected VisitService	visitService;
+	
+	@Autowired
+	protected VetService	vetService;
 
-	//Probar métodos no triviales:
+	@Test
+	public void testCancelVisitPositive() {
+		int id = 1;
+		Visit visit = this.visitService.findById(id).get();
+		this.visitService.cancelVisit(visit);
+		visit = this.visitService.findById(visit.getId()).get();
+		assert(visit.getIsAccepted() == false);
+	}
 	
-	//cancel visit (cancelar visita)
+	@Test
+	public void testCancelVisitNegative() {
+		int id = 1;
+		Visit visit = this.visitService.findById(id).get();
+		this.visitService.cancelVisit(visit);
+		visit = this.visitService.findById(visit.getId()).get();
+		assert(visit.getIsAccepted() != false);
+	}
 	
-	//accept visit (aceptar visita)
+	@Test
+	public void testAcceptVisitPositive() {
+		int id = 1;
+		Visit visit = this.visitService.findById(id).get();
+		this.visitService.acceptVisit(visit);
+		visit = this.visitService.findById(visit.getId()).get();
+		assert(visit.getIsAccepted() == true);
+	}
 	
-	//findAllPendingByVet (buscar visitas con isAccepted a null de un vet concreto)
+	@Test
+	public void testAcceptVisitNegative() {
+		int id = 1;
+		Visit visit = this.visitService.findById(id).get();
+		this.visitService.acceptVisit(visit);
+		visit = this.visitService.findById(visit.getId()).get();
+		assert(visit.getIsAccepted() != true);
+	}
 	
-	//findAllAcceptedByVet (buscar visitas con isAccepted a true de un vet concreto)
+	@Test
+	public void testFindAllPendingByVet() {
+		this.vetService.findVets()
+			.forEach(v -> this.visitService.findAllPendingByVet(v)
+					.forEach(visit -> assertEquals(visit.getIsAccepted(), null)));
+	}
+	
+	
+	@Test
+	public void testFindAllAcceptedByVet() {
+		this.vetService.findVets()
+			.forEach(v -> this.visitService.findAllAcceptedByVet(v)
+					.forEach(visit -> assertEquals(visit.getIsAccepted(), true)));
+		
+	}
 	
 	
 
