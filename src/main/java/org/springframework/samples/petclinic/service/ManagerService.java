@@ -13,7 +13,6 @@ public class ManagerService {
 
 	private ManagerRepository managerRepository;
 
-
 	@Autowired
 	public ManagerService(ManagerRepository managerRepository) {
 		this.managerRepository = managerRepository;
@@ -21,14 +20,15 @@ public class ManagerService {
 
 	@Transactional(readOnly = true)
 	public Iterable<Manager> findAllManagers() {
-		return managerRepository.findAll();
+		return this.managerRepository.findAll();
 	}
 
 	@Transactional(readOnly = true)
-	public Optional<Manager> findManagerById(final int id) {
-		return this.managerRepository.findById(id);
+	public Optional<Manager> findManagerById(final int managerId) {
+		return this.managerRepository.findById(managerId);
 	}
 
+	@Transactional(readOnly = true)
 	public Optional<Manager> findManagerByUsername(String user) {
 		return this.managerRepository.findManagerByUsername(user);
 	}

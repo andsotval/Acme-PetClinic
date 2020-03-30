@@ -34,17 +34,17 @@ public class Provider extends Person {
 	private String	city;
 
 	@Column(name = "telephone")
+	@Pattern(regexp = "[+]346[0-9]{8}")
 	@NotEmpty
-	@Pattern(regexp = "")
 	private String	telephone;
 
 	@Column(name = "mail")
+	@Pattern(regexp = "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$")
 	@NotEmpty
-	@Pattern(regexp = "")
 	private String	mail;
 
-	@ManyToOne(optional = false, fetch = FetchType.EAGER)
-	@JoinColumn(name = "manager_id", nullable = false)
+	@ManyToOne(optional = true, fetch = FetchType.EAGER)
+	@JoinColumn(name = "manager_id", nullable = true)
 	private Manager	manager;
 
 	//	@OneToMany(cascade = CascadeType.ALL, mappedBy = "provider", fetch = FetchType.EAGER)
