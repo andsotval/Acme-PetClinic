@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductRepository extends CrudRepository<Product, Integer>{
 
-	@Query("SELECT product FROM Product product WHERE (product.provider.manager.id=?1) AND	(product.available = true) ORDER BY product.provider.id")
-	Collection<Product> findProductsAvailableForManager(int managerId);
+	@Query("SELECT product FROM Product product WHERE (product.provider.id=?1) AND	(product.available = true) ORDER BY product.name")
+	Collection<Product> findProductsAvailableByProviderId(int providerId);
 	
 }

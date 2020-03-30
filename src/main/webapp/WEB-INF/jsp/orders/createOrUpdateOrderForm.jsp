@@ -8,29 +8,22 @@
 
 <petclinic:layout pageName="orders">
     <h2>
-        <c:if test="${order['new']}">New </c:if> Order
+        New Order
     </h2>
-    <form:form modelAttribute="order" class="form-horizontal" id="add-order-form">
+    <form:form modelAttribute="order" class="form-horizontal" id="create-order-form">
     
     	<input type="hidden" name="id" value="${order.id}"/>
     	<input type="hidden" name="manager.id" value="${order.manager.id}"/>
     	<input type="hidden" name="isAccepted" value="false"/>
     	
         <div class="form-group has-feedback">
-            <petclinic:inputField label="Name" name="name"/>
             <petclinic:inputField label="Date" name="date"/>
-            <petclinic:selectField label="Products" name="products" size="10" names="${products}"/>
+            <petclinic:selectField label="Product" name="product" size="5" itemLabel="name" names="${products}"></petclinic:selectField>
+            <!-- <form:select multiple="true" path="product" items="${products}" itemLabel="name" itemValue="id" /> -->
         </div>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                
-                    <c:when test="${order['new']}">
                         <button class="btn btn-default" type="submit">Create Order</button>
-                    </c:when>
-                    <!--<c:otherwise>
-                        <button class="btn btn-default" type="submit">Update Owner</button>
-                    </c:otherwise> -->
-                
             </div>
         </div>
     </form:form>

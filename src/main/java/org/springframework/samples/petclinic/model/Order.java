@@ -8,8 +8,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -27,13 +27,14 @@ public class Order extends BaseEntity {
 
 	@Column(name = "order_date")
 	@DateTimeFormat(pattern = "yyyy/MM/dd")
+	@NotNull
 	private LocalDate		date;
 
 	@Column(name = "is_accepted")
 	@NotNull
 	private Boolean			isAccepted;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@NotEmpty
 	private Set<Product>	product;
 

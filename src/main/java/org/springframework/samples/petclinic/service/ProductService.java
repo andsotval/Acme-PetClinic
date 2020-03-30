@@ -22,8 +22,8 @@ public class ProductService {
 	}
 	
 	@Transactional(readOnly = true)
-	public Iterable<Product> findProductsAvailableForManager(int managerId){
-		return this.productRepository.findProductsAvailableForManager(managerId);
+	public Iterable<Product> findProductsAvailableByProviderId(int providerId){
+		return this.productRepository.findProductsAvailableByProviderId(providerId);
 	}
 	
 	@Transactional
