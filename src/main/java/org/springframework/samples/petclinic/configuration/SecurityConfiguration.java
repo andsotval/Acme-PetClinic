@@ -36,7 +36,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET, "/", "/oups").permitAll().antMatchers("/users/new").permitAll()
 				.antMatchers("/admin/**").hasAnyAuthority("admin").antMatchers("/owners/**")
 				.hasAnyAuthority("owner", "admin").antMatchers("/vets/**").authenticated().antMatchers("/orders/**").hasAnyAuthority("manager").antMatchers("/providers/**")
-				.hasAnyAuthority("manager").anyRequest().denyAll().and().formLogin()
+				.hasAnyAuthority("manager").antMatchers("/managers/**").hasAnyAuthority("manager", "admin").anyRequest().denyAll().and().formLogin()
 				/* .loginPage("/login") */
 				.failureUrl("/login-error").and().logout().logoutSuccessUrl("/");
 		// Configuración para que funcione la consola de administración
@@ -46,7 +46,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.csrf().ignoringAntMatchers("/h2-console/**");
 		http.headers().frameOptions().sameOrigin();
 	}
-
+ 
 	@Override
 	public void configure(final AuthenticationManagerBuilder auth) throws Exception {
 		auth.jdbcAuthentication().dataSource(this.dataSource)

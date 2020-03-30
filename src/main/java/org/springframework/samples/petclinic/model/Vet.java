@@ -55,15 +55,15 @@ public class Vet extends Person {
 
 	@Column(name = "telephone")
 	@NotEmpty
-	@Pattern(regexp = "")
+	//@Pattern(regexp = "")
 	private String			telephone;
 
 	@Column(name = "mail")
 	@NotEmpty
-	@Pattern(regexp = "")
+	//@Pattern(regexp = "")
 	private String			mail;
 
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "vet_specialties", joinColumns = @JoinColumn(name = "vet_id"), inverseJoinColumns = @JoinColumn(name = "specialty_id"))
 	private Set<Specialty>	specialties;
 

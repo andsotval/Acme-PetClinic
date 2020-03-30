@@ -53,7 +53,7 @@ public class Owner extends Person {
 	@JoinColumn(name = "clinic_id")
 	private Clinic		clinic;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Pet>	pets;
 	//
 	//
