@@ -40,4 +40,4 @@ public class Manager extends Person {
 	@Pattern(regexp = "")
 	private String	mail;
 
-}
+}////
