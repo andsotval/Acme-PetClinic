@@ -41,12 +41,12 @@ public class Owner extends Person {
 
 	@Column(name = "telephone")
 	@NotEmpty
-	@Pattern(regexp = "")
+	@Pattern(regexp = "6[0-9]{8}")
 	private String		telephone;
 
 	@Column(name = "mail")
 	@NotEmpty
-	@Pattern(regexp = "")
+	@Pattern(regexp = "^([a-zA-Z0-9_\\\\-\\\\.]+)@([a-zA-Z0-9_\\\\-\\\\.]+)\\\\.([a-zA-Z]{2,5})$")
 	private String		mail;
 
 	@ManyToOne
