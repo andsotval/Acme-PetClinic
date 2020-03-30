@@ -82,7 +82,7 @@ INSERT INTO clinic(id,name,address,city,telephone,manager_id) VALUES (4, 'Clinic
 
 INSERT INTO user(id, username,password,enabled) VALUES (14, 'vet1','vet1',TRUE);
 INSERT INTO authority VALUES ('vet1','veterinarian');
-INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (1, 14, 'Juan', 'Cardona', 'C/Ordesa, 7', 'Malaga', '670336994', 'vet1@gmail.com');
+INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (1, 14, 'Juan', 'Cardona', 'C/Ordesa, 7', 'Malaga', '670336994', 'vet1@gmail.com', 1);
 INSERT INTO user(id, username,password,enabled) VALUES (15, 'vet2','vet2',TRUE);
 INSERT INTO authority VALUES ('vet2','veterinarian');
 INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (2, 15, 'Paula', 'Barrios', 'Av. de la Constitución, 54, 1ºE', 'Roma', '670024855', 'vet2@gmail.com');

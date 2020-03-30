@@ -41,6 +41,20 @@
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>Veterinarians</span>
 				</petclinic:menuItem>
+
+				<petclinic:menuItem active="${name eq 'providers'}" url="/providers/listAvailable"
+					title="providers">
+					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+					<span>Providers</span>
+         </petclinic:menuItem>
+
+				<petclinic:menuItem active="${name eq 'orders'}" url="/orders/list"
+					title="orders">
+					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+					<span>Orders</span>
+				</petclinic:menuItem>
+        
+				</sec:authorize>
 				
 				<sec:authorize access="hasAuthority('veterinarian')">
 				<petclinic:menuItem active="${name eq 'visits'}" url="/visits/listAllPending"
@@ -58,20 +72,6 @@
 					<span>Stays</span>
 				</petclinic:menuItem>
 				
-				</sec:authorize>
-
-				<petclinic:menuItem active="${name eq 'providers'}" url="/providers/listAvailable"
-					title="providers">
-					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-					<span>Providers</span>
-         </petclinic:menuItem>
-
-				<petclinic:menuItem active="${name eq 'orders'}" url="/orders/list"
-					title="orders">
-					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-					<span>Orders</span>
-				</petclinic:menuItem>
-        
 				</sec:authorize>
 
 				<petclinic:menuItem active="${name eq 'error'}" url="/oups"
