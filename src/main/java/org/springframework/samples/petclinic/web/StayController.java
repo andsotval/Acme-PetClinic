@@ -44,6 +44,7 @@ public class StayController {
 
 		Iterable<Stay> stays = this.stayService.findAllPendingByVet(vet);
 		modelMap.addAttribute("stays", stays);
+		modelMap.addAttribute("accepted", false);
 		return view;
 
 	}
@@ -60,6 +61,7 @@ public class StayController {
 
 		Iterable<Stay> stays = this.stayService.findAllAcceptedByVet(vet);
 		modelMap.addAttribute("stays", stays);
+		modelMap.addAttribute("accepted", true);
 		return view;
 
 	}

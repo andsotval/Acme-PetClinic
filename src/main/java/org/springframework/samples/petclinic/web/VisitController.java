@@ -113,6 +113,7 @@ public class VisitController {
 		Iterable<Visit> visits = this.visitService.findAllPendingByVet(vet);
 
 		modelMap.addAttribute("visits", visits);
+		modelMap.addAttribute("accepted", false);
 		return view;
 
 	}
@@ -129,6 +130,7 @@ public class VisitController {
 
 		Iterable<Visit> visits = this.visitService.findAllAcceptedByVet(vet);
 		modelMap.addAttribute("visits", visits);
+		modelMap.addAttribute("accepted", true);
 		return view;
 
 	}

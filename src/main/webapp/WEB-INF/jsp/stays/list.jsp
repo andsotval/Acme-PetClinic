@@ -52,8 +52,13 @@
         </tbody>
     </table>
     
-    	<a class="btn btn-default" href='<spring:url value="/stays/listAllAccepted" htmlEscape="true"/>'>List of all stays accepted</a>
-    
+    <c:if test="${accepted == false}"> 
+		<a class="btn btn-default" href='<spring:url value="/stays/listAllAccepted" htmlEscape="true"/>'>List my accepted visits</a>
+	</c:if>
+	
+	<c:if test="${accepted == true}"> 
+		<a class="btn btn-default" href='<spring:url value="/stays/listAllPending" htmlEscape="true"/>'>List my pending visits</a>
+	</c:if>
     
     <table class="table-buttons">
         <tr>
