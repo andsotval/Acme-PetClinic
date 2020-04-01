@@ -10,15 +10,12 @@ package org.springframework.samples.petclinic.model;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
 
 import org.springframework.core.style.ToStringCreator;
 
@@ -30,24 +27,6 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Table(name = "owner")
 public class Owner extends Person {
-
-	@Column(name = "address")
-	@NotEmpty
-	private String		address;
-
-	@Column(name = "city")
-	@NotEmpty
-	private String		city;
-
-	@Column(name = "telephone")
-	@NotEmpty
-	@Pattern(regexp = "6[0-9]{8}")
-	private String		telephone;
-
-	@Column(name = "mail")
-	@NotEmpty
-	@Pattern(regexp = "^([a-zA-Z0-9_\\\\-\\\\.]+)@([a-zA-Z0-9_\\\\-\\\\.]+)\\\\.([a-zA-Z]{2,5})$")
-	private String		mail;
 
 	@ManyToOne
 	@JoinColumn(name = "clinic_id")
@@ -130,7 +109,7 @@ public class Owner extends Person {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("id", this.getId()).append("new", this.isNew()).append("lastName", this.getLastName()).append("firstName", this.getFirstName()).append("address", this.address).append("city", this.city)
-			.append("telephone", this.telephone).toString();
+		return new ToStringCreator(this).append("id", this.getId()).append("new", this.isNew()).append("lastName", this.getLastName()).append("firstName", this.getFirstName()).append("address", this.getAddress()).append("city", this.getCity())
+			.append("telephone", this.getTelephone()).toString();
 	}
 }

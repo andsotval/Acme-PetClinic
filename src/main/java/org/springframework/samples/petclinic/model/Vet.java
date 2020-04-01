@@ -45,24 +45,6 @@ import lombok.EqualsAndHashCode;
 @Table(name = "vet")
 public class Vet extends Person {
 
-	@Column(name = "address")
-	@NotEmpty
-	private String			address;
-
-	@Column(name = "city")
-	@NotEmpty
-	private String			city;
-
-	@Column(name = "telephone")
-	@NotEmpty
-	@Pattern(regexp = "6[0-9]{8}")
-	private String			telephone;
-
-	@Column(name = "mail")
-	@NotEmpty
-	@Pattern(regexp = "^([a-zA-Z0-9_\\\\-\\\\.]+)@([a-zA-Z0-9_\\\\-\\\\.]+)\\\\.([a-zA-Z]{2,5})$")
-	private String			mail;
-
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "vet_specialties", joinColumns = @JoinColumn(name = "vet_id"), inverseJoinColumns = @JoinColumn(name = "specialty_id"))
 	private Set<Specialty>	specialties;

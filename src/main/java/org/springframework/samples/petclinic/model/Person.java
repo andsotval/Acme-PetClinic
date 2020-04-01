@@ -13,12 +13,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+
+import lombok.Data;
 
 /**
  * Simple JavaBean domain object representing an person.
  *
  * @author Ken Krebs
  */
+@Data
 @MappedSuperclass
 public class Person extends BaseEntity {
 
@@ -34,6 +38,23 @@ public class Person extends BaseEntity {
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	private User		user;
 
+	@Column(name = "address")
+	@NotEmpty
+	private String	address;
+
+	@Column(name = "city")
+	@NotEmpty
+	private String	city;
+
+	@Column(name = "telephone")
+	@Pattern(regexp = "6[0-9]{8}")
+	@NotEmpty
+	private String	telephone;
+
+	@Column(name = "mail")
+	@Pattern(regexp = "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$")
+	@NotEmpty
+	private String	mail;
 
 	public String getFirstName() {
 		return this.firstName;
