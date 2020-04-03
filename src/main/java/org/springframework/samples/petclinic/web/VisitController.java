@@ -138,6 +138,18 @@ public class VisitController {
 	@GetMapping(path = "/accept/{visitId}")
 	public String acceptVisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
 		Visit visit = this.visitService.findById(visitId).get();
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		User user = (User) authentication.getPrincipal();
+
+		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
+		
+		if(visit.getClinic().getId() == vet.getClinic().getId()) {
+			this.visitService.acceptVisit(visit);
+		}else {
+			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
+		}
 
 		this.visitService.acceptVisit(visit);
 
@@ -149,7 +161,18 @@ public class VisitController {
 	public String cancelVisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
 		Visit visit = this.visitService.findById(visitId).get();
 
-		this.visitService.cancelVisit(visit);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		User user = (User) authentication.getPrincipal();
+
+		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
+		
+		if(visit.getClinic().getId() == vet.getClinic().getId()) {
+			this.visitService.cancelVisit(visit);
+		}else {
+			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
+		}
+		
 
 		return "redirect:/visits/listAllAccepted";
 
@@ -185,14 +208,21 @@ public class VisitController {
 		if (!this.visitService.findById(visitId).isPresent()) {
 			return "redirect:/oups";
 		}
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+		User user = (User) authentication.getPrincipal();
+
+		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
+		
 		Visit visit = this.visitService.findById(visitId).get();
 		visit.setDescription(entity.getDescription());
 		visit.setDate(entity.getDate());
 
 		if (result.hasErrors()) {
 			modelMap.addAttribute("visit", visit);
-		} else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
+		}else if (visit.getClinic().getId() != vet.getClinic().getId()){
+			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
+		}else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
 			result.rejectValue("date", "startLaterFinish", "Posponer con 2 días de antelación");
 			modelMap.addAttribute("visit", visit);
 		} else {

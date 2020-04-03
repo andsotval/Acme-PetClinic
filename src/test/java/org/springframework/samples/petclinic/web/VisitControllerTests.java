@@ -115,7 +115,7 @@ class VisitControllerTests {
 
 		BDDMockito.given(this.visitService.findById(VisitControllerTests.TEST_VISIT_ID)).willReturn(optionalStay);
 
-		BDDMockito.given(this.clinicService.findPetById(VisitControllerTests.TEST_PET_ID)).willReturn(new Pet());
+		BDDMockito.given(this.clinicService.findPetById(VisitControllerTests.TEST_PET_ID).get()).willReturn(new Pet());
 	}
 
 	//	@WithMockUser(value = "spring")
