@@ -43,8 +43,7 @@ public class OrderController {
 		this.providerService = providerService;
 	}
 
-	
-	//inicio de creacion de Order
+	// inicio de creacion de Order
 	@GetMapping(value = "/new/{providerId}")
 	public String initCreationForm(@PathVariable("providerId") int providerId, ModelMap model) {
 		Manager manager = obtainManagerInSession();
@@ -59,24 +58,29 @@ public class OrderController {
 		return VIEWS_ORDERS_CREATE_OR_UPDATE_FORM;
 	}
 
-	//confirmacion de la creacion de una Order
+	// confirmacion de la creacion de una Order
 	@PostMapping(value = "/new/{providerId}")
-	public String processCreationForm(@Valid Order order, BindingResult result, ModelMap model) {
+	public String processCreationForm(@Valid Order order, @PathVariable("providerId") int providerId,
+			BindingResult result, ModelMap model) {
+		String returnView;
 		if (result.hasErrors()) {
 			return VIEWS_ORDERS_CREATE_OR_UPDATE_FORM;
 		} else {
-			try {
+			Provider provider = this.providerService.findProviderById(providerId).get();
+			Boolean security = provider.getManager().getId() == obtainManagerInSession().getId();
+			if (security) {
 				this.orderService.saveOrder(order);
-			} catch (Exception e) {
-				System.out.println("No se ha podido crear: " + e.getMessage());
-
+				returnView = "redirect:/orders/" + order.getId();
+			} else {
+				model.addAttribute("message", "Se esta intentando crear un pedido con un proveedor al que el manager actual no está asociado");
+				returnView = "redirect:/oups";
 			}
 
-			return "redirect:/orders/" + order.getId();
+			return returnView;
 		}
 	}
 
-	//Order Details
+	// Order Details
 	@GetMapping("/{orderId}")
 	public ModelAndView showOrder(@PathVariable("orderId") int orderId, ModelMap modelMap) {
 		ModelAndView mav = new ModelAndView("orders/orderDetails");
@@ -90,8 +94,7 @@ public class OrderController {
 		return mav;
 	}
 
-	
-	//listado de providers
+	// listado de providers
 	@GetMapping(value = "/providers/listAvailable")
 	public String listAvailableProviders(ModelMap modelMap) {
 		Manager manager = obtainManagerInSession();
@@ -101,9 +104,8 @@ public class OrderController {
 
 		return "/orders/providers/providerList";
 	}
-	
-	
-	//listado de orders
+
+	// listado de orders
 	@GetMapping(value = "/list")
 	public String listOrders(ModelMap modelMap) {
 		Manager manager = obtainManagerInSession();
@@ -114,8 +116,7 @@ public class OrderController {
 		return "/orders/orderList";
 	}
 
-	
-	//obtencion del Manager que esta ahora mismo en sesion
+	// obtencion del Manager que esta ahora mismo en sesion
 	private Manager obtainManagerInSession() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User user = (User) authentication.getPrincipal();

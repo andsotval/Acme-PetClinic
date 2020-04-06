@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/providers")
 public class ProviderController {
 
-	private static final String		VIEWS_PROVIDER_ADD_FORM	= "providers/addProviderForm";
-
 	private final ManagerService	managerService;
 	private final ProviderService	providerService;
 
