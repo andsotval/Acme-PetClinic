@@ -15,7 +15,10 @@ import javax.persistence.OneToOne;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
+import org.springframework.core.style.ToStringCreator;
+
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Simple JavaBean domain object representing an person.
@@ -23,6 +26,7 @@ import lombok.Data;
  * @author Ken Krebs
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @MappedSuperclass
 public class Person extends BaseEntity {
 
@@ -40,24 +44,25 @@ public class Person extends BaseEntity {
 
 	@Column(name = "address")
 	@NotEmpty
-	private String	address;
+	private String		address;
 
 	@Column(name = "city")
 	@NotEmpty
-	private String	city;
+	private String		city;
 
 	@Column(name = "telephone")
 	@Pattern(regexp = "6[0-9]{8}")
 	@NotEmpty
-	private String	telephone;
+	private String		telephone;
 
 	@Column(name = "mail")
 	@Pattern(regexp = "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$")
 	@NotEmpty
-	private String	mail;
+	private String		mail;
+
 
 	public String getFirstName() {
-		return this.firstName;
+		return firstName;
 	}
 
 	public void setFirstName(final String firstName) {
@@ -65,7 +70,7 @@ public class Person extends BaseEntity {
 	}
 
 	public String getLastName() {
-		return this.lastName;
+		return lastName;
 	}
 
 	public void setLastName(final String lastName) {
@@ -73,11 +78,18 @@ public class Person extends BaseEntity {
 	}
 
 	public User getUser() {
-		return this.user;
+		return user;
 	}
 
 	public void setUser(final User user) {
 		this.user = user;
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("id", getId()).append("new", isNew()).append("lastName", getLastName())
+			.append("firstName", getFirstName()).append("address", getAddress()).append("city", getCity())
+			.append("telephone", getTelephone()).toString();
 	}
 
 }

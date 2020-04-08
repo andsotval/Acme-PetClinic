@@ -17,18 +17,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "provider")
 public class Provider extends Person {
 
-
-
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "manager_id", nullable = true)
-	private Manager	manager;
-
-	//	@OneToMany(cascade = CascadeType.ALL, mappedBy = "provider", fetch = FetchType.EAGER)
-	//	private Set<Product>	product;
+	private Manager manager;
 
 }

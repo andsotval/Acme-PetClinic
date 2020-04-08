@@ -1,3 +1,4 @@
+
 package org.springframework.samples.petclinic.web;
 
 import javax.validation.Valid;
@@ -11,9 +12,7 @@ import org.springframework.samples.petclinic.service.ManagerService;
 import org.springframework.samples.petclinic.service.OrderService;
 import org.springframework.samples.petclinic.service.ProductService;
 import org.springframework.samples.petclinic.service.ProviderService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.samples.petclinic.util.SessionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -27,33 +26,33 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/orders")
 public class OrderController {
 
-	private static final String VIEWS_ORDERS_CREATE_OR_UPDATE_FORM = "/orders/createOrUpdateOrderForm";
+	private static final String		VIEWS_ORDERS_CREATE_OR_UPDATE_FORM	= "/orders/createOrUpdateOrderForm";
 
-	private final OrderService orderService;
-	private final ManagerService managerService;
-	private final ProductService productService;
-	private final ProviderService providerService;
+	private final OrderService		orderService;
+	private final ManagerService	managerService;
+	private final ProductService	productService;
+	private final ProviderService	providerService;
+
 
 	@Autowired
 	public OrderController(final OrderService orderService, final ManagerService managerService,
-			final ProductService productService, final ProviderService providerService) {
+		final ProductService productService, final ProviderService providerService) {
 		this.orderService = orderService;
 		this.managerService = managerService;
 		this.productService = productService;
 		this.providerService = providerService;
 	}
 
-	
 	//inicio de creacion de Order
 	@GetMapping(value = "/new/{providerId}")
 	public String initCreationForm(@PathVariable("providerId") int providerId, ModelMap model) {
-		Manager manager = obtainManagerInSession();
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		Order order = new Order();
 		order.setManager(manager);
 		model.addAttribute("order", order);
 
-		Iterable<Product> product = this.productService.findProductsAvailableByProviderId(providerId);
+		Iterable<Product> product = productService.findProductsAvailableByProviderId(providerId);
 		model.addAttribute("products", product);
 
 		return VIEWS_ORDERS_CREATE_OR_UPDATE_FORM;
@@ -62,11 +61,11 @@ public class OrderController {
 	//confirmacion de la creacion de una Order
 	@PostMapping(value = "/new/{providerId}")
 	public String processCreationForm(@Valid Order order, BindingResult result, ModelMap model) {
-		if (result.hasErrors()) {
+		if (result.hasErrors())
 			return VIEWS_ORDERS_CREATE_OR_UPDATE_FORM;
-		} else {
+		else {
 			try {
-				this.orderService.saveOrder(order);
+				orderService.saveEntity(order);
 			} catch (Exception e) {
 				System.out.println("No se ha podido crear: " + e.getMessage());
 
@@ -80,7 +79,7 @@ public class OrderController {
 	@GetMapping("/{orderId}")
 	public ModelAndView showOrder(@PathVariable("orderId") int orderId, ModelMap modelMap) {
 		ModelAndView mav = new ModelAndView("orders/orderDetails");
-		Order order = this.orderService.findOrderById(orderId).get();
+		Order order = orderService.findEntityById(orderId).get();
 
 		Provider orderProvider = order.getProduct().iterator().next().getProvider();
 		modelMap.addAttribute("orderProvider", orderProvider);
@@ -90,38 +89,26 @@ public class OrderController {
 		return mav;
 	}
 
-	
 	//listado de providers
 	@GetMapping(value = "/providers/listAvailable")
 	public String listAvailableProviders(ModelMap modelMap) {
-		Manager manager = obtainManagerInSession();
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Iterable<Provider> providerList = this.providerService.findProvidersByManagerId(manager.getId());
+		Iterable<Provider> providerList = providerService.findProvidersByManagerId(manager.getId());
 		modelMap.addAttribute("providers", providerList);
 
 		return "/orders/providers/providerList";
 	}
-	
-	
+
 	//listado de orders
 	@GetMapping(value = "/list")
 	public String listOrders(ModelMap modelMap) {
-		Manager manager = obtainManagerInSession();
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Iterable<Order> orderList = this.orderService.findAllOrdersByManagerId(manager.getId());
+		Iterable<Order> orderList = orderService.findAllOrdersByManagerId(manager.getId());
 		modelMap.addAttribute("orders", orderList);
 
 		return "/orders/orderList";
-	}
-
-	
-	//obtencion del Manager que esta ahora mismo en sesion
-	private Manager obtainManagerInSession() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User user = (User) authentication.getPrincipal();
-		Manager manager = this.managerService.findManagerByUsername(user.getUsername()).get();
-		return manager;
-
 	}
 
 }

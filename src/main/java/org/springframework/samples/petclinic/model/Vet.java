@@ -40,7 +40,7 @@ import lombok.EqualsAndHashCode;
  * @author Arjen Poutsma
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "vet")
 public class Vet extends Person {
