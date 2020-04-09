@@ -18,6 +18,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.springframework.core.style.ToStringCreator;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

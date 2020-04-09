@@ -38,6 +38,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class OwnerService extends PersonService<Owner> {
 
 	private OwnerRepository ownerRepository;
+	private AuthoritiesService authoritiesService;
+	private UserService userService;
 
 
 	@Autowired
@@ -66,9 +68,9 @@ public class OwnerService extends PersonService<Owner> {
 		//creating owner
 		this.ownerRepository.save(owner);
 		//creating user
-		this.userService.saveUser(owner.getUser());
+		//this.userService.saveUser(owner.getUser());
 		//creating authorities
-		this.authoritiesService.saveAuthorities(owner.getUser().getUsername(), "owner");
+		//this.authoritiesService.saveAuthorities(owner.getUser().getUsername(), "owner");
 	}
 
 }

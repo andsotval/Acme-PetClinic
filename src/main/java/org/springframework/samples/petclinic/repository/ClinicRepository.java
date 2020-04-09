@@ -2,7 +2,6 @@
 package org.springframework.samples.petclinic.repository;
 
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +18,5 @@ public interface ClinicRepository extends BaseRepository<Clinic> {
 
 	@Query("SELECT p FROM Pet p WHERE p.owner.clinic = ?1")
 	Iterable<Pet> findPetsByClinic(Clinic id);
-
-	Clinic findClinicByManagerId(@Param("id") Integer id);
 
 }
