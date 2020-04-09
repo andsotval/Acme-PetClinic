@@ -51,7 +51,7 @@ class PetControllerTests {
 		cat.setName("hamster");
 		BDDMockito.given(this.petService.findPetTypes()).willReturn(Lists.newArrayList(cat));
 		BDDMockito.given(this.ownerService.findOwnerById(PetControllerTests.TEST_OWNER_ID)).willReturn(new Owner());
-		BDDMockito.given(this.petService.findPetById(PetControllerTests.TEST_PET_ID)).willReturn(new Pet());
+		BDDMockito.given(this.petService.findPetById(PetControllerTests.TEST_PET_ID).get()).willReturn(new Pet());
 	}
 
 	//	@WithMockUser(value = "spring")

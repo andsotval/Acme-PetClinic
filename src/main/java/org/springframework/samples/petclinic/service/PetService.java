@@ -17,6 +17,7 @@
 package org.springframework.samples.petclinic.service;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -49,7 +50,7 @@ public class PetService {
 	}
 
 	@Transactional(readOnly = true)
-	public Collection<PetType> findPetTypes() throws DataAccessException {
+	public Iterable<PetType> findPetTypes() {
 		return this.petRepository.findPetTypes();
 	}
 
@@ -59,7 +60,7 @@ public class PetService {
 	}
 
 	@Transactional(readOnly = true)
-	public Pet findPetById(final int id) throws DataAccessException {
+	public Optional<Pet> findPetById(final int id){
 		return this.petRepository.findById(id);
 	}
 
@@ -74,6 +75,19 @@ public class PetService {
 
 	public Collection<Visit> findVisitsByPetId(final int petId) {
 		return this.visitRepository.findByPetId(petId);
+	}
+
+	public Iterable<Pet> findPetsByOwnerId(Integer id) {
+		return this.petRepository.findPetsByOwnerId(id);
+	}
+
+	public void save(Pet pet) {
+		this.petRepository.save(pet);
+		
+	}
+
+	public void deletePet(Pet pet) {
+		this.petRepository.delete(pet);	
 	}
 
 }

@@ -72,8 +72,18 @@ public class StayController {
 	public String acceptStay(@PathVariable("stayId") final int stayId, final ModelMap modelMap) {
 		Stay stay = stayService.findEntityById(stayId).get();
 
-		stay.setIsAccepted(true);
-		stayService.saveEntity(stay);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		User user = (User) authentication.getPrincipal();
+
+		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
+		
+		if(stay.getClinic().getId() == vet.getClinic().getId()) {
+			this.stayService.acceptStay(stay);
+		}else {
+			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
+		}
+		
 
 		return "redirect:/stays/listAllAccepted";
 
@@ -83,8 +93,17 @@ public class StayController {
 	public String cancelStay(@PathVariable("stayId") final int stayId, final ModelMap modelMap) {
 		Stay stay = stayService.findEntityById(stayId).get();
 
-		stay.setIsAccepted(false);
-		stayService.saveEntity(stay);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		User user = (User) authentication.getPrincipal();
+
+		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
+		
+		if(stay.getClinic().getId() == vet.getClinic().getId()) {
+			this.stayService.cancelStay(stay);
+		}else {
+			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
+		}
 
 		return "redirect:/stays/listAllAccepted";
 
@@ -114,6 +133,12 @@ public class StayController {
 			// y el codigo de respuesta http devuelto siempre en este caso es el 302
 			return "redirect:/oups";
 		}
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		User user = (User) authentication.getPrincipal();
+
+		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
 
 		Stay stay = stayService.findEntityById(stayId).get();
 		stay.setDescription(entity.getDescription());
@@ -122,7 +147,9 @@ public class StayController {
 
 		if (result.hasErrors())
 			modelMap.addAttribute("stay", stay);
-		else if (!entity.getStartDate().isBefore(entity.getFinishDate())) {
+		} else if (stay.getClinic().getId() != vet.getClinic().getId()){
+			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
+		}else if (!entity.getStartDate().isBefore(entity.getFinishDate())) {
 			result.rejectValue("startDate", "startLaterFinish", "the start date cannot be later than the finish date");
 			modelMap.addAttribute("stay", stay);
 		} else if (entity.getFinishDate().isAfter(entity.getStartDate().plusDays(7L))) {

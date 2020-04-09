@@ -16,30 +16,37 @@
 
 package org.springframework.samples.petclinic.web;
 
+import java.time.LocalDate;
 import java.util.Collection;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
+import org.springframework.samples.petclinic.model.Stay;
+import org.springframework.samples.petclinic.model.Vet;
+import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.PetService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-/**
- * @author Juergen Hoeller
- * @author Ken Krebs
- * @author Arjen Poutsma
- */
+
 @Controller
-@RequestMapping("/owners/{ownerId}")
+@RequestMapping("/pets")
 public class PetController {
 
 	private static final String	VIEWS_PETS_CREATE_OR_UPDATE_FORM	= "pets/createOrUpdatePetForm";
@@ -53,16 +60,105 @@ public class PetController {
 		this.petService = petService;
 		this.ownerService = ownerService;
 	}
-
+	
 	@ModelAttribute("types")
-	public Collection<PetType> populatePetTypes() {
+	public Iterable<PetType> populatePetTypes() {
 		return this.petService.findPetTypes();
 	}
+	
+	@GetMapping(path = "/listMyPets")
+	public String listMyPets(final ModelMap modelMap) {
+		String view = "pets/list";
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-	@ModelAttribute("owner")
-	public Owner findOwner(@PathVariable("ownerId") final int ownerId) {
-		return this.ownerService.findOwnerById(ownerId);
+		User user = (User) authentication.getPrincipal();
+
+		Owner owner = this.ownerService.findByOwnerByUsername(user.getUsername()).get();
+		
+		Iterable<Pet> pets = this.petService.findPetsByOwnerId(owner.getId());
+
+		modelMap.addAttribute("pets", pets);
+		modelMap.addAttribute("ownerId", owner.getId());
+		
+		return view;
 	}
+
+	@GetMapping(value = "/new/{ownerId}")
+	public String newPet(@PathVariable("ownerId") int ownerId, final ModelMap model) {
+			Pet pet = new Pet();
+			Owner owner = this.ownerService.findOwnerById(ownerId);
+			owner.addPet(pet);
+			model.addAttribute("pet", pet);
+			return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
+	}
+	
+	@PostMapping(path = "/save")
+	public String savePet(@Valid final Pet pet, final BindingResult result, final ModelMap modelMap) {
+		String view = "pets/listMyPets";
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		User user = (User) authentication.getPrincipal();
+
+		Owner owner = this.ownerService.findByOwnerByUsername(user.getUsername()).get();
+		
+		//esto hay que verlo
+		pet.setOwner(owner);
+
+		if (pet.getOwner().getId() != owner.getId()){
+			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
+		}else if (pet.getBirthDate().isAfter(LocalDate.now())) {
+			result.rejectValue("birthDate", "birthDateFuture", "the birth date cannot be in future");
+			modelMap.addAttribute("pet", pet);
+		} else {
+			this.petService.save(pet);
+			modelMap.addAttribute("message", "Stay succesfully updated");
+			return "redirect:/pets/listMyPets";
+		}
+
+		return view;
+	}
+	
+	@GetMapping(path = "/delete/{petId}")
+	public String cancelVisit(@PathVariable("petId") final int petId, final ModelMap modelMap) {
+		Pet pet = this.petService.findPetById(petId).get();
+
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		User user = (User) authentication.getPrincipal();
+
+		Owner owner = this.ownerService.findByOwnerByUsername(user.getUsername()).get();
+		
+		if(pet.getOwner().getId() == owner.getId()) {
+			this.petService.deletePet(pet);
+		}else {
+			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
+		}
+		return "redirect:/pets/listMyPets";
+
+	}	
+	
+	@GetMapping(value = "/newVisit/{petId}")
+	public String newVisit(@PathVariable("petId") int petId, final ModelMap model) {
+		Visit visit = new Visit();
+		Pet pet = this.petService.findPetById(petId).get();
+		visit.setClinic(pet.getOwner().getClinic());
+		visit.setPet(pet);
+		model.addAttribute("visit", visit);
+		return "pets/createVisitForm";
+	}
+	
+	
+//	@ModelAttribute("types")
+//	public Collection<PetType> populatePetTypes() {
+//		return this.petService.findPetTypes();
+//	}
+//
+//	@ModelAttribute("owner")
+//	public Owner findOwner(@PathVariable("ownerId") final int ownerId) {
+//		return this.ownerService.findOwnerById(ownerId);
+//	}
 
 	/*
 	 * @ModelAttribute("pet")
@@ -114,7 +210,7 @@ public class PetController {
 
 	@GetMapping(value = "/pets/{petId}/edit")
 	public String initUpdateForm(@PathVariable("petId") final int petId, final ModelMap model) {
-		Pet pet = this.petService.findPetById(petId);
+		Pet pet = this.petService.findPetById(petId).get();
 		model.put("pet", pet);
 		return PetController.VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 	}
