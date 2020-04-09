@@ -7,8 +7,6 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.PetService;
@@ -127,21 +125,19 @@ public class VisitController {
 
 	@GetMapping(path = "/accept/{visitId}")
 	public String acceptVisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
-		Visit visit = this.visitService.findById(visitId).get();
-		
+		Visit visit = visitService.findEntityById(visitId).get();
+
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 		User user = (User) authentication.getPrincipal();
 
-		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
-		
-		if(visit.getClinic().getId() == vet.getClinic().getId()) {
-			this.visitService.acceptVisit(visit);
-		}else {
-			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
-		}
+		Vet vet = vetService.findByVetByUsername(user.getUsername());
 
-		this.visitService.acceptVisit(visit);
+		if (visit.getClinic().getId() == vet.getClinic().getId()) {
+			visit.setIsAccepted(true);
+			visitService.saveEntity(visit);
+		} else
+			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
 
 		return "redirect:/visits/listAllAccepted";
 
@@ -149,20 +145,19 @@ public class VisitController {
 
 	@GetMapping(path = "/cancel/{visitId}")
 	public String cancelVisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
-		Visit visit = this.visitService.findById(visitId).get();
+		Visit visit = visitService.findEntityById(visitId).get();
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 		User user = (User) authentication.getPrincipal();
 
-		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
-		
-		if(visit.getClinic().getId() == vet.getClinic().getId()) {
-			this.visitService.cancelVisit(visit);
-		}else {
+		Vet vet = vetService.findByVetByUsername(user.getUsername());
+
+		if (visit.getClinic().getId() == vet.getClinic().getId()) {
+			visit.setIsAccepted(false);
+			visitService.saveEntity(visit);
+		} else
 			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
-		}
-		
 
 		return "redirect:/visits/listAllAccepted";
 
@@ -175,21 +170,22 @@ public class VisitController {
 		return "/visits/createOrUpdateVisitForm";
 	}
 
-
-	/*@PostMapping(path = "/save")
-	public String newVisit(@Valid final Visit visit, final BindingResult result, final ModelMap modelMap) {
-		String view = "/visits/createOrUpdateVisitForm";
-		if (result.hasErrors()) {
-			modelMap.addAttribute("visit", visit);
-			return view;
-		} else {
-			visit.setIsAccepted(true);
-			this.visitService.save(visit);
-			modelMap.addAttribute("message", "Visit succesfully updated");
-			view = this.listAllAccepted(modelMap);
-			return "redirect:/visits/listAllAccepted";
-		}
-	}*/
+	/*
+	 * @PostMapping(path = "/save")
+	 * public String newVisit(@Valid final Visit visit, final BindingResult result, final ModelMap modelMap) {
+	 * String view = "/visits/createOrUpdateVisitForm";
+	 * if (result.hasErrors()) {
+	 * modelMap.addAttribute("visit", visit);
+	 * return view;
+	 * } else {
+	 * visit.setIsAccepted(true);
+	 * this.visitService.save(visit);
+	 * modelMap.addAttribute("message", "Visit succesfully updated");
+	 * view = this.listAllAccepted(modelMap);
+	 * return "redirect:/visits/listAllAccepted";
+	 * }
+	 * }
+	 */
 
 	@PostMapping(path = "/save/{visitId}")
 	public String updateVisit(@PathVariable("visitId") final int visitId, @Valid final Visit entity,
@@ -199,23 +195,23 @@ public class VisitController {
 
 		if (!visitService.findEntityById(visitId).isPresent())
 			return "redirect:/oups";
-		}
+
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 		User user = (User) authentication.getPrincipal();
 
-		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
-		
-		Visit visit = this.visitService.findById(visitId).get();
+		Vet vet = vetService.findByVetByUsername(user.getUsername());
+
+		Visit visit = visitService.findEntityById(visitId).get();
 
 		visit.setDescription(entity.getDescription());
 		visit.setDate(entity.getDate());
 
 		if (result.hasErrors())
 			modelMap.addAttribute("visit", visit);
-		}else if (visit.getClinic().getId() != vet.getClinic().getId()){
+		else if (visit.getClinic().getId() != vet.getClinic().getId())
 			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
-		}	else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
+		else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
 			result.rejectValue("date", "startLaterFinish", "Posponer con 2 días de antelación");
 			modelMap.addAttribute("visit", visit);
 		} else {
@@ -227,5 +223,5 @@ public class VisitController {
 
 		return view;
 	}
-	
+
 }
