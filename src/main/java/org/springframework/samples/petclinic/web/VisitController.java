@@ -13,6 +13,8 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.model.Owner;
+import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.PetService;
@@ -199,6 +201,8 @@ public class VisitController {
 			return "redirect:/visits/listAllAccepted";
 		}
 	}*/
+	
+	
 
 	@PostMapping(path = "/save/{visitId}")
 	public String updateVisit(@PathVariable("visitId") final int visitId, @Valid final Visit entity, final BindingResult result, final ModelMap modelMap) {
@@ -234,4 +238,5 @@ public class VisitController {
 
 		return view;
 	}
+	
 }

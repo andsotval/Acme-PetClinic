@@ -91,7 +91,7 @@ public class PetController {
 			owner.addPet(pet);
 			model.addAttribute("pet", pet);
 			return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
-		}
+	}
 	
 	@PostMapping(path = "/save")
 	public String savePet(@Valid final Pet pet, final BindingResult result, final ModelMap modelMap) {
@@ -137,6 +137,16 @@ public class PetController {
 		}
 		return "redirect:/pets/listMyPets";
 
+	}	
+	
+	@GetMapping(value = "/newVisit/{petId}")
+	public String newVisit(@PathVariable("petId") int petId, final ModelMap model) {
+		Visit visit = new Visit();
+		Pet pet = this.petService.findPetById(petId).get();
+		visit.setClinic(pet.getOwner().getClinic());
+		visit.setPet(pet);
+		model.addAttribute("visit", visit);
+		return "pets/createVisitForm";
 	}
 	
 	

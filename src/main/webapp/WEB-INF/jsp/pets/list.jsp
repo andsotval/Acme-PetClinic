@@ -31,7 +31,10 @@
                     <c:out value="${pet.birthDate} "/>
                 </td>
                  <td>
-	                <span class="glyphicon glyphicon-calendar" aria-hidden="true" ></span>
+                 <spring:url value="/pets/newVisit/{petId}" var="petUrlNewVisit">
+	                    <spring:param name="petId" value="${pet.id}"/>
+	                </spring:url>
+	                <a href="${fn:escapeXml(petUrlNewVisit)}"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span></a>
                 </td>
                  <td>
 	                <span class="glyphicon glyphicon-bed" aria-hidden="true" ></span>
