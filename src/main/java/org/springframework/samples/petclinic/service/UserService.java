@@ -20,12 +20,6 @@ import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.repository.BaseRepository;
 import org.springframework.stereotype.Service;
 
-/**
- * Mostly used as a facade for all Petclinic controllers Also a placeholder
- * for @Transactional and @Cacheable annotations
- *
- * @author Michael Isvy
- */
 @Service
 public class UserService extends PersonService<User> {
 
