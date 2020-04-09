@@ -33,7 +33,7 @@ import lombok.EqualsAndHashCode;
  * @author Sam Brannen
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "pet")
 public class Pet extends NamedEntity {
@@ -52,7 +52,7 @@ public class Pet extends NamedEntity {
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.LAZY)
 	private Set<Stay>	stay;
-	
+
 	//	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.LAZY)
 	//	private Set<Visit>	visits;
 	//
