@@ -16,31 +16,12 @@
 
 package org.springframework.samples.petclinic.service;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.dao.DataAccessException;
-import org.springframework.samples.petclinic.model.Clinic;
-import org.springframework.samples.petclinic.model.Manager;
-import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.model.Pet;
-import org.springframework.samples.petclinic.model.PetType;
-import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Vet;
-import org.springframework.samples.petclinic.model.Visit;
-import org.springframework.samples.petclinic.repository.OwnerRepository;
-import org.springframework.samples.petclinic.repository.PetRepository;
+import org.springframework.samples.petclinic.repository.BaseRepository;
 import org.springframework.samples.petclinic.repository.VetRepository;
-import org.springframework.samples.petclinic.repository.VisitRepository;
-import org.springframework.samples.petclinic.service.exceptions.DuplicatedPetNameException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 /**
  * Mostly used as a facade for all Petclinic controllers Also a placeholder
@@ -49,38 +30,24 @@ import org.springframework.util.StringUtils;
  * @author Michael Isvy
  */
 @Service
-public class VetService {
+public class VetService extends PersonService<Vet> {
 
 	private VetRepository vetRepository;
 
 
 	@Autowired
-	public VetService(VetRepository vetRepository) {
+	public VetService(BaseRepository<Vet> repository, VetRepository vetRepository) {
+		super(repository, Vet.class);
 		this.vetRepository = vetRepository;
-	}		
+	}
 
-	@Transactional(readOnly = true)	
-	public Collection<Vet> findVets() throws DataAccessException {
-		return vetRepository.findAll();
-	}	
-	
 	@Transactional(readOnly = true)
-	public Iterable<Vet> findAvailableVets(){
+	public Iterable<Vet> findAvailableVets() {
 		return vetRepository.findAvailableVets();
 	}
-	
-	@Transactional
-	public void save(final Vet vet) {
-		this.vetRepository.save(vet);
-	}
-	
+
 	@Transactional(readOnly = true)
-	public Optional<Vet> findById(final int id) {
-		return this.vetRepository.findById(id);
-	}
-	
-	@Transactional
 	public Vet findByVetByUsername(final String username) {
-		return this.vetRepository.findByVetByUsername(username);
+		return vetRepository.findByVetByUsername(username);
 	}
-} 
+}

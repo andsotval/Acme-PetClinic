@@ -18,13 +18,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.springframework.core.style.ToStringCreator;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "owner")
 public class Owner extends Person {
@@ -34,6 +32,7 @@ public class Owner extends Person {
 	private Clinic clinic;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+
 	private Set<Pet> pets;
 
 	protected Set<Pet> getPetsInternal() {
@@ -119,4 +118,5 @@ public class Owner extends Person {
 				.append("address", this.getAddress()).append("city", this.getCity())
 				.append("telephone", this.getTelephone()).toString();
 	}
+
 }

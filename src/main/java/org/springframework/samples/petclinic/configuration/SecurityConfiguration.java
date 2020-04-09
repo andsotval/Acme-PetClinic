@@ -46,6 +46,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers("/orders/**").hasAnyAuthority("manager")
 			.antMatchers("/providers/**").hasAnyAuthority("manager")
 			.antMatchers("/managers/**").hasAnyAuthority("manager", "admin").anyRequest().denyAll().and().formLogin()
+
 			/* .loginPage("/login") */
 			.failureUrl("/login-error").and().logout().logoutSuccessUrl("/");
 		// Configuración para que funcione la consola de administración
@@ -58,8 +59,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(final AuthenticationManagerBuilder auth) throws Exception {
-		auth.jdbcAuthentication().dataSource(this.dataSource).usersByUsernameQuery("select username,password,enabled " + "from user " + "where username = ?")
-			.authoritiesByUsernameQuery("select username, authority " + "from authority " + "where username = ?").passwordEncoder(this.passwordEncoder());
+		auth.jdbcAuthentication().dataSource(dataSource)
+			.usersByUsernameQuery("select username,password,enabled " + "from user " + "where username = ?")
+			.authoritiesByUsernameQuery("select username, authority " + "from authority " + "where username = ?")
+			.passwordEncoder(passwordEncoder());
 	}
 
 	@Bean

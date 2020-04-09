@@ -18,36 +18,17 @@ package org.springframework.samples.petclinic.repository;
 
 import java.util.Collection;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.samples.petclinic.model.Vet;
+import org.springframework.stereotype.Repository;
 
-/**
- * Repository class for <code>Vet</code> domain objects All method names are compliant
- * with Spring Data naming conventions so this interface can easily be extended for Spring
- * Data See here:
- * http://static.springsource.org/spring-data/jpa/docs/current/reference/html/jpa.repositories.html#jpa.query-methods.query-creation
- *
- * @author Ken Krebs
- * @author Juergen Hoeller
- * @author Sam Brannen
- * @author Michael Isvy
- */
-public interface VetRepository extends CrudRepository<Vet, Integer>{
+@Repository
+public interface VetRepository extends BaseRepository<Vet> {
 
-	/**
-	 * Retrieve all <code>Vet</code>s from the data store.
-	 * @return a <code>Collection</code> of <code>Vet</code>s
-	 */
-	Collection<Vet> findAll() throws DataAccessException;
-	
 	@Query("SELECT vet FROM Vet vet WHERE vet.clinic = null")
 	Collection<Vet> findAvailableVets();
-	
+
 	@Query("SELECT v FROM Vet v WHERE v.user.username = ?1")
 	Vet findByVetByUsername(String username);
-	
-	
 
 }

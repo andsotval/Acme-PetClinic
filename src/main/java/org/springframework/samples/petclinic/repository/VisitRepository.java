@@ -17,34 +17,18 @@
 package org.springframework.samples.petclinic.repository;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.samples.petclinic.model.Visit;
+import org.springframework.stereotype.Repository;
 
-/**
- * Repository class for <code>Visit</code> domain objects All method names are compliant
- * with Spring Data naming conventions so this interface can easily be extended for Spring
- * Data See here:
- * http://static.springsource.org/spring-data/jpa/docs/current/reference/html/jpa.repositories.html#jpa.query-methods.query-creation
- *
- * @author Ken Krebs
- * @author Juergen Hoeller
- * @author Sam Brannen
- * @author Michael Isvy
- */
-public interface VisitRepository extends CrudRepository<Visit, Integer> {
-
-	@Query("SELECT v FROM Visit v WHERE v.id = ?1")
-	Visit findByVisitId(Integer visitId);
+@Repository
+public interface VisitRepository extends BaseRepository<Visit> {
 
 	@Query("SELECT v FROM Visit v INNER JOIN Clinic c ON c.id=v.clinic.id WHERE v.isAccepted IS NULL AND ?2 IN (SELECT v2.id FROM Vet v2 WHERE v2.clinic.id=c.id) AND v.date > ?1 ")
 	Iterable<Visit> findAllPendingByVet(LocalDate actualDate, Integer vetId);
 
 	@Query("SELECT v FROM Visit v INNER JOIN Clinic c ON c.id=v.clinic.id WHERE v.isAccepted = true AND ?2 IN (SELECT v2.id FROM Vet v2 WHERE v2.clinic.id=c.id) AND v.date > ?1 ")
 	Iterable<Visit> findAllAcceptedByVet(LocalDate actualDate, Integer vetId);
-
-	List<Visit> findByPetId(Integer petId);
 
 }

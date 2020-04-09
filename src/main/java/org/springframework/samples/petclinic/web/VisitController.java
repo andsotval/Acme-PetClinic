@@ -1,9 +1,4 @@
-/**
- * DP2 - Grupo 8
- * LAB F1.33
- * Date: 05-mar-2020
- * User: carlo
- */
+
 
 package org.springframework.samples.petclinic.web;
 
@@ -33,12 +28,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-/**
- * @author Juergen Hoeller
- * @author Ken Krebs
- * @author Arjen Poutsma
- * @author Michael Isvy
- */
 @Controller
 @RequestMapping("/visits")
 public class VisitController {
@@ -89,10 +78,10 @@ public class VisitController {
 	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is called
 	@PostMapping(value = "/owners/{ownerId}/pets/{petId}/visits/new")
 	public String processNewVisitForm(@Valid final Visit visit, final BindingResult result) {
-		if (result.hasErrors()) {
+		if (result.hasErrors())
 			return "pets/createOrUpdateVisitForm";
-		} else {
-			this.petService.saveVisit(visit);
+		else {
+			visitService.saveEntity(visit);
 			return "redirect:/owners/{ownerId}";
 		}
 	}
@@ -110,9 +99,9 @@ public class VisitController {
 
 		User user = (User) authentication.getPrincipal();
 
-		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
+		Vet vet = vetService.findByVetByUsername(user.getUsername());
 
-		Iterable<Visit> visits = this.visitService.findAllPendingByVet(vet);
+		Iterable<Visit> visits = visitService.findAllPendingByVet(vet);
 
 		modelMap.addAttribute("visits", visits);
 		modelMap.addAttribute("accepted", false);
@@ -128,9 +117,9 @@ public class VisitController {
 
 		User user = (User) authentication.getPrincipal();
 
-		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
+		Vet vet = vetService.findByVetByUsername(user.getUsername());
 
-		Iterable<Visit> visits = this.visitService.findAllAcceptedByVet(vet);
+		Iterable<Visit> visits = visitService.findAllAcceptedByVet(vet);
 		modelMap.addAttribute("visits", visits);
 		modelMap.addAttribute("accepted", true);
 		return view;
@@ -182,10 +171,11 @@ public class VisitController {
 
 	@GetMapping(path = "/changeDate/{visitId}")
 	public String changeDatevisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
-		Visit visit = this.visitService.findById(visitId).get();
+		Visit visit = visitService.findEntityById(visitId).get();
 		modelMap.addAttribute(visit);
 		return "/visits/createOrUpdateVisitForm";
 	}
+
 
 	/*@PostMapping(path = "/save")
 	public String newVisit(@Valid final Visit visit, final BindingResult result, final ModelMap modelMap) {
@@ -201,15 +191,14 @@ public class VisitController {
 			return "redirect:/visits/listAllAccepted";
 		}
 	}*/
-	
-	
 
 	@PostMapping(path = "/save/{visitId}")
-	public String updateVisit(@PathVariable("visitId") final int visitId, @Valid final Visit entity, final BindingResult result, final ModelMap modelMap) {
+	public String updateVisit(@PathVariable("visitId") final int visitId, @Valid final Visit entity,
+		final BindingResult result, final ModelMap modelMap) {
 
 		String view = VisitController.VIEWS_VISIT_CREATE_OR_UPDATE_FORM;
 
-		if (!this.visitService.findById(visitId).isPresent()) {
+		if (!visitService.findEntityById(visitId).isPresent())
 			return "redirect:/oups";
 		}
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -219,20 +208,21 @@ public class VisitController {
 		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
 		
 		Visit visit = this.visitService.findById(visitId).get();
+
 		visit.setDescription(entity.getDescription());
 		visit.setDate(entity.getDate());
 
-		if (result.hasErrors()) {
+		if (result.hasErrors())
 			modelMap.addAttribute("visit", visit);
 		}else if (visit.getClinic().getId() != vet.getClinic().getId()){
 			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
-		}else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
+		}	else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
 			result.rejectValue("date", "startLaterFinish", "Posponer con 2 días de antelación");
 			modelMap.addAttribute("visit", visit);
 		} else {
-			this.visitService.save(visit);
+			visitService.saveEntity(visit);
 			modelMap.addAttribute("message", "Visit succesfully updated");
-			view = this.listAllAccepted(modelMap);
+			view = listAllAccepted(modelMap);
 			return "redirect:/visits/listAllAccepted";
 		}
 
