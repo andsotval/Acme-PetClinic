@@ -43,12 +43,12 @@ public class ProviderController {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User user = (User) authentication.getPrincipal();
-		Manager manager = managerService.findManagerByUsername(user.getUsername()).get();
+		Manager manager = managerService.findPersonByUsername(user.getUsername());
 
-		Provider provider = providerService.findProviderById(providerId).get();
+		Provider provider = providerService.findEntityById(providerId).get();
 		if (provider.getManager() == null) {
 			provider.setManager(manager);
-			providerService.saveProvider(provider);
+			providerService.saveEntity(provider);
 		} else {
 			model.addAttribute("message", "No es posible añadir un Provider que ya esta asignado a otro Manager");
 			return "redirect:/providers/listAvailable";

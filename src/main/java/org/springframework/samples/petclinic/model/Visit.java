@@ -27,7 +27,7 @@ import lombok.EqualsAndHashCode;
  * @author Ken Krebs
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "visit")
 public class Visit extends BaseEntity {

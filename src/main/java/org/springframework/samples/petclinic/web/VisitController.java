@@ -87,10 +87,10 @@ public class VisitController {
 	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is called
 	@PostMapping(value = "/owners/{ownerId}/pets/{petId}/visits/new")
 	public String processNewVisitForm(@Valid final Visit visit, final BindingResult result) {
-		if (result.hasErrors()) {
+		if (result.hasErrors())
 			return "pets/createOrUpdateVisitForm";
-		} else {
-			this.petService.saveVisit(visit);
+		else {
+			visitService.saveEntity(visit);
 			return "redirect:/owners/{ownerId}";
 		}
 	}
@@ -108,9 +108,9 @@ public class VisitController {
 
 		User user = (User) authentication.getPrincipal();
 
-		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
+		Vet vet = vetService.findByVetByUsername(user.getUsername());
 
-		Iterable<Visit> visits = this.visitService.findAllPendingByVet(vet);
+		Iterable<Visit> visits = visitService.findAllPendingByVet(vet);
 
 		modelMap.addAttribute("visits", visits);
 		modelMap.addAttribute("accepted", false);
@@ -126,9 +126,9 @@ public class VisitController {
 
 		User user = (User) authentication.getPrincipal();
 
-		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
+		Vet vet = vetService.findByVetByUsername(user.getUsername());
 
-		Iterable<Visit> visits = this.visitService.findAllAcceptedByVet(vet);
+		Iterable<Visit> visits = visitService.findAllAcceptedByVet(vet);
 		modelMap.addAttribute("visits", visits);
 		modelMap.addAttribute("accepted", true);
 		return view;
@@ -137,9 +137,10 @@ public class VisitController {
 
 	@GetMapping(path = "/accept/{visitId}")
 	public String acceptVisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
-		Visit visit = this.visitService.findById(visitId).get();
+		Visit visit = visitService.findEntityById(visitId).get();
 
-		this.visitService.acceptVisit(visit);
+		visit.setIsAccepted(true);
+		visitService.saveEntity(visit);
 
 		return "redirect:/visits/listAllAccepted";
 
@@ -147,9 +148,10 @@ public class VisitController {
 
 	@GetMapping(path = "/cancel/{visitId}")
 	public String cancelVisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
-		Visit visit = this.visitService.findById(visitId).get();
+		Visit visit = visitService.findEntityById(visitId).get();
 
-		this.visitService.cancelVisit(visit);
+		visit.setIsAccepted(false);
+		visitService.saveEntity(visit);
 
 		return "redirect:/visits/listAllAccepted";
 
@@ -157,48 +159,50 @@ public class VisitController {
 
 	@GetMapping(path = "/changeDate/{visitId}")
 	public String changeDatevisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
-		Visit visit = this.visitService.findById(visitId).get();
+		Visit visit = visitService.findEntityById(visitId).get();
 		modelMap.addAttribute(visit);
 		return "/visits/createOrUpdateVisitForm";
 	}
 
-	/*@PostMapping(path = "/save")
-	public String newVisit(@Valid final Visit visit, final BindingResult result, final ModelMap modelMap) {
-		String view = "/visits/createOrUpdateVisitForm";
-		if (result.hasErrors()) {
-			modelMap.addAttribute("visit", visit);
-			return view;
-		} else {
-			visit.setIsAccepted(true);
-			this.visitService.save(visit);
-			modelMap.addAttribute("message", "Visit succesfully updated");
-			view = this.listAllAccepted(modelMap);
-			return "redirect:/visits/listAllAccepted";
-		}
-	}*/
+	/*
+	 * @PostMapping(path = "/save")
+	 * public String newVisit(@Valid final Visit visit, final BindingResult result, final ModelMap modelMap) {
+	 * String view = "/visits/createOrUpdateVisitForm";
+	 * if (result.hasErrors()) {
+	 * modelMap.addAttribute("visit", visit);
+	 * return view;
+	 * } else {
+	 * visit.setIsAccepted(true);
+	 * this.visitService.save(visit);
+	 * modelMap.addAttribute("message", "Visit succesfully updated");
+	 * view = this.listAllAccepted(modelMap);
+	 * return "redirect:/visits/listAllAccepted";
+	 * }
+	 * }
+	 */
 
 	@PostMapping(path = "/save/{visitId}")
-	public String updateVisit(@PathVariable("visitId") final int visitId, @Valid final Visit entity, final BindingResult result, final ModelMap modelMap) {
+	public String updateVisit(@PathVariable("visitId") final int visitId, @Valid final Visit entity,
+		final BindingResult result, final ModelMap modelMap) {
 
 		String view = VisitController.VIEWS_VISIT_CREATE_OR_UPDATE_FORM;
 
-		if (!this.visitService.findById(visitId).isPresent()) {
+		if (!visitService.findEntityById(visitId).isPresent())
 			return "redirect:/oups";
-		}
 
-		Visit visit = this.visitService.findById(visitId).get();
+		Visit visit = visitService.findEntityById(visitId).get();
 		visit.setDescription(entity.getDescription());
 		visit.setDate(entity.getDate());
 
-		if (result.hasErrors()) {
+		if (result.hasErrors())
 			modelMap.addAttribute("visit", visit);
-		} else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
+		else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
 			result.rejectValue("date", "startLaterFinish", "Posponer con 2 días de antelación");
 			modelMap.addAttribute("visit", visit);
 		} else {
-			this.visitService.save(visit);
+			visitService.saveEntity(visit);
 			modelMap.addAttribute("message", "Visit succesfully updated");
-			view = this.listAllAccepted(modelMap);
+			view = listAllAccepted(modelMap);
 			return "redirect:/visits/listAllAccepted";
 		}
 

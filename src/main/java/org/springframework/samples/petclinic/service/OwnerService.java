@@ -21,6 +21,7 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Owner;
+import org.springframework.samples.petclinic.repository.BaseRepository;
 import org.springframework.samples.petclinic.repository.OwnerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,40 +33,25 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Michael Isvy
  */
 @Service
-public class OwnerService {
+public class OwnerService extends PersonService<Owner> {
 
-	private OwnerRepository		ownerRepository;
-
-	@Autowired
-	private UserService			userService;
-
-	@Autowired
-	private AuthoritiesService	authoritiesService;
+	private OwnerRepository ownerRepository;
 
 
 	@Autowired
-	public OwnerService(final OwnerRepository ownerRepository) {
+	public OwnerService(BaseRepository<Owner> repository, OwnerRepository ownerRepository) {
+		super(repository, Owner.class);
 		this.ownerRepository = ownerRepository;
 	}
 
 	@Transactional(readOnly = true)
 	public Owner findOwnerById(final int id) throws DataAccessException {
-		return this.ownerRepository.findById(id);
+		return ownerRepository.findById(id);
 	}
 
 	@Transactional(readOnly = true)
 	public Collection<Owner> findOwnerByLastName(final String lastName) throws DataAccessException {
-		return this.ownerRepository.findByLastName(lastName);
-	}
-
-	@Transactional
-	public void saveOwner(final Owner owner) throws DataAccessException {
-		//creating owner
-		this.ownerRepository.save(owner);
-		//creating user
-		this.userService.saveUser(owner.getUser());
-		//creating authorities
-		this.authoritiesService.saveAuthorities(owner.getUser().getUsername(), "owner");
+		return ownerRepository.findByLastName(lastName);
 	}
 
 }

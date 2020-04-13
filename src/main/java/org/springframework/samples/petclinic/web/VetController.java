@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.samples.petclinic.web;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,76 +46,73 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/vets")
 public class VetController {
-	
-	
-	private final ClinicService clinicService;
-	private final VetService vetService;
-	private final ManagerService managerService;
+
+	private final ClinicService		clinicService;
+	private final VetService		vetService;
+	private final ManagerService	managerService;
+
 
 	@Autowired
-	public VetController(VetService vetService,ClinicService clinicService,ManagerService managerService) {
+	public VetController(VetService vetService, ClinicService clinicService, ManagerService managerService) {
 		this.vetService = vetService;
-		this.clinicService=clinicService;
-		this.managerService=managerService;
+		this.clinicService = clinicService;
+		this.managerService = managerService;
 	}
-	
 
-	@GetMapping(value = { "/vetsList" })
+	@GetMapping(value = {
+		"/vetsList"
+	})
 	public String showVetList(Map<String, Object> model) {
 		// Here we are returning an object of type 'Vets' rather than a collection of Vet
 		// objects
 		// so it is simpler for Object-Xml mapping
 		Vets vets = new Vets();
-		vets.getVetList().addAll(this.vetService.findVets());
+		vets.getVetList().addAll((Collection<Vet>) vetService.findAllEntities());
 		model.put("vets", vets);
 		return "vets/vetList";
 	}
 
-	@GetMapping(value = { "/vets.xml"})
+	@GetMapping(value = {
+		"/vets.xml"
+	})
 	public @ResponseBody Vets showResourcesVetList() {
 		// Here we are returning an object of type 'Vets' rather than a collection of Vet
 		// objects
 		// so it is simpler for JSon/Object mapping
 		Vets vets = new Vets();
-		vets.getVetList().addAll(this.vetService.findVets());
+		vets.getVetList().addAll((Collection<Vet>) vetService.findAllEntities());
 		return vets;
 	}
-	
+
 	@GetMapping(value = "/vetsAvailable")
 	public String vetsAvailableList(ModelMap modelMap) {
-		String vista="vets/vetsAvailable";
-		Iterable<Vet> vets= vetService.findAvailableVets();
+		String vista = "vets/vetsAvailable";
+		Iterable<Vet> vets = vetService.findAvailableVets();
 		modelMap.addAttribute("vets2", vets);
 		return vista;
 	}
-	
+
 	@GetMapping(path = "/accept/{vetId}")
 	public String acceptVet(@PathVariable("vetId") final int vetId, final ModelMap modelMap) {
-		
+
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 		User user = (User) authentication.getPrincipal();
 
-		Manager manager = this.managerService.findManagerByUsername(user.getUsername()).get();
-		
-		Clinic clinic = this.clinicService.findClinicByManagerId(manager.getId());
-		
-		Vet vet = vetService.findById(vetId).get();
-		
-		if(vet.getClinic() == null) {
+		Manager manager = managerService.findPersonByUsername(user.getUsername());
+
+		Clinic clinic = clinicService.findClinicByManagerId(manager.getId());
+
+		Vet vet = vetService.findEntityById(vetId).get();
+
+		if (vet.getClinic() == null) {
 			vet.setClinic(clinic);
-			this.vetService.save(vet);
-		}else {
+			vetService.saveEntity(vet);
+		} else
 			return "redirect:/oups";
-		}
 
 		return "redirect:/vets/vetsAvailable";
 
 	}
-	
-	
-	
-	
-	
 
-} 
+}
