@@ -26,17 +26,16 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/orders")
 public class OrderController {
 
-	private static final String		VIEWS_ORDERS_CREATE_OR_UPDATE_FORM	= "/orders/createOrUpdateOrderForm";
+	private static final String VIEWS_ORDERS_CREATE_OR_UPDATE_FORM = "/orders/createOrUpdateOrderForm";
 
-	private final OrderService		orderService;
-	private final ManagerService	managerService;
-	private final ProductService	productService;
-	private final ProviderService	providerService;
-
+	private final OrderService orderService;
+	private final ManagerService managerService;
+	private final ProductService productService;
+	private final ProviderService providerService;
 
 	@Autowired
 	public OrderController(final OrderService orderService, final ManagerService managerService,
-		final ProductService productService, final ProviderService providerService) {
+			final ProductService productService, final ProviderService providerService) {
 		this.orderService = orderService;
 		this.managerService = managerService;
 		this.productService = productService;
@@ -46,10 +45,8 @@ public class OrderController {
 	// inicio de creacion de Order
 	@GetMapping(value = "/new/{providerId}")
 	public String initCreationForm(@PathVariable("providerId") int providerId, ModelMap model) {
-		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
-
 		Order order = new Order();
-		order.setManager(manager);
+		order.setManager(obtainManagerInSession());
 		model.addAttribute("order", order);
 
 		Iterable<Product> product = productService.findProductsAvailableByProviderId(providerId);
@@ -62,17 +59,21 @@ public class OrderController {
 	@PostMapping(value = "/new/{providerId}")
 	public String processCreationForm(@Valid Order order, @PathVariable("providerId") int providerId,
 			BindingResult result, ModelMap model) {
+
 		String returnView;
+
 		if (result.hasErrors()) {
 			return VIEWS_ORDERS_CREATE_OR_UPDATE_FORM;
 		} else {
-			Provider provider = this.providerService.findProviderById(providerId).get();
+			Provider provider = this.providerService.findEntityById(providerId).get();
 			Boolean security = provider.getManager().getId() == obtainManagerInSession().getId();
+
 			if (security) {
-				this.orderService.saveOrder(order);
+				this.orderService.saveEntity(order);
 				returnView = "redirect:/orders/" + order.getId();
 			} else {
-				model.addAttribute("message", "Se esta intentando crear un pedido con un proveedor al que el manager actual no está asociado");
+				model.addAttribute("message",
+						"Se esta intentando crear un pedido con un proveedor al que el manager actual no está asociado");
 				returnView = "redirect:/oups";
 			}
 
@@ -97,9 +98,8 @@ public class OrderController {
 	// listado de providers
 	@GetMapping(value = "/providers/listAvailable")
 	public String listAvailableProviders(ModelMap modelMap) {
-		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Iterable<Provider> providerList = providerService.findProvidersByManagerId(manager.getId());
+		Iterable<Provider> providerList = providerService.findProvidersByManagerId(obtainManagerInSession().getId());
 		modelMap.addAttribute("providers", providerList);
 
 		return "/orders/providers/providerList";
@@ -108,9 +108,7 @@ public class OrderController {
 	// listado de orders
 	@GetMapping(value = "/list")
 	public String listOrders(ModelMap modelMap) {
-		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
-
-		Iterable<Order> orderList = orderService.findAllOrdersByManagerId(manager.getId());
+		Iterable<Order> orderList = orderService.findAllOrdersByManagerId(obtainManagerInSession().getId());
 		modelMap.addAttribute("orders", orderList);
 
 		return "/orders/orderList";
@@ -118,9 +116,7 @@ public class OrderController {
 
 	// obtencion del Manager que esta ahora mismo en sesion
 	private Manager obtainManagerInSession() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User user = (User) authentication.getPrincipal();
-		Manager manager = this.managerService.findManagerByUsername(user.getUsername()).get();
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		return manager;
 
 	}
