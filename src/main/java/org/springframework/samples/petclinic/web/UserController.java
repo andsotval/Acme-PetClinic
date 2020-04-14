@@ -18,12 +18,10 @@ package org.springframework.samples.petclinic.web;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.samples.petclinic.model.Authorities;
 import org.springframework.samples.petclinic.model.Manager;
 import org.springframework.samples.petclinic.model.Owner;
@@ -96,12 +94,10 @@ public class UserController {
 	}
 
 	@PostMapping(value = "/users/new")
-	public String processCreationForm(@RequestParam("role") String role, @Valid Person person, BindingResult result,
-		HttpServletResponse resp) {
-		if (result.hasErrors()) {
-			resp.setStatus(HttpStatus.BAD_REQUEST.value());
+	public String processCreationForm(@RequestParam("role") String role, @Valid Person person, BindingResult result) {
+		if (result.hasErrors())
 			return VIEWS_OWNER_CREATE_FORM;
-		}
+
 		// Creamos el usuario
 		User user = mapper.map(person, User.class);
 		User _user = userService.saveEntity(user);
@@ -119,10 +115,8 @@ public class UserController {
 		else if (role.equals("provider"))
 			createProvider(person, _user);
 
-		else {
-			resp.setStatus(HttpStatus.BAD_REQUEST.value());
+		else
 			return VIEWS_OWNER_CREATE_FORM;
-		}
 
 		return "redirect:/login";
 	}

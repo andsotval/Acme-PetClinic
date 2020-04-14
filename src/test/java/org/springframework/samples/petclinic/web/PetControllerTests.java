@@ -1,10 +1,11 @@
 
 package org.springframework.samples.petclinic.web;
 
+import java.util.Optional;
+
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.BDDMockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
@@ -16,23 +17,21 @@ import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
-import org.springframework.test.web.servlet.MockMvc;
 
 /**
  * Test class for the {@link PetController}
  *
  * @author Colin But
  */
-@WebMvcTest(value = PetController.class, includeFilters = @ComponentScan.Filter(value = PetTypeFormatter.class, type = FilterType.ASSIGNABLE_TYPE),
-	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
+@WebMvcTest(value = PetController.class,
+	includeFilters = @ComponentScan.Filter(value = PetTypeFormatter.class, type = FilterType.ASSIGNABLE_TYPE),
+	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
+	excludeAutoConfiguration = SecurityConfiguration.class)
 class PetControllerTests {
 
 	private static final int	TEST_OWNER_ID	= 1;
 
 	private static final int	TEST_PET_ID		= 1;
-
-	@Autowired
-	private PetController		petController;
 
 	@MockBean
 	private PetService			petService;
@@ -40,18 +39,26 @@ class PetControllerTests {
 	@MockBean
 	private OwnerService		ownerService;
 
-	@Autowired
-	private MockMvc				mockMvc;
-
 
 	@BeforeEach
 	void setup() {
 		PetType cat = new PetType();
 		cat.setId(3);
 		cat.setName("hamster");
-		BDDMockito.given(this.petService.findPetTypes()).willReturn(Lists.newArrayList(cat));
-		BDDMockito.given(this.ownerService.findOwnerById(PetControllerTests.TEST_OWNER_ID)).willReturn(new Owner());
-		BDDMockito.given(this.petService.findPetById(PetControllerTests.TEST_PET_ID).get()).willReturn(new Pet());
+
+		Owner george = new Owner();
+		george.setId(TEST_OWNER_ID);
+		george.setFirstName("George");
+		george.setLastName("Franklin");
+		george.setAddress("110 W. Liberty St.");
+		george.setCity("Madison");
+		george.setTelephone("6085551023");
+
+		Optional<Owner> owner = Optional.of(george);
+
+		BDDMockito.given(petService.findPetTypes()).willReturn(Lists.newArrayList(cat));
+		BDDMockito.given(ownerService.findEntityById(TEST_OWNER_ID)).willReturn(owner);
+		BDDMockito.given(petService.findEntityById(TEST_PET_ID).get()).willReturn(new Pet());
 	}
 
 	//	@WithMockUser(value = "spring")
@@ -93,7 +100,7 @@ class PetControllerTests {
 	//				.andExpect(status().isOk()).andExpect(model().attributeExists("pet"))
 	//				.andExpect(view().name("pets/createOrUpdatePetForm"));
 	//	}
-	//    
+	//
 	//    @WithMockUser(value = "spring")
 	//	@Test
 	//	void testProcessUpdateFormSuccess() throws Exception {
@@ -105,7 +112,7 @@ class PetControllerTests {
 	//				.andExpect(status().is3xxRedirection())
 	//				.andExpect(view().name("redirect:/owners/{ownerId}"));
 	//	}
-	//    
+	//
 	//    @WithMockUser(value = "spring")
 	//	@Test
 	//	void testProcessUpdateFormHasErrors() throws Exception {

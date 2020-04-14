@@ -1,11 +1,9 @@
 
 package org.springframework.samples.petclinic.web;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.samples.petclinic.model.Stay;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.service.StayService;
@@ -117,21 +115,12 @@ public class StayController {
 
 	@PostMapping(path = "/save/{stayId}")
 	public String updateStay(@PathVariable("stayId") final int stayId, @Valid final Stay entity,
-		final BindingResult result, final ModelMap modelMap, HttpServletResponse resp) {
-		// HttpServletResponse resp esto hay que meterlo en los metodos que queramos modificar la respuesta http
+		final BindingResult result, final ModelMap modelMap) {
 
-		// se modifica como vemos en la siguiente linea
-		// aqui teneis un ejemplo de como se mete el codigo 400, que significa que algun parametro esta mal
-		resp.setStatus(HttpStatus.BAD_REQUEST.value());
 		String view = StayController.VIEWS_STAY_CREATE_OR_UPDATE_FORM;
 
-		if (!stayService.findEntityById(stayId).isPresent()) {
-			// este por ejemplo es que no ha encontrado el stay a modificar
-			resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-			// entonces por cojones hace falta el redirect
-			// y el codigo de respuesta http devuelto siempre en este caso es el 302
+		if (!stayService.findEntityById(stayId).isPresent())
 			return "redirect:/oups";
-		}
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -157,14 +146,9 @@ public class StayController {
 		} else {
 			stayService.saveEntity(stay);
 			modelMap.addAttribute("message", "Stay succesfully updated");
-			view = listAllAccepted(modelMap);
-			// este es el correcto OK -> 200 yes
-			resp.setStatus(HttpStatus.OK.value());
+			return listAllAccepted(modelMap);
 		}
 
-		// IMPORTANTE: intentar no hacer nunca un redirect, si es posible evitarlo como en este caso, que antes había
-		// uno y ahora no lo hay.
-		// es decir, si el redirect, es a un metodo de este mismo controlador, llamar directamente al metodo
 		return view;
 	}
 

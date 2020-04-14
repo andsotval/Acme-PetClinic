@@ -68,7 +68,7 @@ class VetControllerTests {
 		james.setTelephone("6085551023");
 
 		Optional<Vet> opt = Optional.of(james);
-		BDDMockito.given(vetService.findById(TEST_VET_ID)).willReturn(opt);
+		BDDMockito.given(vetService.findEntityById(TEST_VET_ID)).willReturn(opt);
 
 		Vet helen = new Vet();
 		helen.setFirstName("Helen");
@@ -82,7 +82,7 @@ class VetControllerTests {
 		radiology.setId(1);
 		radiology.setName("radiology");
 		james.addSpecialty(radiology);
-		BDDMockito.given(vetService.findVets()).willReturn(Lists.newArrayList(james, helen));
+		BDDMockito.given(vetService.findAllEntities()).willReturn(Lists.newArrayList(james, helen));
 
 		User user = new User();
 		user.setEnabled(true);
@@ -101,8 +101,7 @@ class VetControllerTests {
 		pepe.setCity("Madison");
 		pepe.setTelephone("6085551023");
 
-		Optional<Manager> manager = Optional.of(pepe);
-		BDDMockito.given(managerService.findManagerByUsername("pepito")).willReturn(manager);
+		BDDMockito.given(managerService.findPersonByUsername("pepito")).willReturn(pepe);
 
 		Clinic clinic = new Clinic();
 		clinic.setId(1);
@@ -118,9 +117,7 @@ class VetControllerTests {
 			.andExpect(model().attributeExists("vets2")).andExpect(view().name("vets/vetsAvailable"));
 	}
 
-	@WithMockUser(value = "pepito", authorities = {
-		"manager"
-	})
+	@WithMockUser(value = "pepito")
 	@Test
 	void testAcceptVet() throws Exception {
 		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET_ID)).andExpect(status().isFound())

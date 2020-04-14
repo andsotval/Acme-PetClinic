@@ -83,7 +83,7 @@ public class PetController {
 	@GetMapping(value = "/new/{ownerId}")
 	public String newPet(@PathVariable("ownerId") int ownerId, final ModelMap model) {
 		Pet pet = new Pet();
-		Owner owner = ownerService.findOwnerById(ownerId);
+		Owner owner = ownerService.findEntityById(ownerId).get();
 		owner.addPet(pet);
 		model.addAttribute("pet", pet);
 		return VIEWS_PETS_CREATE_OR_UPDATE_FORM;

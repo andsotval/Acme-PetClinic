@@ -13,7 +13,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
-import org.springframework.samples.petclinic.model.Pet;
+import org.springframework.samples.petclinic.model.Authorities;
+import org.springframework.samples.petclinic.model.Clinic;
+import org.springframework.samples.petclinic.model.User;
+import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.VetService;
@@ -30,12 +33,16 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
  *
  * @author Colin But
  */
-@WebMvcTest(controllers = VisitController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
+@WebMvcTest(controllers = VisitController.class,
+	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
+	excludeAutoConfiguration = SecurityConfiguration.class)
 class VisitControllerTests {
 
-	private static final int	TEST_PET_ID		= 1;
+	private static final int	TEST_VET_ID		= 1;
 
 	private static final int	TEST_VISIT_ID	= 1;
+
+	private static final int	TEST_CLINIC_ID	= 1;
 
 	@MockBean
 	private VisitService		visitService;
@@ -43,61 +50,11 @@ class VisitControllerTests {
 	@MockBean
 	private VetService			vetService;
 
-
-	//listAllPending (todas las visits devueltas tienen que tener isAcepted a null)
-	@WithMockUser(value = "spring")
-	@Test
-	void testShowVisitsPending() throws Exception {
-		this.mockMvc.perform(MockMvcRequestBuilders.get("/visits/listAllPending")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("visits"))
-			.andExpect(MockMvcResultMatchers.view().name("visits/list"));
-	}
-
-	//listAllAccepted (todas las visits devueltas tienen que tener isAcepted a true)
-	@WithMockUser(value = "spring")
-	@Test
-	void testShowVisitsAccept() throws Exception {
-		this.mockMvc.perform(MockMvcRequestBuilders.get("/visits/listAllAccepted")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("visits"))
-			.andExpect(MockMvcResultMatchers.view().name("visits/list"));
-	}
-
-	//acceptVisit (pasarle una visit con isAccepted a null y te la actualice a true)
-	@WithMockUser(value = "spring")
-	@Test
-	void testAcceptVisit() throws Exception {
-		this.mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", VisitControllerTests.TEST_VISIT_ID)).andExpect(MockMvcResultMatchers.status().isFound()).andExpect(MockMvcResultMatchers.view().name("redirect:/visits/listAllAccepted"));
-	}
-
-	//cancelVisit (pasarle una visit con isAccepted a null y te la actualice a false)
-	@WithMockUser(value = "spring")
-	@Test
-	void testCancelVisit() throws Exception {
-		this.mockMvc.perform(MockMvcRequestBuilders.get("/visits/cancel/{visitId}", VisitControllerTests.TEST_VISIT_ID)).andExpect(MockMvcResultMatchers.status().isFound()).andExpect(MockMvcResultMatchers.view().name("redirect:/visits/listAllAccepted"));
-	}
-
-	//changeDateVisit (la visit que entra es la misma que sale)
-	@WithMockUser(value = "spring")
-	@Test
-	void testChangeDateVisit() throws Exception {
-		this.mockMvc.perform(MockMvcRequestBuilders.get("/visits/changeDate/{visitId}", VisitControllerTests.TEST_VISIT_ID)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("/visits/createOrUpdateVisitForm"));
-	}
-
-	//updateVisit (actualizar parametros (startDate, finishDate y description) y comprobar que se ha guardado bien)
-	//date tiene que ser mínimo, dentro de 2 dias
-	@WithMockUser(value = "spring")
-	@Test
-	void testVisitSuccesfull() throws Exception {
-		this.mockMvc
-			.perform(
-				MockMvcRequestBuilders.post("/visits/save/{visitId}", VisitControllerTests.TEST_VISIT_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("description", "Description").param("startDate", "2020-06-09").param("endDate", "2020-07-09"))
-			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("/visits/createOrUpdateVisitForm"));
-	}
-
-
 	@MockBean
-	private PetService	clinicService;
+	private PetService			petService;
 
 	@Autowired
-	private MockMvc		mockMvc;
+	private MockMvc				mockMvc;
 
 
 	@BeforeEach
@@ -105,17 +62,100 @@ class VisitControllerTests {
 
 		LocalDate actualDate = LocalDate.now();
 
-		Visit visit = new Visit();
+		Clinic clinic = new Clinic();
+		clinic.setId(TEST_CLINIC_ID);
 
+		Visit visit = new Visit();
 		visit.setDescription("Descripcion");
 		visit.setDate(actualDate);
 		visit.setIsAccepted(null);
+		visit.setClinic(clinic);
 
 		Optional<Visit> optionalStay = Optional.of(visit);
 
-		BDDMockito.given(this.visitService.findById(VisitControllerTests.TEST_VISIT_ID)).willReturn(optionalStay);
+		BDDMockito.given(visitService.findEntityById(VisitControllerTests.TEST_VISIT_ID)).willReturn(optionalStay);
 
-		BDDMockito.given(this.clinicService.findPetById(VisitControllerTests.TEST_PET_ID).get()).willReturn(new Pet());
+		User user = new User();
+		user.setEnabled(true);
+		user.setUsername("pepito");
+		user.setPassword("pepito");
+
+		Authorities authority = new Authorities();
+		authority.setAuthority("Vet");
+		authority.setUsername("pepito");
+		Vet pepe = new Vet();
+		pepe.setUser(user);
+		pepe.setId(TEST_VET_ID);
+		pepe.setFirstName("Pepe");
+		pepe.setLastName("Leary");
+		pepe.setAddress("110 W. Liberty St.");
+		pepe.setCity("Madison");
+		pepe.setTelephone("6085551023");
+		pepe.setClinic(clinic);
+
+		BDDMockito.given(vetService.findByVetByUsername("pepito")).willReturn(pepe);
+
+		//		BDDMockito.given(petService.findEntityById(VisitControllerTests.TEST_PET_ID).get()).willReturn(new Pet());
+	}
+
+	//listAllPending (todas las visits devueltas tienen que tener isAcepted a null)
+	@WithMockUser(value = "spring")
+	@Test
+	void testShowVisitsPending() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listAllPending"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("visits"))
+			.andExpect(MockMvcResultMatchers.view().name("visits/list"));
+	}
+
+	//listAllAccepted (todas las visits devueltas tienen que tener isAcepted a true)
+	@WithMockUser(value = "spring")
+	@Test
+	void testShowVisitsAccept() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listAllAccepted"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("visits"))
+			.andExpect(MockMvcResultMatchers.view().name("visits/list"));
+	}
+
+	//acceptVisit (pasarle una visit con isAccepted a null y te la actualice a true)
+	@WithMockUser(value = "pepito")
+	@Test
+	void testAcceptVisit() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", VisitControllerTests.TEST_VISIT_ID))
+			.andExpect(MockMvcResultMatchers.status().isFound())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/visits/listAllAccepted"));
+	}
+
+	//cancelVisit (pasarle una visit con isAccepted a null y te la actualice a false)
+	@WithMockUser(value = "pepito")
+	@Test
+	void testCancelVisit() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/cancel/{visitId}", VisitControllerTests.TEST_VISIT_ID))
+			.andExpect(MockMvcResultMatchers.status().isFound())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/visits/listAllAccepted"));
+	}
+
+	//changeDateVisit (la visit que entra es la misma que sale)
+	@WithMockUser(value = "spring")
+	@Test
+	void testChangeDateVisit() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/changeDate/{visitId}", VisitControllerTests.TEST_VISIT_ID))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("/visits/createOrUpdateVisitForm"));
+	}
+
+	//updateVisit (actualizar parametros (startDate, finishDate y description) y comprobar que se ha guardado bien)
+	//date tiene que ser mínimo, dentro de 2 dias
+	@WithMockUser(value = "pepito")
+	@Test
+	void testVisitSuccesfull() throws Exception {
+		mockMvc
+			.perform(MockMvcRequestBuilders.post("/visits/save/{visitId}", VisitControllerTests.TEST_VISIT_ID)
+				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("description", "Description")
+				.param("date", "2020/06/09"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("visits/list"));
 	}
 
 	//	@WithMockUser(value = "spring")

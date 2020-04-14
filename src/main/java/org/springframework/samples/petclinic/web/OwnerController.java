@@ -111,7 +111,7 @@ public class OwnerController {
 
 	@GetMapping(value = "/owners/{ownerId}/edit")
 	public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
-		Owner owner = ownerService.findOwnerById(ownerId);
+		Owner owner = ownerService.findEntityById(ownerId).get();
 		model.addAttribute(owner);
 		return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 	}
@@ -138,9 +138,8 @@ public class OwnerController {
 	@GetMapping("/owners/{ownerId}")
 	public ModelAndView showOwner(@PathVariable("ownerId") int ownerId) {
 		ModelAndView mav = new ModelAndView("owners/ownerDetails");
-		mav.addObject(ownerService.findOwnerById(ownerId));
+		mav.addObject(ownerService.findEntityById(ownerId).get());
 		return mav;
 	}
-	
 
 }

@@ -24,11 +24,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PetRepository extends BaseRepository<Pet> {
 
-	/**
-	 * Retrieve all <code>PetType</code>s from the data store.
-	 *
-	 * @return a <code>Collection</code> of <code>PetType</code>s
-	 */
 	@Query("SELECT pt FROM PetType pt")
 	Iterable<PetType> findPetTypes();
 

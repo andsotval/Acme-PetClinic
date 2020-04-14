@@ -62,7 +62,7 @@ class ProviderControllerTests {
 		james.setTelephone("6085551023");
 
 		Optional<Provider> opt = Optional.of(james);
-		BDDMockito.given(providerService.findProviderById(TEST_PROVIDER_ID)).willReturn(opt);
+		BDDMockito.given(providerService.findEntityById(TEST_PROVIDER_ID)).willReturn(opt);
 
 		Provider helen = new Provider();
 		helen.setFirstName("Helen");
@@ -91,8 +91,7 @@ class ProviderControllerTests {
 		pepe.setCity("Madison");
 		pepe.setTelephone("6085551023");
 
-		Optional<Manager> manager = Optional.of(pepe);
-		BDDMockito.given(managerService.findManagerByUsername("pepito")).willReturn(manager);
+		BDDMockito.given(managerService.findPersonByUsername("pepito")).willReturn(pepe);
 
 	}
 

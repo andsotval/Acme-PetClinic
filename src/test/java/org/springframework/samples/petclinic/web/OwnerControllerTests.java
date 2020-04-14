@@ -1,6 +1,8 @@
 
 package org.springframework.samples.petclinic.web;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,9 @@ import org.springframework.test.web.servlet.MockMvc;
  * @author Colin But
  */
 
-@WebMvcTest(controllers = OwnerController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
+@WebMvcTest(controllers = OwnerController.class,
+	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
+	excludeAutoConfiguration = SecurityConfiguration.class)
 class OwnerControllerTests {
 
 	private static final int	TEST_OWNER_ID	= 1;
@@ -31,7 +35,7 @@ class OwnerControllerTests {
 	private OwnerController		ownerController;
 
 	@MockBean
-	private OwnerService		clinicService;
+	private OwnerService		ownerService;
 
 	@MockBean
 	private UserService			userService;
@@ -42,20 +46,20 @@ class OwnerControllerTests {
 	@Autowired
 	private MockMvc				mockMvc;
 
-	private Owner				george;
-
 
 	@BeforeEach
 	void setup() {
 
-		this.george = new Owner();
-		this.george.setId(OwnerControllerTests.TEST_OWNER_ID);
-		this.george.setFirstName("George");
-		this.george.setLastName("Franklin");
-		this.george.setAddress("110 W. Liberty St.");
-		this.george.setCity("Madison");
-		this.george.setTelephone("6085551023");
-		BDDMockito.given(this.clinicService.findOwnerById(OwnerControllerTests.TEST_OWNER_ID)).willReturn(this.george);
+		Owner george = new Owner();
+		george.setId(OwnerControllerTests.TEST_OWNER_ID);
+		george.setFirstName("George");
+		george.setLastName("Franklin");
+		george.setAddress("110 W. Liberty St.");
+		george.setCity("Madison");
+		george.setTelephone("6085551023");
+
+		Optional<Owner> owner = Optional.of(george);
+		BDDMockito.given(ownerService.findEntityById(OwnerControllerTests.TEST_OWNER_ID)).willReturn(owner);
 
 	}
 
