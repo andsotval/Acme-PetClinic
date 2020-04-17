@@ -32,16 +32,10 @@ import lombok.EqualsAndHashCode;
 @Table(name = "visit")
 public class Visit extends BaseEntity {
 
-	/**
-	 * Holds value of property date.
-	 */
 	@Column(name = "visit_date")
 	@DateTimeFormat(pattern = "yyyy/MM/dd")
 	private LocalDate	date;
 
-	/**
-	 * Holds value of property description.
-	 */
 	@NotEmpty
 	@Column(name = "description")
 	private String		description;
@@ -62,7 +56,7 @@ public class Visit extends BaseEntity {
 	 * Creates a new instance of Visit for the current date
 	 */
 	public Visit() {
-		this.date = LocalDate.now();
+		date = LocalDate.now();
 	}
 
 }

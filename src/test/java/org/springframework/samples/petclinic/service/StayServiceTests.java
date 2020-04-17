@@ -16,14 +16,11 @@
 
 package org.springframework.samples.petclinic.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.samples.petclinic.model.Stay;
 import org.springframework.stereotype.Service;
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
@@ -34,43 +31,18 @@ class StayServiceTests {
 
 	@Autowired
 	protected VetService	vetService;
-	
 
-
-	@Test
-	public void testCancelStayPositive() {
-		int id = 1;
-		Stay stay = this.stayService.findById(id).get();
-		this.stayService.cancelStay(stay);
-		stay = this.stayService.findById(stay.getId()).get();
-		assertEquals(false, stay.getIsAccepted());
-	}
-	
-	@Test
-	public void testCancelStayNegative() {
-		Stay stay = new Stay();
-		this.stayService.cancelStay(stay);
-		stay = this.stayService.findById(stay.getId()).get();
-		assertEquals(!false, stay.getIsAccepted());
-	}
-
-	@Test
-	public void testAcceptStay() {
-		int id = 1;
-		Stay stay = this.stayService.findById(id).get();
-		this.stayService.acceptStay(stay);
-		stay = this.stayService.findById(stay.getId()).get();
-		assert stay.getIsAccepted() == true;
-	}
 
 	@Test
 	public void testFindAllPendingByVetPositive() {
-		this.vetService.findVets().forEach(v -> this.stayService.findAllPendingByVet(v).forEach(visit -> Assert.assertEquals(visit.getIsAccepted(), null)));
+		vetService.findAllEntities().forEach(
+			v -> stayService.findAllPendingByVet(v).forEach(stay -> Assert.assertEquals(stay.getIsAccepted(), null)));
 	}
 
 	@Test
 	public void testFindAllAcceptedByVet() {
-		this.vetService.findVets().forEach(v -> this.stayService.findAllAcceptedByVet(v).forEach(visit -> Assert.assertEquals(visit.getIsAccepted(), true)));
+		vetService.findAllEntities().forEach(
+			v -> stayService.findAllAcceptedByVet(v).forEach(stay -> Assert.assertEquals(stay.getIsAccepted(), true)));
 
 	}
 
