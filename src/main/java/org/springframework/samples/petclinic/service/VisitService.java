@@ -2,8 +2,10 @@
 package org.springframework.samples.petclinic.service;
 
 import java.time.LocalDate;
+import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.model.Stay;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.BaseRepository;
@@ -33,6 +35,12 @@ public class VisitService extends BaseService<Visit> {
 	public Iterable<Visit> findAllAcceptedByVet(final Vet vet) {
 		LocalDate actualDate = LocalDate.now();
 		return visitRepository.findAllAcceptedByVet(actualDate, vet.getId());
+	}
+
+	public void deleteByPetId(Integer id) {
+		Collection<Visit> visit = this.visitRepository.findByPetId(id);
+		visitRepository.deleteAll(visit);
+		
 	}
 
 }

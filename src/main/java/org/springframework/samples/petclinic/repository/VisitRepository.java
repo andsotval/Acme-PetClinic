@@ -32,7 +32,7 @@ public interface VisitRepository extends BaseRepository<Visit> {
 	@Query("SELECT v FROM Visit v INNER JOIN Clinic c ON c.id=v.clinic.id WHERE v.isAccepted = true AND ?2 IN (SELECT v2.id FROM Vet v2 WHERE v2.clinic.id=c.id) AND v.date > ?1 ")
 	Iterable<Visit> findAllAcceptedByVet(LocalDate actualDate, Integer vetId);
 	
-	@Query("SELECT v FROM Visit v WHERE v.pet = ?1 ")
+	@Query("SELECT v FROM Visit v WHERE v.pet.id = ?1 ")
 	Collection<Visit> findByPetId(int petId);
 
 }
