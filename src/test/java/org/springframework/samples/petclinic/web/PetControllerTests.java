@@ -16,6 +16,7 @@ import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.PetService;
+import org.springframework.samples.petclinic.service.PetTypeService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 
 /**
@@ -37,6 +38,9 @@ class PetControllerTests {
 	private PetService			petService;
 
 	@MockBean
+	private PetTypeService		petTypeService;
+
+	@MockBean
 	private OwnerService		ownerService;
 
 
@@ -56,7 +60,7 @@ class PetControllerTests {
 
 		Optional<Owner> owner = Optional.of(george);
 
-		BDDMockito.given(petService.findPetTypes()).willReturn(Lists.newArrayList(cat));
+		BDDMockito.given(petTypeService.findAvailable()).willReturn(Lists.newArrayList(cat));
 		BDDMockito.given(ownerService.findEntityById(TEST_OWNER_ID)).willReturn(owner);
 		BDDMockito.given(petService.findEntityById(TEST_PET_ID).get()).willReturn(new Pet());
 	}

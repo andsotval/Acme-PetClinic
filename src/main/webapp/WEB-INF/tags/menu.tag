@@ -33,19 +33,24 @@
 					<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
 					<span>Find owners</span>
 				</petclinic:menuItem>
+
+				<sec:authorize access="hasAuthority('admin')">
+				<petclinic:menuItem active="${name eq 'pettypes'}" url="/pettype/list"
+					title="pettypes">
+					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+					<span>Pet types</span>
+				</petclinic:menuItem>
+				</sec:authorize>
 				
 				<sec:authorize access="hasAuthority('owner')">
-				
 				<petclinic:menuItem active="${name eq 'pets'}" url="/pets/listMyPets"
 					title="pets">
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>My Pets</span>
 				</petclinic:menuItem>
-        
 				</sec:authorize>
 				
 				<sec:authorize access="hasAuthority('manager')">
-				
 				<petclinic:menuItem active="${name eq 'vets'}" url="/vets/vetsAvailable"
 					title="veterinarians">
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
@@ -63,7 +68,6 @@
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>Orders</span>
 				</petclinic:menuItem>
-        
 				</sec:authorize>
 				
 				<sec:authorize access="hasAuthority('veterinarian')">
@@ -73,15 +77,11 @@
 					<span>Visits</span>
 				</petclinic:menuItem>
 				
-				</sec:authorize>
-
-				<sec:authorize access="hasAuthority('veterinarian')">
 				<petclinic:menuItem active="${name eq 'stays'}" url="/stays/listAllPending"
 					title="stays">
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>Stays</span>
 				</petclinic:menuItem>
-				
 				</sec:authorize>
 
 				<petclinic:menuItem active="${name eq 'error'}" url="/oups"

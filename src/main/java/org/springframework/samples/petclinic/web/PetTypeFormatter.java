@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.samples.petclinic.web;
 
 import java.text.ParseException;
-import java.util.Collection;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.Formatter;
 import org.springframework.samples.petclinic.model.PetType;
-import org.springframework.samples.petclinic.service.PetService;
-import org.springframework.samples.petclinic.service.VetService;
+import org.springframework.samples.petclinic.service.PetTypeService;
 import org.springframework.stereotype.Component;
 
 /**
@@ -44,11 +43,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class PetTypeFormatter implements Formatter<PetType> {
 
-	private final PetService peService;
+	private final PetTypeService service;
+
 
 	@Autowired
-	public PetTypeFormatter(PetService petService) {
-		this.peService = petService;
+	public PetTypeFormatter(PetTypeService petService) {
+		service = petService;
 	}
 
 	@Override
@@ -58,12 +58,10 @@ public class PetTypeFormatter implements Formatter<PetType> {
 
 	@Override
 	public PetType parse(String text, Locale locale) throws ParseException {
-		Iterable<PetType> findPetTypes = this.peService.findPetTypes();
-		for (PetType type : findPetTypes) {
-			if (type.getName().equals(text)) {
+		Iterable<PetType> findPetTypes = service.findAvailable();
+		for (PetType type : findPetTypes)
+			if (type.getName().equals(text))
 				return type;
-			}
-		}
 		throw new ParseException("type not found: " + text, 0);
 	}
 
