@@ -47,7 +47,7 @@
                    <!--! <input type="hidden" name="clinic" value="${visit.clinic.id}"/>
                     <input type="hidden" name="pet" value="${visit.pet.id}"/>-->
                      <c:if test="${visit.id == null}">
-                    	<input type="hidden" name="clinic" value="${visit.clinic.id}"/>
+                    	<input type="hidden" name="clinic" value="${clinicId}"/>
                     	<input type="hidden" name="pet" value="${visit.pet.id}"/>
 						<button class="btn btn-default" type="submit" formaction="/visits/save">Save Visit</button> 
                      </c:if>

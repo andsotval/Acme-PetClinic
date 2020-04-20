@@ -58,11 +58,11 @@
         <tr>
             <td>
                 <c:if test="${accepted == false}"> 
-					<a class="btn btn-default" href='<spring:url value="/stays/listAllAccepted" htmlEscape="true"/>'>List my accepted visits</a>
+					<a class="btn btn-default" href='<spring:url value="/stays/listAllAccepted" htmlEscape="true"/>'>List my accepted stays</a>
 				</c:if>
 	
 				<c:if test="${accepted == true}"> 
-					<a class="btn btn-default" href='<spring:url value="/stays/listAllPending" htmlEscape="true"/>'>List my pending visits</a>
+					<a class="btn btn-default" href='<spring:url value="/stays/listAllPending" htmlEscape="true"/>'>List my pending stays</a>
 				</c:if>
             </td>            
         </tr>

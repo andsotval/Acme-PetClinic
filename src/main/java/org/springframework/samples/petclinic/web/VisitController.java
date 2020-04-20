@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
@@ -232,13 +233,6 @@ public class VisitController {
 	public String updateNewVisit(@Valid final Visit entity, final BindingResult result, final ModelMap modelMap) {
 
 		String view = "redirect:/pets/newVisit/" + entity.getPet().getId();
-
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		User user = (User) authentication.getPrincipal();
-
-		Owner owner = this.personService.findPersonByUsername(user.getUsername());
-		entity.setClinic(owner.getClinic());
 
 		if (result.hasErrors()) {
 			modelMap.addAttribute("visit", entity);

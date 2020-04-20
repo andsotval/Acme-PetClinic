@@ -143,6 +143,7 @@ public class PetController {
 		visit.setClinic(pet.getOwner().getClinic());
 		visit.setPet(pet);
 		model.addAttribute("visit", visit);
+		model.addAttribute("clinicId", pet.getOwner().getClinic().getId());
 		return "visits/createOrUpdateVisitForm";
 	}
 	
