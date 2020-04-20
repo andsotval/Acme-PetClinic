@@ -2,6 +2,7 @@
 package org.springframework.samples.petclinic.service;
 
 import java.time.LocalDate;
+import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Stay;
@@ -34,5 +35,12 @@ public class StayService extends BaseService<Stay> {
 		LocalDate actualDate = LocalDate.now();
 		return stayRepository.findAllAcceptedByVet(actualDate, vet.getId());
 	}
+
+	public void deleteByPetId(Integer id) {
+		Collection<Stay> stay = this.stayRepository.findByPetId(id);
+		stayRepository.deleteAll(stay);
+		
+	}
+
 
 }

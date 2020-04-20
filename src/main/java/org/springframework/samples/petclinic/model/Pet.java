@@ -50,11 +50,11 @@ public class Pet extends NamedEntity {
 	@JoinColumn(name = "owner_id", nullable = false)
 	private Owner		owner;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.LAZY)
-	private Set<Stay>	stay;
+	//@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.LAZY)
+	//private Set<Stay>	stay;
 
-	//	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.LAZY)
-	//	private Set<Visit>	visits;
+	//@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.LAZY)
+	//private Set<Visit>	visits;
 	//
 	//
 	//	protected Set<Visit> getVisitsInternal() {
