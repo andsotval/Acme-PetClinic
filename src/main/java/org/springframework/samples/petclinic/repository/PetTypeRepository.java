@@ -16,14 +16,16 @@
 
 package org.springframework.samples.petclinic.repository;
 
+import java.util.Collection;
+
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.samples.petclinic.model.Pet;
+import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PetRepository extends BaseRepository<Pet> {
+public interface PetTypeRepository extends BaseRepository<PetType> {
 
-	@Query("SELECT p FROM Pet p WHERE p.owner.id = ?1")
-	Iterable<Pet> findPetsByOwnerId(Integer id);
+	@Query("SELECT pt FROM PetType pt WHERE pt.available = true")
+	Collection<PetType> findAvailable();
 
 }

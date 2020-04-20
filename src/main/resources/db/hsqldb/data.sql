@@ -167,12 +167,12 @@ INSERT INTO vet_specialties VALUES (9, 9);
 
 -- PET_TYPE
 
-INSERT INTO pet_type VALUES (1, 'cat');
-INSERT INTO pet_type VALUES (2, 'dog');
-INSERT INTO pet_type VALUES (3, 'lizard');
-INSERT INTO pet_type VALUES (4, 'snake');
-INSERT INTO pet_type VALUES (5, 'bird');
-INSERT INTO pet_type VALUES (6, 'hamster');
+INSERT INTO pet_type VALUES (1, 'cat', true);
+INSERT INTO pet_type VALUES (2, 'dog', true);
+INSERT INTO pet_type VALUES (3, 'lizard', true);
+INSERT INTO pet_type VALUES (4, 'snake', true);
+INSERT INTO pet_type VALUES (5, 'bird', true);
+INSERT INTO pet_type VALUES (6, 'hamster', true);
 
 -- OWNERS
 
