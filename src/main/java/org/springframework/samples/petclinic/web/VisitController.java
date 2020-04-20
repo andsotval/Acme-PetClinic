@@ -7,8 +7,10 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
+import org.springframework.samples.petclinic.service.PersonService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.samples.petclinic.service.VisitService;
 import org.springframework.security.core.Authentication;
@@ -31,14 +33,17 @@ public class VisitController {
 	private VisitService		visitService;
 
 	private VetService			vetService;
+	
+	private PersonService<Owner> 		personService;
 
 	private static final String	VIEWS_VISIT_CREATE_OR_UPDATE_FORM	= "/visits/createOrUpdateVisitForm";
 
 
 	@Autowired
-	public VisitController(VisitService visitService, VetService vetService) {
+	public VisitController(VisitService visitService, VetService vetService, PersonService<Owner> personService) {
 		this.visitService = visitService;
 		this.vetService = vetService;
+		this.personService = personService;
 	}
 
 	@InitBinder
@@ -216,6 +221,32 @@ public class VisitController {
 			modelMap.addAttribute("message", "Visit succesfully updated");
 			return listAllAccepted(modelMap);
 
+		}
+
+		return view;
+	}
+	
+	@PostMapping(path = "/save")
+	public String updateNewVisit(@Valid final Visit entity,
+		final BindingResult result, final ModelMap modelMap) {
+
+		String view = "pets/listMyPets";
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		User user = (User) authentication.getPrincipal();
+		
+		Owner owner = (Owner) this.personService.findPersonByUsername(user.getUsername());
+		entity.setClinic(owner.getClinic());
+
+		if (result.hasErrors())
+			modelMap.addAttribute("visit", entity);
+		else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
+			result.rejectValue("date", "startLaterFinish", "Debe ser en futuro");
+			modelMap.addAttribute("visit", entity);
+		} else {
+			visitService.saveEntity(entity);
+			modelMap.addAttribute("message", "Visit succesfully updated");
 		}
 
 		return view;

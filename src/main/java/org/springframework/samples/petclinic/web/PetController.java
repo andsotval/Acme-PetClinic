@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
+import org.springframework.samples.petclinic.model.Stay;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.PetService;
@@ -150,7 +151,17 @@ public class PetController {
 		visit.setClinic(pet.getOwner().getClinic());
 		visit.setPet(pet);
 		model.addAttribute("visit", visit);
-		return "pets/createVisitForm";
+		return "visits/createOrUpdateVisitForm";
+	}
+	
+	@GetMapping(value = "/newStay/{petId}")
+	public String newStay(@PathVariable("petId") int petId, final ModelMap model) {
+		Stay stay = new Stay();
+		Pet pet = petService.findEntityById(petId).get();
+		stay.setClinic(pet.getOwner().getClinic());
+		stay.setPet(pet);
+		model.addAttribute("stay", stay);
+		return "visits/createOrUpdateVisitForm";
 	}
 
 	// @ModelAttribute("types")
