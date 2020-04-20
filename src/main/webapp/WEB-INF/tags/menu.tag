@@ -83,6 +83,15 @@
 				</petclinic:menuItem>
 				
 				</sec:authorize>
+				
+				<sec:authorize access="hasAuthority('veterinarian')">
+				<petclinic:menuItem active="${name eq 'stays'}" url="/clinics/getDetail"
+					title="stays">
+					<span class="glyphicon glyphicon-flash" aria-hidden="true"></span>
+					<span>My Clinic</span>
+				</petclinic:menuItem>
+				
+				</sec:authorize>
 
 				<petclinic:menuItem active="${name eq 'error'}" url="/oups"
 					title="trigger a RuntimeException to see how it is handled">
