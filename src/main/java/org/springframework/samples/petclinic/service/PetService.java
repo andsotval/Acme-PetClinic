@@ -16,18 +16,11 @@
 
 package org.springframework.samples.petclinic.service;
 
-import java.util.Collection;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Pet;
-import org.springframework.samples.petclinic.model.PetType;
-import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.BaseRepository;
 import org.springframework.samples.petclinic.repository.PetRepository;
-import org.springframework.samples.petclinic.repository.VisitRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Mostly used as a facade for all Petclinic controllers Also a placeholder
@@ -38,30 +31,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PetService extends BaseService<Pet> {
 
-	private PetRepository	petRepository;
-
-	private VisitRepository	visitRepository;
+	private PetRepository petRepository;
 
 
 	@Autowired
-	public PetService(BaseRepository<Pet> repository, PetRepository petRepository, VisitRepository visitRepository) {
+	public PetService(BaseRepository<Pet> repository, PetRepository petRepository) {
 		super(repository);
 		this.petRepository = petRepository;
-		this.visitRepository = visitRepository;
-	}
-
-	@Transactional(readOnly = true)
-	public Iterable<PetType> findPetTypes() {
-		return petRepository.findPetTypes();
-	}
-
-	@Transactional
-	public void saveVisit(final Visit visit) throws DataAccessException {
-		visitRepository.save(visit);
-	}
-
-	public Collection<Visit> findVisitsByPetId(final int petId) {
-		return visitRepository.findByPetId(petId);
 	}
 
 	public Iterable<Pet> findPetsByOwnerId(Integer id) {

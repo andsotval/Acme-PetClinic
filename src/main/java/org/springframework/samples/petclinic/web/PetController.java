@@ -27,9 +27,8 @@ import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.PetService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.samples.petclinic.service.PetTypeService;
+import org.springframework.samples.petclinic.util.SessionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -45,32 +44,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/pets")
 public class PetController {
 
-	private static final String	VIEWS_PETS_CREATE_OR_UPDATE_FORM	= "pets/createOrUpdatePetForm";
+	private static final String		VIEWS_PETS_CREATE_OR_UPDATE_FORM	= "pets/createOrUpdatePetForm";
 
-	private final PetService	petService;
-	private final OwnerService	ownerService;
+	private final PetService		petService;
+	private final PetTypeService	petTypeService;
+	private final OwnerService		ownerService;
 
 
 	@Autowired
-	public PetController(final PetService petService, final OwnerService ownerService) {
+	public PetController(PetService petService, PetTypeService petTypeService, OwnerService ownerService) {
 		this.petService = petService;
+		this.petTypeService = petTypeService;
 		this.ownerService = ownerService;
 	}
 
 	@ModelAttribute("types")
 	public Iterable<PetType> populatePetTypes() {
-		return petService.findPetTypes();
+		return petTypeService.findAvailable();
 	}
 
 	@GetMapping(path = "/listMyPets")
 	public String listMyPets(final ModelMap modelMap) {
 		String view = "pets/list";
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		User user = (User) authentication.getPrincipal();
-
-		Owner owner = ownerService.findByOwnerByUsername(user.getUsername()).get();
+		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		Iterable<Pet> pets = petService.findPetsByOwnerId(owner.getId());
 
@@ -93,11 +90,7 @@ public class PetController {
 	public String savePet(@Valid final Pet pet, final BindingResult result, final ModelMap modelMap) {
 		String view = "pets/listMyPets";
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		User user = (User) authentication.getPrincipal();
-
-		Owner owner = ownerService.findByOwnerByUsername(user.getUsername()).get();
+		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		//esto hay que verlo
 		pet.setOwner(owner);
@@ -120,11 +113,7 @@ public class PetController {
 	public String cancelVisit(@PathVariable("petId") final int petId, final ModelMap modelMap) {
 		Pet pet = petService.findEntityById(petId).get();
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		User user = (User) authentication.getPrincipal();
-
-		Owner owner = ownerService.findByOwnerByUsername(user.getUsername()).get();
+		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		if (pet.getOwner().getId() == owner.getId())
 			petService.deleteEntity(pet);

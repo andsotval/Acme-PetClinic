@@ -19,34 +19,26 @@ package org.springframework.samples.petclinic.service;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.samples.petclinic.model.Owner;
+import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.repository.BaseRepository;
-import org.springframework.samples.petclinic.repository.OwnerRepository;
+import org.springframework.samples.petclinic.repository.PetTypeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Mostly used as a facade for all Petclinic controllers Also a placeholder
- * for @Transactional and @Cacheable annotations
- *
- * @author Michael Isvy
- */
 @Service
-public class OwnerService extends PersonService<Owner> {
+public class PetTypeService extends BaseService<PetType> {
 
-	private OwnerRepository ownerRepository;
+	private PetTypeRepository petTypeRepository;
 
 
 	@Autowired
-	public OwnerService(BaseRepository<Owner> repository, OwnerRepository ownerRepository) {
-		super(repository, Owner.class);
-		this.ownerRepository = ownerRepository;
+	public PetTypeService(BaseRepository<PetType> repository, PetTypeRepository petTypeRepository) {
+		super(repository);
+		this.petTypeRepository = petTypeRepository;
 	}
 
 	@Transactional(readOnly = true)
-	public Collection<Owner> findOwnerByLastName(final String lastName) throws DataAccessException {
-		return ownerRepository.findByLastName(lastName);
+	public Collection<PetType> findAvailable() {
+		return petTypeRepository.findAvailable();
 	}
-
 }

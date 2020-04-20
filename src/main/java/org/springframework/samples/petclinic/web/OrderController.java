@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @RequestMapping("/orders")
@@ -44,11 +43,11 @@ public class OrderController {
 	}
 
 	//inicio de creacion de Order
-	@GetMapping(value = "/new/{providerId}")
+	@GetMapping(path = "/new/{providerId}")
 	public String initCreationForm(@PathVariable("providerId") int providerId, ModelMap model) {
 
 		Order order = new Order();
-		order.setManager(obtainManagerInSession());
+		order.setManager(managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername()));
 		model.addAttribute("order", order);
 
 		Iterable<Product> product = productService.findProductsAvailableByProviderId(providerId);
@@ -58,8 +57,8 @@ public class OrderController {
 	}
 
 	//confirmacion de la creacion de una Order
-	@PostMapping(value = "/new/{providerId}")
-	public String processCreationForm(@Valid Order order, @PathVariable("providerId") int providerId,
+	@PostMapping(path = "/new/{providerId}")
+	public String processCreationForm(@PathVariable("providerId") int providerId, @Valid Order order,
 		BindingResult result, ModelMap model) {
 		String returnView;
 
@@ -67,7 +66,8 @@ public class OrderController {
 			return VIEWS_ORDERS_CREATE_OR_UPDATE_FORM;
 		else {
 			Provider provider = providerService.findEntityById(providerId).get();
-			Boolean security = provider.getManager().getId() == obtainManagerInSession().getId();
+			Boolean security = provider.getManager().getId() == managerService
+				.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername()).getId();
 
 			if (security) {
 				orderService.saveEntity(order);
@@ -84,27 +84,28 @@ public class OrderController {
 
 	//Order Details
 	@GetMapping("/{orderId}")
-	public ModelAndView showOrder(@PathVariable("orderId") int orderId, ModelMap modelMap) {
+	public String showOrder(@PathVariable("orderId") int orderId, ModelMap modelMap) {
 		Order order = orderService.findEntityById(orderId).get();
-		ModelAndView mav = new ModelAndView("orders/orderDetails");
+		String returnView = "orders/orderDetails";
 
-		if (order.getManager().getId() == obtainManagerInSession().getId()) {
+		if (order.getManager().getId() == managerService
+			.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername()).getId()) {
 			Provider orderProvider = order.getProduct().iterator().next().getProvider();
 			modelMap.addAttribute("orderProvider", orderProvider);
 
-			mav.addObject(order);
+			modelMap.addAttribute("order", order);
 		} else {
 			modelMap.addAttribute("message",
 				"Se esta intentando acceder a un pedido que no pertenece al manager actual");
-			mav.setViewName("redirect:/oups");
+			returnView = "redirect:/oups";
 		}
-		return mav;
+		return returnView;
 	}
 
 	//listado de providers
-	@GetMapping(value = "/providers/listAvailable")
+	@GetMapping(path = "/providers/listAvailable")
 	public String listAvailableProviders(ModelMap modelMap) {
-		Manager manager = obtainManagerInSession();
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		Iterable<Provider> providerList = providerService.findProvidersByManagerId(manager.getId());
 		modelMap.addAttribute("providers", providerList);
@@ -113,18 +114,14 @@ public class OrderController {
 	}
 
 	//listado de orders
-	@GetMapping(value = "/list")
+	@GetMapping(path = "/list")
 	public String listOrders(ModelMap modelMap) {
-		Manager manager = obtainManagerInSession();
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		Iterable<Order> orderList = orderService.findAllOrdersByManagerId(manager.getId());
 		modelMap.addAttribute("orders", orderList);
 
 		return "/orders/orderList";
-	}
-
-	private Manager obtainManagerInSession() {
-		return managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 	}
 
 }
