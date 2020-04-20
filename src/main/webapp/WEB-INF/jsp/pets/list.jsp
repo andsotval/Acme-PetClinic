@@ -25,7 +25,7 @@
                     <c:out value="${pet.name}"/>
                 </td>
                 <td>
-                    <c:out value="${pet.type}"/>
+                    <c:out value="${pet.type.name}"/>
                 </td>
                 <td>
                     <c:out value="${pet.birthDate} "/>

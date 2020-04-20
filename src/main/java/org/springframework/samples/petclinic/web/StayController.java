@@ -114,8 +114,8 @@ public class StayController {
 	}
 
 	@PostMapping(path = "/save/{stayId}")
-	public String updateStay(@PathVariable("stayId") final int stayId, @Valid final Stay entity,
-		final BindingResult result, final ModelMap modelMap) {
+	public String updateStay(@PathVariable("stayId") int stayId, @Valid Stay entity, BindingResult result,
+		ModelMap modelMap) {
 
 		String view = StayController.VIEWS_STAY_CREATE_OR_UPDATE_FORM;
 
