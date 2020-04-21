@@ -18,6 +18,7 @@ import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
+import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.samples.petclinic.service.VisitService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
@@ -48,6 +49,9 @@ class VisitControllerTests {
 
 	@MockBean
 	private VetService			vetService;
+
+	@MockBean
+	private OwnerService		ownerService;
 
 	@Autowired
 	private MockMvc				mockMvc;
