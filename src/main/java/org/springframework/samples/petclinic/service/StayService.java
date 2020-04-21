@@ -37,10 +37,14 @@ public class StayService extends BaseService<Stay> {
 	}
 
 	public void deleteByPetId(Integer id) {
-		Collection<Stay> stay = this.stayRepository.findByPetId(id);
+		Collection<Stay> stay = stayRepository.findByPetId(id);
 		stayRepository.deleteAll(stay);
-		
+
 	}
 
+	@Transactional(readOnly = true)
+	public Iterable<Stay> findAllStayByPet(final Integer petId) {
+		return stayRepository.findByPetId(petId);
+	}
 
 }
