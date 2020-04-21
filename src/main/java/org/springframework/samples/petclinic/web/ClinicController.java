@@ -28,14 +28,16 @@ public class ClinicController {
 	}
 
 	@GetMapping(path = "/owner")
-	public String initClinicView() {
+	public String initClinicView(ModelMap modelMap) {
 		Owner owner = obtainOwnerInSession();
-		String returnView = "redirect:/clinics/owner/";
+		String returnView;
+		modelMap.addAttribute("owner", owner);
 
 		if (owner.getClinic() == null)
-			returnView += "listAvailable";
+			returnView = listAvailable(modelMap);
 		else
-			returnView += owner.getClinic().getId();
+			//			returnView = "clinics/owner/" + owner.getClinic().getId();
+			returnView = showClinic(owner.getId(), modelMap);
 
 		return returnView;
 	}
@@ -60,7 +62,7 @@ public class ClinicController {
 		if (clinic != null) {
 			owner.setClinic(null);
 			ownerService.saveEntity(owner);
-			return "redirect:/clinics/owner";
+			return initClinicView(modelMap);
 		} else {
 			modelMap.addAttribute("message", "Este propietario no esta dado de alta en ninguna clínica");
 			return "redirect:/oups";
@@ -84,7 +86,7 @@ public class ClinicController {
 			owner.setClinic(clinic);
 			ownerService.saveEntity(owner);
 
-			returnView = "redirect:/clinics/owner";
+			returnView = initClinicView(modelMap);
 		} else {
 			modelMap.addAttribute("message",
 				"No es posible dar de alta al propietario a dicha clinica porque ya esta dado de alta a una clinica");

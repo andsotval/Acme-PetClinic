@@ -4,6 +4,7 @@ package org.springframework.samples.petclinic.web;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,7 +21,10 @@ import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.samples.petclinic.service.ManagerService;
 import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @WebMvcTest(controllers = ClinicController.class,
 	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
@@ -29,7 +33,7 @@ public class ClinicControllerTest {
 
 	private static final int	TEST_OWNER_ID_1		= 1;
 
-	private static final int	TEST_OWNER_ID_2		= 2;
+	//	private static final int	TEST_OWNER_ID_2		= 2;
 
 	private static final int	TEST_MANAGER_ID		= 1;
 
@@ -43,9 +47,6 @@ public class ClinicControllerTest {
 	private static Clinic		clinic2;
 	private static Clinic		clinic3;
 
-	@Autowired
-	private MockMvc				mockMvc;
-
 	@MockBean
 	private ClinicService		clinicService;
 
@@ -54,6 +55,9 @@ public class ClinicControllerTest {
 
 	@MockBean
 	private ManagerService		managerService;
+
+	@Autowired
+	private MockMvc				mockMvc;
 
 
 	@BeforeEach
@@ -153,7 +157,7 @@ public class ClinicControllerTest {
 		BDDMockito.given(clinicService.findClinicByManagerId(manager1.getId())).willReturn(clinic1);
 
 		Clinic clinic2 = new Clinic();
-		clinic2.setId(TEST_CLINIC_ID_1);
+		clinic2.setId(TEST_CLINIC_ID_2);
 		clinic2.setName("Canitas");
 		clinic2.setAddress("C/La mina, 8");
 		clinic2.setCity("Dos Hermanas");
@@ -167,7 +171,7 @@ public class ClinicControllerTest {
 		BDDMockito.given(clinicService.findClinicByManagerId(manager1.getId())).willReturn(clinic2);
 
 		Clinic clinic3 = new Clinic();
-		clinic3.setId(TEST_CLINIC_ID_1);
+		clinic3.setId(TEST_CLINIC_ID_3);
 		clinic3.setName("Canitas");
 		clinic3.setAddress("C/La mina, 8");
 		clinic3.setCity("Dos Hermanas");
@@ -181,15 +185,12 @@ public class ClinicControllerTest {
 		BDDMockito.given(clinicService.findClinicByManagerId(manager1.getId())).willReturn(clinic3);
 	}
 
-	//	@WithMockUser(value = "juan")
-	//	@Test
-	//	void testInitClinicView() throws Exception {
-	//		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner"))
-	//			.andExpect(MockMvcResultMatchers.view().name("redirect:/clinics/owner/listAvailable"));
-	//
-	//		mockMvc.perform(MockMvcRequestBuilders.get("clinics/owner")).andExpect(MockMvcResultMatchers.status().isOk())
-	//			.andExpect(MockMvcResultMatchers.model().attributeExists("clinics"))
-	//			.andExpect(MockMvcResultMatchers.view().name("/clinics/owner/listAvailable"));
-	//	}
+	@WithMockUser(value = "juan")
+	@Test
+	void testInitClinicView() throws Exception {
+//		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner")).andExpect(MockMvcResultMatchers.status().isOk())
+//			.andExpect(MockMvcResultMatchers.model().attributeExists("owner"))
+//			.andExpect(MockMvcResultMatchers.view().name("/clinics/owner/clinicsList"));
+	}
 
 }
