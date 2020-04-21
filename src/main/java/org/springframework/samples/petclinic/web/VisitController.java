@@ -7,13 +7,13 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
-import org.springframework.samples.petclinic.service.PersonService;
+import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.samples.petclinic.service.VisitService;
+import org.springframework.samples.petclinic.util.SessionUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -35,16 +35,16 @@ public class VisitController {
 
 	private VetService				vetService;
 
-	private PersonService<Owner>	personService;
-
+	private OwnerService			ownerService;
+	
 	private static final String		VIEWS_VISIT_CREATE_OR_UPDATE_FORM	= "/visits/createOrUpdateVisitForm";
 
 
 	@Autowired
-	public VisitController(final VisitService visitService, final VetService vetService, final PersonService<Owner> personService) {
+	public VisitController(final VisitService visitService, final VetService vetService, final OwnerService ownerService) {
 		this.visitService = visitService;
 		this.vetService = vetService;
-		this.personService = personService;
+		this.ownerService = ownerService;
 	}
 
 	@InitBinder
@@ -247,6 +247,20 @@ public class VisitController {
 		}
 
 		return "redirect:/pets/listMyPets";
+	}
+	
+	@GetMapping(value = "/listAllPendingByOwner")
+	public String listAllPendingByOwner(final ModelMap modelMap) {
+		String view = "visits/list2";
+
+		Owner owner = this.ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+
+		Iterable<Visit> visits = this.visitService.findAllPendingByOwner(owner);
+
+		modelMap.addAttribute("visits", visits);
+		
+		return view;
+
 	}
 
 }
