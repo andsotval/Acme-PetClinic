@@ -27,9 +27,11 @@ public abstract class PersonService<T extends BaseEntity> extends BaseService<T>
 		String sql = "SELECT * FROM " + clazz.getSimpleName()
 			+ " WHERE USER_ID = (SELECT ID FROM USER WHERE USERNAME = ?)";
 
-		return jdbcTemplate.queryForObject(sql, new Object[] {
+		T entity = jdbcTemplate.queryForObject(sql, new Object[] {
 			username
 		}, BeanPropertyRowMapper.newInstance(clazz));
+		
+		return findEntityById(entity.getId()).get();
 	}
 
 }
