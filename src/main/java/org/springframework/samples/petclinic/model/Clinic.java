@@ -49,7 +49,7 @@ public class Clinic extends NamedEntity {
 	@OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY)
 	private Set<Vet>	vet;
 
-	@OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY)
-	private Set<Owner>	owner;
+	//	@OneToMany(mappedBy = "clinic", fetch = FetchType.EAGER)
+	//	private Set<Owner>	owner;
 
 }
