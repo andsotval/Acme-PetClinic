@@ -28,4 +28,7 @@ public interface PetTypeRepository extends BaseRepository<PetType> {
 	@Query("SELECT pt FROM PetType pt WHERE pt.available = true")
 	Collection<PetType> findAvailable();
 
+	@Query("SELECT pt FROM PetType pt WHERE pt.available = false")
+	Collection<PetType> findNotAvailable();
+
 }

@@ -20,6 +20,6 @@ public interface StayRepository extends BaseRepository<Stay> {
 	@Query("SELECT s FROM Stay s WHERE s.pet.id = ?1 ")
 	Collection<Stay> findByPetId(Integer id);
 
-	
-
+	//	@Query("SELECT s FROM Stay s WHERE s.pet.id = ?1")
+	//	Iterable<Stay> findAllStayByPet(int petId);
 }

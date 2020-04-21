@@ -62,9 +62,14 @@ public class OrderController {
 		BindingResult result, ModelMap model) {
 		String returnView;
 
-		if (result.hasErrors())
+		if (result.hasErrors()) {
+			model.addAttribute("order", order);
+
+			Iterable<Product> product = productService.findProductsAvailableByProviderId(providerId);
+			model.addAttribute("products", product);
+
 			return VIEWS_ORDERS_CREATE_OR_UPDATE_FORM;
-		else {
+		} else {
 			Provider provider = providerService.findEntityById(providerId).get();
 			Boolean security = provider.getManager().getId() == managerService
 				.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername()).getId();

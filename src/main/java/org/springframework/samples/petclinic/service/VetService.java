@@ -46,8 +46,4 @@ public class VetService extends PersonService<Vet> {
 		return vetRepository.findAvailableVets();
 	}
 
-	@Transactional(readOnly = true)
-	public Vet findByVetByUsername(final String username) {
-		return vetRepository.findByVetByUsername(username);
-	}
 }

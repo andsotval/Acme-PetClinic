@@ -27,10 +27,20 @@
                     </spring:url>
                     <a href="${fn:escapeXml(pettypeUpdateUrl)}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>
                     
-	                <spring:url value="/pettype/delete/{pettypeId}" var="pettypeDeleteUrl">
-	                    <spring:param name="pettypeId" value="${pettype.id}"/>
-	                </spring:url>
-	                <a href="${fn:escapeXml(pettypeDeleteUrl)}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                    <c:choose>
+	                    <c:when test="${available eq true}">
+			                <spring:url value="/pettype/notAvailable/{pettypeId}" var="pettypeNotAvailableUrl">
+			                    <spring:param name="pettypeId" value="${pettype.id}"/>
+			                </spring:url>
+			                <a href="${fn:escapeXml(pettypeNotAvailableUrl)}"><span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span></a>
+	                    </c:when>
+	                    <c:otherwise>
+	                    	 <spring:url value="/pettype/available/{pettypeId}" var="pettypeAvailableUrl">
+			                    <spring:param name="pettypeId" value="${pettype.id}"/>
+			                </spring:url>
+			                <a href="${fn:escapeXml(pettypeAvailableUrl)}"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
+	                    </c:otherwise>
+                    </c:choose>
                 </td>
             </tr>
         </c:forEach>
@@ -38,5 +48,13 @@
     </table>
     
     <a class="btn btn-default" href='<spring:url value="/pettype/new" htmlEscape="true"/>'>Create a new Pet type</a>
-    
+	<c:choose>
+		<c:when test="${available eq true}">
+			<a class="btn btn-default" href='<spring:url value="/pettype/listNotAvailable" htmlEscape="true"/>'>Not Availables</a>
+		</c:when>
+		<c:otherwise>
+			<a class="btn btn-default" href='<spring:url value="/pettype/listAvailable" htmlEscape="true"/>'>Availables</a>
+		</c:otherwise>
+	</c:choose>
+
 </petclinic:layout>

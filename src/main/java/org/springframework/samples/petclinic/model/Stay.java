@@ -37,11 +37,11 @@ public class Stay extends BaseEntity {
 	private Boolean		isAccepted;
 
 	@ManyToOne
-	@JoinColumn(name = "clinic_id", referencedColumnName = "id")
+	@JoinColumn(name = "clinic_id")
 	private Clinic		clinic;
 
 	@ManyToOne
-	@JoinColumn(name = "pet_id", referencedColumnName = "id")
+	@JoinColumn(name = "pet_id")
 	private Pet			pet;
 
 }

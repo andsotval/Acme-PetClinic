@@ -1,16 +1,20 @@
 
 package org.springframework.samples.petclinic.web;
 
+import java.util.Optional;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.model.Owner;
+import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.Stay;
 import org.springframework.samples.petclinic.model.Vet;
+import org.springframework.samples.petclinic.service.OwnerService;
+import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.StayService;
 import org.springframework.samples.petclinic.service.VetService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.samples.petclinic.util.SessionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -25,22 +29,44 @@ public class StayController {
 
 	private static final String	VIEWS_STAY_CREATE_OR_UPDATE_FORM	= "/stays/createOrUpdateStayForm";
 
-	@Autowired
 	private StayService			stayService;
 
-	@Autowired
 	private VetService			vetService;
 
+	private PetService			petService;
 
-	@GetMapping(value = "/listAllPending")
+	private OwnerService		ownerService;
+
+
+	@Autowired
+	public StayController(StayService stayService, VetService vetService, PetService petService,
+		OwnerService ownerService) {
+		this.stayService = stayService;
+		this.vetService = vetService;
+		this.petService = petService;
+		this.ownerService = ownerService;
+	}
+
+	@GetMapping(path = "/listHistoryByPet/{petId}")
+	public String listAllByPet(@PathVariable("petId") final int petId, final ModelMap modelMap) {
+		String view = "stays/petHistory";
+
+		//Hay que asegurar que el usuario autenticado es propietario de la mascota que se devuelve
+		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+
+		//Alomejor esto es inutil
+		Optional<Pet> pet = petService.findEntityById(petId);
+
+		Iterable<Stay> stays = stayService.findAllStayByPet(petId);
+		modelMap.addAttribute("stays", stays);
+		return view;
+	}
+
+	@GetMapping(path = "/listAllPending")
 	public String listAllPending(final ModelMap modelMap) {
 		String view = "stays/list";
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		User user = (User) authentication.getPrincipal();
-
-		Vet vet = vetService.findByVetByUsername(user.getUsername());
+		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		Iterable<Stay> stays = stayService.findAllPendingByVet(vet);
 		modelMap.addAttribute("stays", stays);
@@ -49,15 +75,11 @@ public class StayController {
 
 	}
 
-	@GetMapping(value = "/listAllAccepted")
+	@GetMapping(path = "/listAllAccepted")
 	public String listAllAccepted(final ModelMap modelMap) {
 		String view = "stays/list";
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		User user = (User) authentication.getPrincipal();
-
-		Vet vet = vetService.findByVetByUsername(user.getUsername());
+		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		Iterable<Stay> stays = stayService.findAllAcceptedByVet(vet);
 		modelMap.addAttribute("stays", stays);
@@ -70,11 +92,7 @@ public class StayController {
 	public String acceptStay(@PathVariable("stayId") final int stayId, final ModelMap modelMap) {
 		Stay stay = stayService.findEntityById(stayId).get();
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		User user = (User) authentication.getPrincipal();
-
-		Vet vet = vetService.findByVetByUsername(user.getUsername());
+		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		if (stay.getClinic().getId() == vet.getClinic().getId()) {
 			stay.setIsAccepted(true);
@@ -90,11 +108,7 @@ public class StayController {
 	public String cancelStay(@PathVariable("stayId") final int stayId, final ModelMap modelMap) {
 		Stay stay = stayService.findEntityById(stayId).get();
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		User user = (User) authentication.getPrincipal();
-
-		Vet vet = vetService.findByVetByUsername(user.getUsername());
+		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		if (stay.getClinic().getId() == vet.getClinic().getId()) {
 			stay.setIsAccepted(false);
@@ -122,11 +136,7 @@ public class StayController {
 		if (!stayService.findEntityById(stayId).isPresent())
 			return "redirect:/oups";
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		User user = (User) authentication.getPrincipal();
-
-		Vet vet = vetService.findByVetByUsername(user.getUsername());
+		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		Stay stay = stayService.findEntityById(stayId).get();
 		stay.setDescription(entity.getDescription());
