@@ -21,6 +21,7 @@ import java.util.Collection;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.samples.petclinic.model.Owner;
+import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -28,5 +29,8 @@ public interface OwnerRepository extends BaseRepository<Owner> {
 
 	@Query("SELECT DISTINCT owner FROM Owner owner WHERE owner.lastName LIKE :lastName%")
 	Collection<Owner> findByLastName(@Param("lastName") String lastName);
+	
+	@Query("SELECT o FROM Owner o WHERE o.user.username = ?1")
+	Owner findByOwnerByUsername(String username);
 
 }
