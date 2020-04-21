@@ -28,14 +28,14 @@
 					<span>Home</span>
 				</petclinic:menuItem>
 
-				<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find"
+				<%-- <petclinic:menuItem active="${name eq 'owners'}" url="/owners/find"
 					title="find owners">
 					<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
 					<span>Find owners</span>
-				</petclinic:menuItem>
+				</petclinic:menuItem> --%>
 
 				<sec:authorize access="hasAuthority('admin')">
-				<petclinic:menuItem active="${name eq 'pettypes'}" url="/pettype/list"
+				<petclinic:menuItem active="${name eq 'pettypes'}" url="/pettype/listAvailable"
 					title="pettypes">
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>Pet types</span>
@@ -95,17 +95,17 @@
 				<sec:authorize access="hasAuthority('veterinarian')">
 				<petclinic:menuItem active="${name eq 'stays'}" url="/clinics/getDetail"
 					title="stays">
-					<span class="glyphicon glyphicon-flash" aria-hidden="true"></span>
+					<span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>
 					<span>My Clinic</span>
 				</petclinic:menuItem>
 				
 				</sec:authorize>
 
-				<petclinic:menuItem active="${name eq 'error'}" url="/oups"
+				<%-- <petclinic:menuItem active="${name eq 'error'}" url="/oups"
 					title="trigger a RuntimeException to see how it is handled">
 					<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
 					<span>Error</span>
-				</petclinic:menuItem>
+				</petclinic:menuItem> --%>
 				
 
 			</ul>

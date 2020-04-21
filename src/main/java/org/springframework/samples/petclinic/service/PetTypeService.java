@@ -41,4 +41,9 @@ public class PetTypeService extends BaseService<PetType> {
 	public Collection<PetType> findAvailable() {
 		return petTypeRepository.findAvailable();
 	}
+
+	@Transactional(readOnly = true)
+	public Collection<PetType> findNotAvailable() {
+		return petTypeRepository.findNotAvailable();
+	}
 }

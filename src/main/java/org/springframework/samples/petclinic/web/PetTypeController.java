@@ -28,10 +28,20 @@ public class PetTypeController {
 		this.petTypeService = petTypeService;
 	}
 
-	@GetMapping(path = "/list")
-	public String list(ModelMap modelMap) {
+	@GetMapping(path = "/listAvailable")
+	public String listAvailable(ModelMap model) {
 		Iterable<PetType> petTypeList = petTypeService.findAvailable();
-		modelMap.addAttribute("pettypes", petTypeList);
+		model.addAttribute("pettypes", petTypeList);
+		model.addAttribute("available", true);
+
+		return "/pettype/list";
+	}
+
+	@GetMapping(path = "/listNotAvailable")
+	public String listNotAvailable(ModelMap model) {
+		Iterable<PetType> petTypeList = petTypeService.findNotAvailable();
+		model.addAttribute("pettypes", petTypeList);
+		model.addAttribute("available", false);
 
 		return "/pettype/list";
 	}
@@ -50,7 +60,7 @@ public class PetTypeController {
 			return VIEWS_PETTYPE_CREATE_OR_UPDATE_FORM;
 		else {
 			petTypeService.saveEntity(pettype);
-			return list(model);
+			return listAvailable(model);
 		}
 	}
 
@@ -73,19 +83,29 @@ public class PetTypeController {
 			model.addAttribute("pettype", petType);
 		else {
 			petTypeService.saveEntity(petType);
-			return list(model);
+			return listAvailable(model);
 		}
 
 		return VIEWS_PETTYPE_CREATE_OR_UPDATE_FORM;
 	}
 
-	@GetMapping(path = "/delete/{pettypeId}")
-	public String delete(@PathVariable("pettypeId") int pettypeId, ModelMap model) {
+	@GetMapping(path = "/available/{pettypeId}")
+	public String available(@PathVariable("pettypeId") int pettypeId, ModelMap model) {
+		PetType petType = petTypeService.findEntityById(pettypeId).get();
+
+		petType.setAvailable(true);
+		petTypeService.saveEntity(petType);
+
+		return listAvailable(model);
+	}
+
+	@GetMapping(path = "/notAvailable/{pettypeId}")
+	public String notAvailable(@PathVariable("pettypeId") int pettypeId, ModelMap model) {
 		PetType petType = petTypeService.findEntityById(pettypeId).get();
 
 		petType.setAvailable(false);
 		petTypeService.saveEntity(petType);
 
-		return list(model);
+		return listNotAvailable(model);
 	}
 }

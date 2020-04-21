@@ -49,9 +49,4 @@ public class OwnerService extends PersonService<Owner> {
 		return ownerRepository.findByLastName(lastName);
 	}
 
-	@Transactional(readOnly = true)
-	public Owner findOwnerByUsername(final String username) throws DataAccessException {
-		return ownerRepository.findByUsername(username);
-	}
-
 }

@@ -62,9 +62,21 @@ public class PetTypeControllerTests {
 
 	@WithMockUser(value = "spring")
 	@Test
-	void testList() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/pettype/list")).andExpect(MockMvcResultMatchers.status().isOk())
+	void testListAvailable() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/pettype/listAvailable"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.model().attributeExists("pettypes"))
+			.andExpect(MockMvcResultMatchers.model().attribute("available", true))
+			.andExpect(MockMvcResultMatchers.view().name(VIEWS_PETTYPE_LIST));
+	}
+
+	@WithMockUser(value = "spring")
+	@Test
+	void testNotListAvailable() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/pettype/listNotAvailable"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("pettypes"))
+			.andExpect(MockMvcResultMatchers.model().attribute("available", false))
 			.andExpect(MockMvcResultMatchers.view().name(VIEWS_PETTYPE_LIST));
 	}
 
@@ -78,7 +90,7 @@ public class PetTypeControllerTests {
 
 	@WithMockUser(value = "spring")
 	@Test
-	void testProcessCreationForm() throws Exception {
+	void testProcessCreationFormPositive() throws Exception {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/pettype/new").with(SecurityMockMvcRequestPostProcessors.csrf())
 				.param("name", "name1").param("available", "true"))
@@ -111,7 +123,7 @@ public class PetTypeControllerTests {
 
 	@WithMockUser(value = "spring")
 	@Test
-	void testProcessUpdateForm() throws Exception {
+	void testProcessUpdateFormPositive() throws Exception {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/pettype/edit/{pettypeId}", TEST_PETTYPE_ID_1)
 				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("name", "name1").param("available", "true"))
@@ -135,10 +147,21 @@ public class PetTypeControllerTests {
 
 	@WithMockUser(value = "spring")
 	@Test
-	void testDelete() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/pettype/delete/{pettypeId}", TEST_PETTYPE_ID_1))
+	void testAvailable() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/pettype/available/{pettypeId}", TEST_PETTYPE_ID_1))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.model().attributeExists("pettypes"))
+			.andExpect(MockMvcResultMatchers.model().attribute("available", true))
+			.andExpect(MockMvcResultMatchers.view().name(VIEWS_PETTYPE_LIST));
+	}
+
+	@WithMockUser(value = "spring")
+	@Test
+	void testNotAvailable() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/pettype/notAvailable/{pettypeId}", TEST_PETTYPE_ID_1))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("pettypes"))
+			.andExpect(MockMvcResultMatchers.model().attribute("available", false))
 			.andExpect(MockMvcResultMatchers.view().name(VIEWS_PETTYPE_LIST));
 	}
 

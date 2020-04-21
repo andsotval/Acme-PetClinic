@@ -2,6 +2,7 @@
 package org.springframework.samples.petclinic.web;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.service.ClinicService;
+import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -41,6 +43,9 @@ class ClinicControllerTests {
 
 	@MockBean
 	private ClinicService		clinicService;
+
+	@MockBean
+	private OwnerService		ownerService;
 
 
 	@BeforeEach
@@ -69,6 +74,9 @@ class ClinicControllerTests {
 		pepe.setClinic(clinic);
 
 		BDDMockito.given(vetService.findPersonByUsername("pepito")).willReturn(pepe);
+
+		Optional<Vet> optVet = Optional.of(pepe);
+		BDDMockito.given(vetService.findEntityById(TEST_VET_ID)).willReturn(optVet);
 
 	}
 

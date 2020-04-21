@@ -28,12 +28,9 @@ import org.springframework.samples.petclinic.model.Stay;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.PetService;
+import org.springframework.samples.petclinic.service.PetTypeService;
 import org.springframework.samples.petclinic.service.StayService;
 import org.springframework.samples.petclinic.service.VisitService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.samples.petclinic.service.PetTypeService;
 import org.springframework.samples.petclinic.util.SessionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -50,17 +47,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/pets")
 public class PetController {
 
-	private static final String VIEWS_PETS_CREATE_OR_UPDATE_FORM = "pets/createOrUpdatePetForm";
+	private static final String		VIEWS_PETS_CREATE_OR_UPDATE_FORM	= "pets/createOrUpdatePetForm";
 
 	private final PetTypeService	petTypeService;
-	private final PetService petService;
-	private final VisitService visitService;
-	private final StayService stayService;
-	private final OwnerService ownerService;
+	private final PetService		petService;
+	private final VisitService		visitService;
+	private final StayService		stayService;
+	private final OwnerService		ownerService;
+
 
 	@Autowired
 	public PetController(final PetService petService, final OwnerService ownerService, final VisitService visitService,
-			final StayService stayService, final PetTypeService petTypeService) {
+		final StayService stayService, final PetTypeService petTypeService) {
 		this.petService = petService;
 		this.petTypeService = petTypeService;
 		this.ownerService = ownerService;
@@ -91,7 +89,8 @@ public class PetController {
 	public String newPet(@PathVariable("ownerId") int ownerId, final ModelMap model) {
 		Pet pet = new Pet();
 		Owner owner = ownerService.findEntityById(ownerId).get();
-		owner.addPet(pet);
+		//		owner.addPet(pet);
+		pet.setOwner(owner);
 		model.addAttribute("pet", pet);
 		return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 	}
@@ -129,9 +128,8 @@ public class PetController {
 			stayService.deleteByPetId(pet.getId());
 			visitService.deleteByPetId(pet.getId());
 			petService.deleteEntityById(pet.getId());
-		} else {
+		} else
 			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
-		}
 		return "redirect:/pets/listMyPets";
 
 	}
@@ -146,7 +144,7 @@ public class PetController {
 		model.addAttribute("clinicId", pet.getOwner().getClinic().getId());
 		return "visits/createOrUpdateVisitForm";
 	}
-	
+
 	@GetMapping(value = "/newStay/{petId}")
 	public String newStay(@PathVariable("petId") int petId, final ModelMap model) {
 		Stay stay = new Stay();

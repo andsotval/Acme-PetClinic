@@ -1,14 +1,9 @@
 
 package org.springframework.samples.petclinic.model;
 
-import java.util.Set;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
@@ -25,29 +20,29 @@ public class Clinic extends NamedEntity {
 
 	@Column(name = "address")
 	@NotEmpty
-	private String		address;
+	private String	address;
 
 	@Column(name = "city")
 	@NotEmpty
-	private String		city;
+	private String	city;
 
 	@Column(name = "telephone")
 	@NotEmpty
 	@Pattern(regexp = "9[0-9]{8}")
-	private String		telephone;
+	private String	telephone;
 
 	@OneToOne
 	@JoinColumn(name = "manager_id", referencedColumnName = "id")
-	private Manager		manager;
+	private Manager	manager;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clinic", fetch = FetchType.LAZY)
-	private Set<Stay>	stay;
-
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clinic", fetch = FetchType.LAZY)
-	private Set<Visit>	visit;
-
-	@OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY)
-	private Set<Vet>	vet;
+	//	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clinic", fetch = FetchType.LAZY)
+	//	private Set<Stay>	stay;
+	//
+	//	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clinic", fetch = FetchType.LAZY)
+	//	private Set<Visit>	visit;
+	//
+	//	@OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY)
+	//	private Set<Vet>	vet;
 
 	//	@OneToMany(mappedBy = "clinic", fetch = FetchType.EAGER)
 	//	private Set<Owner>	owner;

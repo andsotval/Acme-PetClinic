@@ -34,7 +34,7 @@ public class VisitController {
 
 
 	@Autowired
-	public VisitController(final VisitService visitService, final VetService vetService) {
+	public VisitController(VisitService visitService, VetService vetService) {
 		this.visitService = visitService;
 		this.vetService = vetService;
 	}
@@ -201,20 +201,23 @@ public class VisitController {
 	}
 
 	@PostMapping(path = "/save")
-	public String updateNewVisit(@Valid final Visit entity, final BindingResult result, final ModelMap modelMap) {
+	public String updateNewVisit(@Valid final Visit entity, final BindingResult result, final ModelMap model) {
 
 		String view = "redirect:/pets/newVisit/" + entity.getPet().getId();
 
 		if (result.hasErrors()) {
-			modelMap.addAttribute("visit", entity);
-			return view;
+			//			modelMap.addAttribute("visit", entity);
+			//			return view;
+			model.addAttribute("visit", entity);
+			model.addAttribute("clinicId", entity.getPet().getOwner().getClinic().getId());
+			return "visits/createOrUpdateVisitForm";
 		} else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
 			result.rejectValue("date", "startLaterFinish", "Debe ser en futuro");
-			modelMap.addAttribute("visit", entity);
+			model.addAttribute("visit", entity);
 			return view;
 		} else {
 			visitService.saveEntity(entity);
-			modelMap.addAttribute("message", "Visit succesfully updated");
+			model.addAttribute("message", "Visit succesfully updated");
 		}
 
 		return "redirect:/pets/listMyPets";

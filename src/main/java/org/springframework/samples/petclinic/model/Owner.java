@@ -7,15 +7,9 @@
 
 package org.springframework.samples.petclinic.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.springframework.core.style.ToStringCreator;
@@ -33,21 +27,20 @@ public class Owner extends Person {
 	@JoinColumn(name = "clinic_id")
 	private Clinic clinic;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-
-	private Set<Pet> pets;
-
-	protected Set<Pet> getPetsInternal() {
-		if (this.pets == null) {
-			this.pets = new HashSet<>();
-		}
-		return this.pets;
-	}
-
-	public void addPet(final Pet pet) {
-		this.getPetsInternal().add(pet);
-		pet.setOwner(this);
-	}
+	//	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	//	private Set<Pet> pets;
+	//
+	//	protected Set<Pet> getPetsInternal() {
+	//		if (this.pets == null) {
+	//			this.pets = new HashSet<>();
+	//		}
+	//		return this.pets;
+	//	}
+	//
+	//	public void addPet(final Pet pet) {
+	//		this.getPetsInternal().add(pet);
+	//		pet.setOwner(this);
+	//	}
 	//
 	//
 
@@ -63,6 +56,7 @@ public class Owner extends Person {
 	// return Collections.unmodifiableList(sortedPets);
 	// }
 	//
+
 
 	//
 	// public boolean removePet(final Pet pet) {
@@ -115,10 +109,9 @@ public class Owner extends Person {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("id", this.getId()).append("new", this.isNew())
-				.append("lastName", this.getLastName()).append("firstName", this.getFirstName())
-				.append("address", this.getAddress()).append("city", this.getCity())
-				.append("telephone", this.getTelephone()).toString();
+		return new ToStringCreator(this).append("id", getId()).append("new", isNew()).append("lastName", getLastName())
+			.append("firstName", getFirstName()).append("address", getAddress()).append("city", getCity())
+			.append("telephone", getTelephone()).toString();
 	}
 
 }

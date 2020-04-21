@@ -26,9 +26,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OwnerRepository extends BaseRepository<Owner> {
 
-	@Query("SELECT DISTINCT owner FROM Owner owner left join fetch owner.pets WHERE owner.lastName LIKE :lastName%")
+	@Query("SELECT DISTINCT owner FROM Owner owner WHERE owner.lastName LIKE :lastName%")
 	Collection<Owner> findByLastName(@Param("lastName") String lastName);
 
-	@Query("SELECT owner FROM Owner owner WHERE owner.user.username = ?1")
-	Owner findByUsername(String username);
 }

@@ -1,3 +1,4 @@
+
 package org.springframework.samples.petclinic.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,23 +21,24 @@ public class ClinicController {
 
 	private final ClinicService	clinicService;
 	private final OwnerService	ownerService;
-  private VetService		vetService;
+	private VetService			vetService;
 
 
 	@Autowired
 	public ClinicController(ClinicService clinicService, OwnerService ownerService, VetService vetService) {
 		this.clinicService = clinicService;
 		this.ownerService = ownerService;
-    this.vetService = vetService;
+		this.vetService = vetService;
 	}
-  
-  @GetMapping(value = "/getDetail")
+
+	@GetMapping(value = "/getDetail")
 	public String listAllPending(final ModelMap modelMap) {
 		String view = "clinics/show";
-    
+
 		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Clinic clinic = vet.getClinic();
+		Vet _vet = vetService.findEntityById(vet.getId()).get();
+		Clinic clinic = _vet.getClinic();
 
 		modelMap.addAttribute("clinic", clinic);
 		return view;
