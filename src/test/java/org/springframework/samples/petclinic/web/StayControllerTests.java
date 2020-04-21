@@ -18,6 +18,8 @@ import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.Stay;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Vet;
+import org.springframework.samples.petclinic.service.OwnerService;
+import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.StayService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
@@ -46,6 +48,12 @@ class StayControllerTests {
 
 	@MockBean
 	private VetService			vetService;
+
+	@MockBean
+	private PetService			petService;
+
+	@MockBean
+	private OwnerService		ownerService;
 
 
 	@BeforeEach
@@ -84,7 +92,7 @@ class StayControllerTests {
 		pepe.setTelephone("6085551023");
 		pepe.setClinic(clinic);
 
-		BDDMockito.given(vetService.findByVetByUsername("pepito")).willReturn(pepe);
+		BDDMockito.given(vetService.findPersonByUsername("pepito")).willReturn(pepe);
 
 	}
 

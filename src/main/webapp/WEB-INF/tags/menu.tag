@@ -90,6 +90,14 @@
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>Clinic</span>
 				</petclinic:menuItem>
+        
+				<sec:authorize access="hasAuthority('veterinarian')">
+				<petclinic:menuItem active="${name eq 'stays'}" url="/clinics/getDetail"
+					title="stays">
+					<span class="glyphicon glyphicon-flash" aria-hidden="true"></span>
+					<span>My Clinic</span>
+				</petclinic:menuItem>
+				
 				</sec:authorize>
 
 				<petclinic:menuItem active="${name eq 'error'}" url="/oups"

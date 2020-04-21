@@ -16,6 +16,25 @@
     
     <jsp:body>
         <h2>Update Visit</h2>
+        
+        <b>Pet</b>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Birth Date</th>
+                <th>Type</th>
+                <th>Owner</th>
+            </tr>
+            </thead>
+            <tr>
+                <td><c:out value="${visit.pet.name}"/></td>
+                <td><petclinic:localDate date="${visit.pet.birthDate}" pattern="yyyy/MM/dd"/></td>
+                <td><c:out value="${visit.pet.type.name}"/></td>
+                <td><c:out value="${visit.pet.owner.firstName} ${visit.pet.owner.lastName}"/></td>
+            </tr>
+        </table>
+        
 			<form:form modelAttribute="visit" class="form-horizontal" action="/visits/save/${visit.id}">
             <div class="form-group has-feedback">
            		<petclinic:inputField label="Description" name="description"/>	
@@ -27,7 +46,15 @@
                     <input type="hidden" name="id" value="${visit.id}"/>
                    <!--! <input type="hidden" name="clinic" value="${visit.clinic.id}"/>
                     <input type="hidden" name="pet" value="${visit.pet.id}"/>-->
-                    <button class="btn btn-default" type="submit">Save Visit</button>
+                     <c:if test="${visit.id == null}">
+                    	<input type="hidden" name="clinic" value="${clinicId}"/>
+                    	<input type="hidden" name="pet" value="${visit.pet.id}"/>
+						<button class="btn btn-default" type="submit" formaction="/visits/save">Save Visit</button> 
+                     </c:if>
+                     <c:if test="${visit.id != null}">
+						<button class="btn btn-default" type="submit" formaction="/visits/save/${visit.id}">Save Visit</button> 
+                     </c:if>
+                    <!-- <button class="btn btn-default" type="submit">Save Visit</button> -->
                 </div>
             </div>
         </form:form>

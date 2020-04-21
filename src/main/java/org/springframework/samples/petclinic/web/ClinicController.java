@@ -1,11 +1,12 @@
-
 package org.springframework.samples.petclinic.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.Owner;
+import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.samples.petclinic.service.OwnerService;
+import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.samples.petclinic.util.SessionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -19,12 +20,27 @@ public class ClinicController {
 
 	private final ClinicService	clinicService;
 	private final OwnerService	ownerService;
+  private VetService		vetService;
 
 
 	@Autowired
-	public ClinicController(ClinicService clinicService, OwnerService ownerService) {
+	public ClinicController(ClinicService clinicService, OwnerService ownerService, VetService vetService) {
 		this.clinicService = clinicService;
 		this.ownerService = ownerService;
+    this.vetService = vetService;
+	}
+  
+  @GetMapping(value = "/getDetail")
+	public String listAllPending(final ModelMap modelMap) {
+		String view = "clinics/show";
+    
+		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+
+		Clinic clinic = vet.getClinic();
+
+		modelMap.addAttribute("clinic", clinic);
+		return view;
+
 	}
 
 	@GetMapping(path = "/owner")

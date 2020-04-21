@@ -11,9 +11,7 @@ import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.samples.petclinic.service.VisitService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.samples.petclinic.util.SessionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -36,7 +34,7 @@ public class VisitController {
 
 
 	@Autowired
-	public VisitController(VisitService visitService, VetService vetService) {
+	public VisitController(final VisitService visitService, final VetService vetService) {
 		this.visitService = visitService;
 		this.vetService = vetService;
 	}
@@ -89,11 +87,8 @@ public class VisitController {
 	@GetMapping(value = "/listAllPending")
 	public String listAllPending(final ModelMap modelMap) {
 		String view = "visits/list";
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		User user = (User) authentication.getPrincipal();
-
-		Vet vet = vetService.findByVetByUsername(user.getUsername());
+		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		Iterable<Visit> visits = visitService.findAllPendingByVet(vet);
 
@@ -107,11 +102,7 @@ public class VisitController {
 	public String listAllAccepted(final ModelMap modelMap) {
 		String view = "visits/list";
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		User user = (User) authentication.getPrincipal();
-
-		Vet vet = vetService.findByVetByUsername(user.getUsername());
+		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		Iterable<Visit> visits = visitService.findAllAcceptedByVet(vet);
 		modelMap.addAttribute("visits", visits);
@@ -124,11 +115,7 @@ public class VisitController {
 	public String acceptVisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
 		Visit visit = visitService.findEntityById(visitId).get();
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		User user = (User) authentication.getPrincipal();
-
-		Vet vet = vetService.findByVetByUsername(user.getUsername());
+		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		if (visit.getClinic().getId() == vet.getClinic().getId()) {
 			visit.setIsAccepted(true);
@@ -144,11 +131,7 @@ public class VisitController {
 	public String cancelVisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
 		Visit visit = visitService.findEntityById(visitId).get();
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		User user = (User) authentication.getPrincipal();
-
-		Vet vet = vetService.findByVetByUsername(user.getUsername());
+		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		if (visit.getClinic().getId() == vet.getClinic().getId()) {
 			visit.setIsAccepted(false);
@@ -193,11 +176,7 @@ public class VisitController {
 		if (!visitService.findEntityById(visitId).isPresent())
 			return "redirect:/oups";
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		User user = (User) authentication.getPrincipal();
-
-		Vet vet = vetService.findByVetByUsername(user.getUsername());
+		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		Visit visit = visitService.findEntityById(visitId).get();
 
@@ -219,6 +198,26 @@ public class VisitController {
 		}
 
 		return view;
+	}
+
+	@PostMapping(path = "/save")
+	public String updateNewVisit(@Valid final Visit entity, final BindingResult result, final ModelMap modelMap) {
+
+		String view = "redirect:/pets/newVisit/" + entity.getPet().getId();
+
+		if (result.hasErrors()) {
+			modelMap.addAttribute("visit", entity);
+			return view;
+		} else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
+			result.rejectValue("date", "startLaterFinish", "Debe ser en futuro");
+			modelMap.addAttribute("visit", entity);
+			return view;
+		} else {
+			visitService.saveEntity(entity);
+			modelMap.addAttribute("message", "Visit succesfully updated");
+		}
+
+		return "redirect:/pets/listMyPets";
 	}
 
 }

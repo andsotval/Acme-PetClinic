@@ -178,47 +178,47 @@ INSERT INTO pet_type VALUES (6, 'hamster', true);
 
 INSERT INTO user(id, username,password,enabled) VALUES (26, 'owner1','owner1',TRUE);
 INSERT INTO authority VALUES ('owner1','owner');
-INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (1, 26, 'Encarnación', 'Padilla', 'C/Libertadores', 'Cadiz', '659813471', 'owner1@gmail.com');
+INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (1, 26, 'Encarnación', 'Padilla', 'C/Libertadores', 'Cadiz', '659813471', 'owner1@gmail.com', 1);
 
 INSERT INTO user(id, username,password,enabled) VALUES (27, 'owner2','owner2',TRUE);
 INSERT INTO authority VALUES ('owner2','owner');
-INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (2,27, 'George', 'Franklin', '110 W. Liberty St.', 'Madison', '608555102', 'owner2@gmail.com');
+INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (2,27, 'George', 'Franklin', '110 W. Liberty St.', 'Madison', '608555102', 'owner2@gmail.com', 2);
 
 INSERT INTO user(id, username,password,enabled) VALUES (28, 'owner3','owner3',TRUE);
 INSERT INTO authority VALUES ('owner3','owner');
-INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (3,28, 'Betty', 'Davis', '638 Cardinal Ave.', 'Sun Prairie', '608555174', 'owner3@gmail.com');
+INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (3,28, 'Betty', 'Davis', '638 Cardinal Ave.', 'Sun Prairie', '608555174', 'owner3@gmail.com', 3);
 
 INSERT INTO user(id, username,password,enabled) VALUES (29, 'owner4','owner4',TRUE);
 INSERT INTO authority VALUES ('owner4','owner');
-INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (4,29, 'Eduardo', 'Rodriquez', '2693 Commerce St.', 'McFarland', '608555873', 'owner4@gmail.com');
+INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (4,29, 'Eduardo', 'Rodriquez', '2693 Commerce St.', 'McFarland', '608555873', 'owner4@gmail.com', 4);
 
 INSERT INTO user(id, username,password,enabled) VALUES (30, 'owner5','owner5',TRUE);
 INSERT INTO authority VALUES ('owner5','owner');
-INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (5,30, 'Harold', 'Davis', '563 Friendly St.', 'Windsor', '608555319', 'owner5@gmail.com');
+INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (5,30, 'Harold', 'Davis', '563 Friendly St.', 'Windsor', '608555319', 'owner5@gmail.com', 5);
 
 INSERT INTO user(id, username,password,enabled) VALUES (31, 'owner6','owner6',TRUE);
 INSERT INTO authority VALUES ('owner6','owner');
-INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (6,31, 'Peter', 'McTavish', '2387 S. Fair Way', 'Madison', '608555275', 'owner6@gmail.com');
+INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (6,31, 'Peter', 'McTavish', '2387 S. Fair Way', 'Madison', '608555275', 'owner6@gmail.com', 6);
 
 INSERT INTO user(id, username,password,enabled) VALUES (32, 'owner7','owner7',TRUE);
 INSERT INTO authority VALUES ('owner7','owner');
-INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (7,32, 'Jean', 'Coleman', '105 N. Lake St.', 'Monona', '608555265', 'owner7@gmail.com');
+INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (7,32, 'Jean', 'Coleman', '105 N. Lake St.', 'Monona', '608555265', 'owner7@gmail.com', 7);
 
 INSERT INTO user(id, username,password,enabled) VALUES (33, 'owner8','owner8',TRUE);
 INSERT INTO authority VALUES ('owner8','owner');
-INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (8,33, 'Jeff', 'Black', '1450 Oak Blvd.', 'Monona', '608555538', 'owner8@gmail.com');
+INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (8,33, 'Jeff', 'Black', '1450 Oak Blvd.', 'Monona', '608555538', 'owner8@gmail.com', 8);
 
 INSERT INTO user(id, username,password,enabled) VALUES (34, 'owner9','owner9',TRUE);
 INSERT INTO authority VALUES ('owner9','owner');
-INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (9,34, 'Maria', 'Escobito', '345 Maple St.', 'Madison', '608557683', 'owner9@gmail.com');
+INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (9,34, 'Maria', 'Escobito', '345 Maple St.', 'Madison', '608557683', 'owner9@gmail.com', null);
 
 INSERT INTO user(id, username,password,enabled) VALUES (35, 'owner10','owner10',TRUE);
 INSERT INTO authority VALUES ('owner10','owner');
-INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (10,35, 'David', 'Schroeder', '2749 Blackhawk Trail', 'Madison', '605559435', 'owner10@gmail.com');
+INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (10,35, 'David', 'Schroeder', '2749 Blackhawk Trail', 'Madison', '605559435', 'owner10@gmail.com', null);
 
 INSERT INTO user(id, username,password,enabled) VALUES (36, 'owner11','owner11',TRUE);
 INSERT INTO authority VALUES ('owner11','owner');
-INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail) VALUES (11,36, 'Carlos', 'Estaban', '2335 Independence La.', 'Waunakee', '608555487', 'owner11@gmail.com');
+INSERT INTO owner(id, user_id, first_name, last_name, address, city, telephone, mail, clinic_id) VALUES (11,36, 'Carlos', 'Estaban', '2335 Independence La.', 'Waunakee', '608555487', 'owner11@gmail.com', null);
 
 -- PETS
 
