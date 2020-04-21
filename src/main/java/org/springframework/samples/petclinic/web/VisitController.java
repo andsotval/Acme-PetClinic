@@ -7,16 +7,11 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.samples.petclinic.model.Clinic;
-import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
-import org.springframework.samples.petclinic.service.PersonService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.samples.petclinic.service.VisitService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.samples.petclinic.util.SessionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -31,20 +26,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/visits")
 public class VisitController {
 
-	private VisitService			visitService;
+	private VisitService		visitService;
 
-	private VetService				vetService;
+	private VetService			vetService;
 
-	private PersonService<Owner>	personService;
-
-	private static final String		VIEWS_VISIT_CREATE_OR_UPDATE_FORM	= "/visits/createOrUpdateVisitForm";
+	private static final String	VIEWS_VISIT_CREATE_OR_UPDATE_FORM	= "/visits/createOrUpdateVisitForm";
 
 
 	@Autowired
-	public VisitController(final VisitService visitService, final VetService vetService, final PersonService<Owner> personService) {
+	public VisitController(final VisitService visitService, final VetService vetService) {
 		this.visitService = visitService;
 		this.vetService = vetService;
-		this.personService = personService;
 	}
 
 	@InitBinder
@@ -78,10 +70,10 @@ public class VisitController {
 	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is called
 	@PostMapping(value = "/owners/{ownerId}/pets/{petId}/visits/new")
 	public String processNewVisitForm(@Valid final Visit visit, final BindingResult result) {
-		if (result.hasErrors()) {
+		if (result.hasErrors())
 			return "pets/createOrUpdateVisitForm";
-		} else {
-			this.visitService.saveEntity(visit);
+		else {
+			visitService.saveEntity(visit);
 			return "redirect:/owners/{ownerId}";
 		}
 	}
@@ -95,13 +87,10 @@ public class VisitController {
 	@GetMapping(value = "/listAllPending")
 	public String listAllPending(final ModelMap modelMap) {
 		String view = "visits/list";
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		User user = (User) authentication.getPrincipal();
+		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
-
-		Iterable<Visit> visits = this.visitService.findAllPendingByVet(vet);
+		Iterable<Visit> visits = visitService.findAllPendingByVet(vet);
 
 		modelMap.addAttribute("visits", visits);
 		modelMap.addAttribute("accepted", false);
@@ -113,13 +102,9 @@ public class VisitController {
 	public String listAllAccepted(final ModelMap modelMap) {
 		String view = "visits/list";
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		User user = (User) authentication.getPrincipal();
-
-		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
-
-		Iterable<Visit> visits = this.visitService.findAllAcceptedByVet(vet);
+		Iterable<Visit> visits = visitService.findAllAcceptedByVet(vet);
 		modelMap.addAttribute("visits", visits);
 		modelMap.addAttribute("accepted", true);
 		return view;
@@ -128,20 +113,15 @@ public class VisitController {
 
 	@GetMapping(path = "/accept/{visitId}")
 	public String acceptVisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
-		Visit visit = this.visitService.findEntityById(visitId).get();
+		Visit visit = visitService.findEntityById(visitId).get();
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		User user = (User) authentication.getPrincipal();
-
-		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
+		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		if (visit.getClinic().getId() == vet.getClinic().getId()) {
 			visit.setIsAccepted(true);
-			this.visitService.saveEntity(visit);
-		} else {
+			visitService.saveEntity(visit);
+		} else
 			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
-		}
 
 		return "redirect:/visits/listAllAccepted";
 
@@ -149,20 +129,15 @@ public class VisitController {
 
 	@GetMapping(path = "/cancel/{visitId}")
 	public String cancelVisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
-		Visit visit = this.visitService.findEntityById(visitId).get();
+		Visit visit = visitService.findEntityById(visitId).get();
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		User user = (User) authentication.getPrincipal();
-
-		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
+		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		if (visit.getClinic().getId() == vet.getClinic().getId()) {
 			visit.setIsAccepted(false);
-			this.visitService.saveEntity(visit);
-		} else {
+			visitService.saveEntity(visit);
+		} else
 			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
-		}
 
 		return "redirect:/visits/listAllAccepted";
 
@@ -170,7 +145,7 @@ public class VisitController {
 
 	@GetMapping(path = "/changeDate/{visitId}")
 	public String changeDatevisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
-		Visit visit = this.visitService.findEntityById(visitId).get();
+		Visit visit = visitService.findEntityById(visitId).get();
 		modelMap.addAttribute(visit);
 		return "/visits/createOrUpdateVisitForm";
 	}
@@ -193,36 +168,32 @@ public class VisitController {
 	 */
 
 	@PostMapping(path = "/save/{visitId}")
-	public String updateVisit(@PathVariable("visitId") final int visitId, @Valid final Visit entity, final BindingResult result, final ModelMap modelMap) {
+	public String updateVisit(@PathVariable("visitId") final int visitId, @Valid final Visit entity,
+		final BindingResult result, final ModelMap modelMap) {
 
 		String view = VisitController.VIEWS_VISIT_CREATE_OR_UPDATE_FORM;
 
-		if (!this.visitService.findEntityById(visitId).isPresent()) {
+		if (!visitService.findEntityById(visitId).isPresent())
 			return "redirect:/oups";
-		}
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		User user = (User) authentication.getPrincipal();
-
-		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
-
-		Visit visit = this.visitService.findEntityById(visitId).get();
+		Visit visit = visitService.findEntityById(visitId).get();
 
 		visit.setDescription(entity.getDescription());
 		visit.setDate(entity.getDate());
 
-		if (result.hasErrors()) {
+		if (result.hasErrors())
 			modelMap.addAttribute("visit", visit);
-		} else if (visit.getClinic().getId() != vet.getClinic().getId()) {
+		else if (visit.getClinic().getId() != vet.getClinic().getId())
 			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
-		} else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
+		else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
 			result.rejectValue("date", "startLaterFinish", "Posponer con 2 días de antelación");
 			modelMap.addAttribute("visit", visit);
 		} else {
-			this.visitService.saveEntity(visit);
+			visitService.saveEntity(visit);
 			modelMap.addAttribute("message", "Visit succesfully updated");
-			return this.listAllAccepted(modelMap);
+			return listAllAccepted(modelMap);
 
 		}
 
@@ -242,7 +213,7 @@ public class VisitController {
 			modelMap.addAttribute("visit", entity);
 			return view;
 		} else {
-			this.visitService.saveEntity(entity);
+			visitService.saveEntity(entity);
 			modelMap.addAttribute("message", "Visit succesfully updated");
 		}
 

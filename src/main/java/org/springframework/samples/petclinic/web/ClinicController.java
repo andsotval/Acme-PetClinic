@@ -32,7 +32,7 @@ public class ClinicController {
 
 		User user = (User) authentication.getPrincipal();
 
-		Vet vet = this.vetService.findByVetByUsername(user.getUsername());
+		Vet vet = vetService.findPersonByUsername(user.getUsername());
 
 		Clinic clinic = vet.getClinic();
 

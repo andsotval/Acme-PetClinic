@@ -18,7 +18,6 @@ import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
-import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.samples.petclinic.service.VisitService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
@@ -49,9 +48,6 @@ class VisitControllerTests {
 
 	@MockBean
 	private VetService			vetService;
-
-	@MockBean
-	private PetService			petService;
 
 	@Autowired
 	private MockMvc				mockMvc;
@@ -93,9 +89,8 @@ class VisitControllerTests {
 		pepe.setTelephone("6085551023");
 		pepe.setClinic(clinic);
 
-		BDDMockito.given(vetService.findByVetByUsername("pepito")).willReturn(pepe);
+		BDDMockito.given(vetService.findPersonByUsername("pepito")).willReturn(pepe);
 
-		//		BDDMockito.given(petService.findEntityById(VisitControllerTests.TEST_PET_ID).get()).willReturn(new Pet());
 	}
 
 	//listAllPending (todas las visits devueltas tienen que tener isAcepted a null)

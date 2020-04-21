@@ -20,7 +20,6 @@ import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -39,9 +38,10 @@ class ClinicControllerTests {
 
 	@MockBean
 	private VetService			vetService;
-	
+
 	@MockBean
-	private ClinicService			clinicService;
+	private ClinicService		clinicService;
+
 
 	@BeforeEach
 	void setup() {
@@ -68,7 +68,7 @@ class ClinicControllerTests {
 		pepe.setTelephone("6085551023");
 		pepe.setClinic(clinic);
 
-		BDDMockito.given(vetService.findByVetByUsername("pepito")).willReturn(pepe);
+		BDDMockito.given(vetService.findPersonByUsername("pepito")).willReturn(pepe);
 
 	}
 
@@ -81,6 +81,5 @@ class ClinicControllerTests {
 			.andExpect(MockMvcResultMatchers.model().attributeExists("clinic"))
 			.andExpect(MockMvcResultMatchers.view().name("clinics/show"));
 	}
-
 
 }
