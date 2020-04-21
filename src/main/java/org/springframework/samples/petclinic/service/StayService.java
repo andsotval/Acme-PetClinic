@@ -35,4 +35,9 @@ public class StayService extends BaseService<Stay> {
 		return stayRepository.findAllAcceptedByVet(actualDate, vet.getId());
 	}
 
+	@Transactional(readOnly = true)
+	public Iterable<Stay> findAllStayByPet(final Integer petId) {
+		return stayRepository.findAllStayByPet(petId);
+	}
+
 }

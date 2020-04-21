@@ -16,4 +16,6 @@ public interface StayRepository extends BaseRepository<Stay> {
 	@Query("SELECT s FROM Stay s INNER JOIN Clinic c ON c.id=s.clinic.id WHERE s.isAccepted = true AND ?2 IN (SELECT v2.id FROM Vet v2 WHERE v2.clinic.id=c.id) AND s.startDate > ?1 ")
 	Iterable<Stay> findAllAcceptedByVet(LocalDate actualDate, Integer vetId);
 
+	@Query("SELECT s FROM Stay s WHERE s.pet.id = ?1")
+	Iterable<Stay> findAllStayByPet(int petId);
 }
