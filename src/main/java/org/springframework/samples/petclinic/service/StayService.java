@@ -5,8 +5,10 @@ import java.time.LocalDate;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Stay;
 import org.springframework.samples.petclinic.model.Vet;
+import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.BaseRepository;
 import org.springframework.samples.petclinic.repository.StayRepository;
 import org.springframework.stereotype.Service;
@@ -45,6 +47,15 @@ public class StayService extends BaseService<Stay> {
 	@Transactional(readOnly = true)
 	public Iterable<Stay> findAllStayByPet(final Integer petId) {
 		return stayRepository.findByPetId(petId);
+	}
+	
+	@Transactional(readOnly = true)
+	public Iterable<Stay> findAllPendingByOwner(final Owner owner) {
+		return stayRepository.findAllPendingByOwner(owner.getId());
+	}
+	
+	public Iterable<Stay> findAllAcceptedByOwner(Owner owner) {
+		return stayRepository.findAllAcceptedByOwner(owner.getId());
 	}
 
 }

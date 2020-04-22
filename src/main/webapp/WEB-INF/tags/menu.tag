@@ -87,13 +87,13 @@
 				<sec:authorize access="hasAuthority('owner')">
 				<petclinic:menuItem active="${name eq 'clinics'}" url="/clinics/owner"
 					title="Clinic">
-					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+					<span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>
 					<span>Clinic</span>
 				</petclinic:menuItem>
 				</sec:authorize>
         
 				<sec:authorize access="hasAuthority('veterinarian')">
-				<petclinic:menuItem active="${name eq 'stays'}" url="/clinics/getDetail"
+				<petclinic:menuItem active="${name eq 'clinics'}" url="/clinics/getDetail"
 					title="stays">
 					<span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>
 					<span>My Clinic</span>
@@ -102,12 +102,19 @@
 				</sec:authorize>
 				
 				<sec:authorize access="hasAuthority('owner')">
-				<petclinic:menuItem active="${name eq 'visits'}" url="/visits/listAllPendingByOwner"
+				<petclinic:menuItem active="${name eq 'visits'}" url="/visits/listByOwner"
 					title="visits">
-					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+					<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
 					<span>My Visits</span>
 				</petclinic:menuItem>
+				</sec:authorize>
 				
+				<sec:authorize access="hasAuthority('owner')">
+				<petclinic:menuItem active="${name eq 'stays'}" url="/stays/listByOwner"
+					title="stays">
+					<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+					<span>My Stays</span>
+				</petclinic:menuItem>
 				</sec:authorize>
 
 				<%-- <petclinic:menuItem active="${name eq 'error'}" url="/oups"

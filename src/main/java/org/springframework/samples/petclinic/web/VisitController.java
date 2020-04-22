@@ -31,17 +31,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/visits")
 public class VisitController {
 
-	private VisitService		visitService;
+	private VisitService visitService;
 
-	private VetService			vetService;
+	private VetService vetService;
 
-	private OwnerService			ownerService;
-	
-	private static final String		VIEWS_VISIT_CREATE_OR_UPDATE_FORM	= "/visits/createOrUpdateVisitForm";
+	private OwnerService ownerService;
 
+	private static final String VIEWS_VISIT_CREATE_OR_UPDATE_FORM = "/visits/createOrUpdateVisitForm";
 
 	@Autowired
-	public VisitController(final VisitService visitService, final VetService vetService, final OwnerService ownerService) {
+	public VisitController(final VisitService visitService, final VetService vetService,
+			final OwnerService ownerService) {
 		this.visitService = visitService;
 		this.vetService = vetService;
 		this.ownerService = ownerService;
@@ -53,29 +53,31 @@ public class VisitController {
 	}
 
 	/**
-	 * Called before each and every @GetMapping or @PostMapping annotated method. 2 goals:
-	 * - Make sure we always have fresh data - Since we do not use the session scope, make
-	 * sure that Pet object always has an id (Even though id is not part of the form
-	 * fields)
+	 * Called before each and every @GetMapping or @PostMapping annotated method. 2
+	 * goals: - Make sure we always have fresh data - Since we do not use the
+	 * session scope, make sure that Pet object always has an id (Even though id is
+	 * not part of the form fields)
 	 *
 	 * @param petId
 	 * @return Pet
 	 */
-	//	@ModelAttribute("visit")
-	//	public Visit loadPetWithVisit(@PathVariable("petId") final int petId) {
-	//		Pet pet = this.petService.findPetById(petId);
-	//		Visit visit = new Visit();
-	//		pet.addVisit(visit);
-	//		return visit;
-	//	}
+	// @ModelAttribute("visit")
+	// public Visit loadPetWithVisit(@PathVariable("petId") final int petId) {
+	// Pet pet = this.petService.findPetById(petId);
+	// Visit visit = new Visit();
+	// pet.addVisit(visit);
+	// return visit;
+	// }
 
-	// Spring MVC calls method loadPetWithVisit(...) before initNewVisitForm is called
+	// Spring MVC calls method loadPetWithVisit(...) before initNewVisitForm is
+	// called
 	@GetMapping(value = "/owners/*/pets/{petId}/visits/new")
 	public String initNewVisitForm(@PathVariable("petId") final int petId, final Map<String, Object> model) {
 		return "pets/createOrUpdateVisitForm";
 	}
 
-	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is called
+	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is
+	// called
 	@PostMapping(value = "/owners/{ownerId}/pets/{petId}/visits/new")
 	public String processNewVisitForm(@Valid final Visit visit, final BindingResult result) {
 		if (result.hasErrors())
@@ -85,12 +87,6 @@ public class VisitController {
 			return "redirect:/owners/{ownerId}";
 		}
 	}
-
-	//	@GetMapping(value = "/owners/*/pets/{petId}/visits")
-	//	public String showVisits(@PathVariable final int petId, final Map<String, Object> model) {
-	//		model.put("visits", this.petService.findPetById(petId).getVisits());
-	//		return "visitList";
-	//	}
 
 	@GetMapping(value = "/listAllPending")
 	public String listAllPending(final ModelMap modelMap) {
@@ -158,26 +154,9 @@ public class VisitController {
 		return "/visits/createOrUpdateVisitForm";
 	}
 
-	/*
-	 * @PostMapping(path = "/save")
-	 * public String newVisit(@Valid final Visit visit, final BindingResult result, final ModelMap modelMap) {
-	 * String view = "/visits/createOrUpdateVisitForm";
-	 * if (result.hasErrors()) {
-	 * modelMap.addAttribute("visit", visit);
-	 * return view;
-	 * } else {
-	 * visit.setIsAccepted(true);
-	 * this.visitService.save(visit);
-	 * modelMap.addAttribute("message", "Visit succesfully updated");
-	 * view = this.listAllAccepted(modelMap);
-	 * return "redirect:/visits/listAllAccepted";
-	 * }
-	 * }
-	 */
-
 	@PostMapping(path = "/save/{visitId}")
 	public String updateVisit(@PathVariable("visitId") final int visitId, @Valid final Visit entity,
-		final BindingResult result, final ModelMap modelMap) {
+			final BindingResult result, final ModelMap modelMap) {
 
 		String view = VisitController.VIEWS_VISIT_CREATE_OR_UPDATE_FORM;
 
@@ -214,8 +193,8 @@ public class VisitController {
 		String view = "redirect:/pets/newVisit/" + entity.getPet().getId();
 
 		if (result.hasErrors()) {
-			//			modelMap.addAttribute("visit", entity);
-			//			return view;
+			// modelMap.addAttribute("visit", entity);
+			// return view;
 			model.addAttribute("visit", entity);
 			model.addAttribute("clinicId", entity.getPet().getOwner().getClinic().getId());
 			return "visits/createOrUpdateVisitForm";
@@ -230,17 +209,21 @@ public class VisitController {
 
 		return "redirect:/pets/listMyPets";
 	}
-	
-	@GetMapping(value = "/listAllPendingByOwner")
+
+	@GetMapping(value = "/listByOwner")
 	public String listAllPendingByOwner(final ModelMap modelMap) {
-		String view = "visits/list2";
+		String view = "visits/listByOwner";
 
 		Owner owner = this.ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Iterable<Visit> visits = this.visitService.findAllPendingByOwner(owner);
-
-		modelMap.addAttribute("visits", visits);
+		Iterable<Visit> visitsPending = this.visitService.findAllPendingByOwner(owner);
 		
+		Iterable<Visit> visitsAccepted = this.visitService.findAllAcceptedByOwner(owner);
+
+		modelMap.addAttribute("visitsPending", visitsPending);
+		
+		modelMap.addAttribute("visitsAccepted", visitsAccepted);
+
 		return view;
 
 	}

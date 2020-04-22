@@ -5,7 +5,7 @@
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
 
-<petclinic:layout pageName="visits">
+<petclinic:layout pageName="visitsByPet">
     <jsp:attribute name="customScript">
         <script>
             $(function () {
@@ -15,7 +15,13 @@
     </jsp:attribute>
     
     <jsp:body>
-        <h2>Update Visit</h2>
+    	<c:if test="${visit.id != null}">
+				<h2>Update Visit</h2>
+        </c:if>
+        
+        <c:if test="${visit.id == null}">
+				<h2>New Visit</h2>
+        </c:if>
         
         <b>Pet</b>
         <table class="table table-striped">
@@ -58,6 +64,30 @@
                 </div>
             </div>
         </form:form>
+       <c:if test="${visits != null}">
+        <h2>Historical of Visits</h2>
+        
+        <table id="visitsTable" class="table table-striped">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <c:forEach items="${visits}" var="visit">
+            <tr>
+                <td>
+                    <c:out value="${visit.date}"/>
+                </td>
+                <td>
+                    <c:out value="${visit.description}"/>
+                </td>
+            </tr>
+        </c:forEach>
+        </tbody>
+    </table>
+    </c:if>
     </jsp:body>
 
 </petclinic:layout>

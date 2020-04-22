@@ -142,6 +142,9 @@ public class PetController {
 		visit.setPet(pet);
 		model.addAttribute("visit", visit);
 		model.addAttribute("clinicId", pet.getOwner().getClinic().getId());
+		Iterable<Visit> visits = visitService.findAllVisitByPet(petId);
+		model.addAttribute("visits", visits);
+		
 		return "visits/createOrUpdateVisitForm";
 	}
 
@@ -152,7 +155,10 @@ public class PetController {
 		stay.setClinic(pet.getOwner().getClinic());
 		stay.setPet(pet);
 		model.addAttribute("stay", stay);
-		return "visits/createOrUpdateVisitForm";
+		model.addAttribute("clinicId", pet.getOwner().getClinic().getId());
+		Iterable<Stay> stays = stayService.findAllStayByPet(petId);
+		model.addAttribute("stays", stays);
+		return "stays/createOrUpdateStayForm";
 	}
 
 	// @ModelAttribute("types")

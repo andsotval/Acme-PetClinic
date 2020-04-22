@@ -1,17 +1,16 @@
 
 package org.springframework.samples.petclinic.web;
 
-import java.util.Optional;
+import java.time.LocalDate;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.Stay;
 import org.springframework.samples.petclinic.model.Vet;
+import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.OwnerService;
-import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.StayService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.samples.petclinic.util.SessionUtils;
@@ -32,35 +31,17 @@ public class StayController {
 	private StayService			stayService;
 
 	private VetService			vetService;
-
-	private PetService			petService;
-
+	
 	private OwnerService		ownerService;
 
 
 	@Autowired
-	public StayController(StayService stayService, VetService vetService, PetService petService,
-		OwnerService ownerService) {
+	public StayController(StayService stayService, VetService vetService, OwnerService ownerService) {
 		this.stayService = stayService;
 		this.vetService = vetService;
-		this.petService = petService;
 		this.ownerService = ownerService;
 	}
 
-	@GetMapping(path = "/listHistoryByPet/{petId}")
-	public String listAllByPet(@PathVariable("petId") final int petId, final ModelMap modelMap) {
-		String view = "stays/petHistory";
-
-		//Hay que asegurar que el usuario autenticado es propietario de la mascota que se devuelve
-		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
-
-		//Alomejor esto es inutil
-		Optional<Pet> pet = petService.findEntityById(petId);
-
-		Iterable<Stay> stays = stayService.findAllStayByPet(petId);
-		modelMap.addAttribute("stays", stays);
-		return view;
-	}
 
 	@GetMapping(path = "/listAllPending")
 	public String listAllPending(final ModelMap modelMap) {
@@ -162,4 +143,45 @@ public class StayController {
 		return view;
 	}
 
+	@PostMapping(path = "/save")
+	public String updateNewVisit(@Valid final Stay entity, final BindingResult result, final ModelMap model) {
+
+		String view = "redirect:/pets/newStay/" + entity.getPet().getId();
+
+		if (result.hasErrors()) {
+			model.addAttribute("visit", entity);
+			model.addAttribute("clinicId", entity.getPet().getOwner().getClinic().getId());
+			return "visits/createOrUpdateVisitForm";
+		} else if (entity.getStartDate().isBefore(LocalDate.now().plusDays(2L))) {
+			result.rejectValue("date", "startLaterFinish", "Debe ser en futuro");
+			model.addAttribute("visit", entity);
+			return view;
+		} else if (entity.getFinishDate().isAfter(entity.getStartDate().plusDays(7L))) {
+			model.addAttribute("stay", entity);
+			result.rejectValue("finishDate", "sevenDays", "you cannot book a stay longer than seven days");
+		} else {
+			stayService.saveEntity(entity);
+			model.addAttribute("message", "Visit succesfully updated");
+		}
+
+		return "redirect:/pets/listMyPets";
+	}
+	
+	@GetMapping(value = "/listByOwner")
+	public String listAllPendingByOwner(final ModelMap modelMap) {
+		String view = "stays/listByOwner";
+
+		Owner owner = this.ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+
+		Iterable<Stay> staysPending = this.stayService.findAllPendingByOwner(owner);
+		
+		Iterable<Stay> staysAccepted = this.stayService.findAllAcceptedByOwner(owner);
+
+		modelMap.addAttribute("staysPending", staysPending);
+		
+		modelMap.addAttribute("staysAccepted", staysAccepted);
+
+		return view;
+
+	}
 }
