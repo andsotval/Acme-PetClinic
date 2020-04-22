@@ -6,9 +6,8 @@
 
 <petclinic:layout pageName="visits/{ownerId}">
 
-   		<c:if test="${staysAccepted != null}">
-        	<h2>Accepted Stays</h2>
-        
+		<h2>Accepted Stays</h2>
+   		<c:if test="${not empty staysAccepted}">
         	<table id="staysTable" class="table table-striped">
         	<thead>
         	<tr>
@@ -34,10 +33,13 @@
         	</tbody>
     		</table>
     	</c:if>
+    	
+    	<c:if test="${empty staysAccepted}">
+    		<h3>You don't have Accepted Stays by the moment...</h3>
+    	</c:if>
 
-		<c:if test="${staysPending != null}">
-        	<h2>Stays waiting for Acceptance</h2>
-        
+		<h2>Stays waiting for Acceptance</h2>
+		<c:if test="${not empty staysPending}">
         	<table id="staysTable" class="table table-striped">
         	<thead>
         	<tr>
@@ -62,6 +64,10 @@
         		</c:forEach>
         	</tbody>
     		</table>
+    	</c:if>
+    	
+    	<c:if test="${empty staysPending}">
+    		<h3>You don't have Stays waiting for being accepted by the moment...</h3>
     	</c:if>
  
 </petclinic:layout>
