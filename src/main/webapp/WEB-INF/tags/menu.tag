@@ -42,7 +42,7 @@
 				</petclinic:menuItem>
 				<petclinic:menuItem active="${name eq 'suggestions'}" url="/suggestion/admin/list"
 					title="suggestions">
-					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+					<span class="glyphicon glyphicon-bell" aria-hidden="true"></span>
 					<span>Suggestions</span>
 				</petclinic:menuItem>
 				</sec:authorize>
@@ -124,8 +124,8 @@
         <sec:authorize access="isAuthenticated() and !hasAuthority('admin')">
 				<petclinic:menuItem active="${name eq 'suggestions'}" url="#"
 					title="suggestions">
-					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-					<span>My Suggestions</span>
+					<span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>
+					<span>Suggestions</span>
          </petclinic:menuItem>
 				</sec:authorize>
 
