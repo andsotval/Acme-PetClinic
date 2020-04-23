@@ -84,6 +84,7 @@
         			<tr>
             			<th>Date</th>
             			<th>Description</th>
+            			<th>Status</th>
        				</tr>
        			</thead>
         		<tbody>
@@ -94,6 +95,19 @@
 			                </td>
 			                <td>
 			                    <c:out value="${visit.description}" />
+			                </td>
+			                <td>
+			                <c:choose>
+                			<c:when test="${visit.isAccepted == null}">
+                				<c:out value="PENDING"/>
+                			</c:when>
+                			<c:when test="${visit.isAccepted eq true}">
+                				<c:out value="ACCEPTED"/>
+                			</c:when>
+                			<c:otherwise>
+                				<c:out value="REJECTED"/>
+                			</c:otherwise>
+                		</c:choose>
 			                </td>
 			            </tr>
 			        </c:forEach>

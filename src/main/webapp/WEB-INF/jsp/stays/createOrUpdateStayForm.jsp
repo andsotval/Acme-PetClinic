@@ -90,6 +90,7 @@
             <th>Start Date</th>
             <th>Finish Date</th>
             <th>Description</th>
+            <th>Status</th>
         </tr>
         </thead>
         <tbody>
@@ -104,6 +105,19 @@
                 <td>
                     <c:out value="${stay.description} " />
                 </td>
+                <td>
+			       <c:choose>
+                		<c:when test="${stay.isAccepted == null}">
+                			<c:out value="PENDING" />
+                		</c:when>
+                		<c:when test="${stay.isAccepted eq true}">
+                			<c:out value="ACCEPTED" />
+                		</c:when>
+                		<c:otherwise>
+                			<c:out value="REJECTED" />
+                		</c:otherwise>
+                	</c:choose>
+			    </td>
             </tr>
         </c:forEach>
         </tbody>
