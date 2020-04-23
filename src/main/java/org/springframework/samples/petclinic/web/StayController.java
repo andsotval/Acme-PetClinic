@@ -1,17 +1,15 @@
 
 package org.springframework.samples.petclinic.web;
 
-import java.util.Optional;
+import java.time.LocalDate;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.Stay;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.service.OwnerService;
-import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.StayService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.samples.petclinic.util.SessionUtils;
@@ -32,35 +30,17 @@ public class StayController {
 	private StayService			stayService;
 
 	private VetService			vetService;
-
-	private PetService			petService;
-
+	
 	private OwnerService		ownerService;
 
 
 	@Autowired
-	public StayController(StayService stayService, VetService vetService, PetService petService,
-		OwnerService ownerService) {
+	public StayController(StayService stayService, VetService vetService, OwnerService ownerService) {
 		this.stayService = stayService;
 		this.vetService = vetService;
-		this.petService = petService;
 		this.ownerService = ownerService;
 	}
 
-	@GetMapping(path = "/listHistoryByPet/{petId}")
-	public String listAllByPet(@PathVariable("petId") final int petId, final ModelMap modelMap) {
-		String view = "stays/petHistory";
-
-		//Hay que asegurar que el usuario autenticado es propietario de la mascota que se devuelve
-		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
-
-		//Alomejor esto es inutil
-		Optional<Pet> pet = petService.findEntityById(petId);
-
-		Iterable<Stay> stays = stayService.findAllStayByPet(petId);
-		modelMap.addAttribute("stays", stays);
-		return view;
-	}
 
 	@GetMapping(path = "/listAllPending")
 	public String listAllPending(final ModelMap modelMap) {
@@ -162,4 +142,74 @@ public class StayController {
 		return view;
 	}
 
+	@PostMapping(path = "/save")
+	public String newStay(@Valid final Stay entity, final BindingResult result, final ModelMap model) {
+
+		String view = "stays/createOrUpdateStayForm";
+		
+		int i = 0;
+		
+		if (result.hasErrors()) {
+			model.addAttribute("stay", entity);
+			i++;
+		}
+		if(entity.getStartDate() == null) {
+			model.addAttribute("stay", entity);
+			result.rejectValue("startDate", "startDateNotNull", "is required");
+			i++;
+		}else {
+			if(entity.getStartDate().isBefore(LocalDate.now().plusDays(2L))) {
+				model.addAttribute("stay", entity);
+				result.rejectValue("startDate", "startFuturePlus2Days", "Minimum 2 days after today");
+				i++;
+			}
+		}
+		
+		if(entity.getFinishDate() == null) {
+			model.addAttribute("stay", entity);
+			result.rejectValue("finishDate", "finishDateNotNull", "is required");
+			i++;
+		}else {
+			if(entity.getFinishDate().isAfter(entity.getStartDate().plusDays(7L))) {
+				model.addAttribute("stay", entity);
+				result.rejectValue("finishDate", "finishDateMinimumOneWeek", "Stays cannot last longer than one week");
+				i++;
+			}
+			if(entity.getFinishDate().isBefore(entity.getStartDate())) {
+				model.addAttribute("stay", entity);
+				result.rejectValue("finishDate", "finishDateAfteStartDate", "The finish date must be after the start date");
+				i++;
+			}
+		}
+		
+		if(i == 0) {
+			stayService.saveEntity(entity);
+			model.addAttribute("message", "Stay succesfully updated");
+			return "redirect:/stays/listByOwner";
+		}else {
+			Iterable<Stay> stays = stayService.findAllStayByPet(entity.getPet().getId());
+			model.addAttribute("stays", stays);
+			model.addAttribute("clinicId", entity.getPet().getOwner().getClinic().getId());
+		}
+
+		return view;
+	}
+	
+	@GetMapping(value = "/listByOwner")
+	public String listAllPendingByOwner(final ModelMap modelMap) {
+		String view = "stays/listByOwner";
+
+		Owner owner = this.ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+
+		Iterable<Stay> staysPending = this.stayService.findAllPendingByOwner(owner);
+		
+		Iterable<Stay> staysAccepted = this.stayService.findAllAcceptedByOwner(owner);
+
+		modelMap.addAttribute("staysPending", staysPending);
+		
+		modelMap.addAttribute("staysAccepted", staysAccepted);
+
+		return view;
+
+	}
 }

@@ -13,10 +13,9 @@
             <th>Name</th>
             <th>Type</th>
             <th>Birth Date</th>
-            <th>New visit</th>
-            <th>New stay</th>
+            <th>Visits</th>
+            <th>Stays</th>
             <th>Delete</th>
-            <th>History</th>
         </tr>
         </thead>
         <tbody>
@@ -38,19 +37,16 @@
 	                <a href="${fn:escapeXml(petUrlNewVisit)}"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span></a>
                 </td>
                  <td>
-	                <span class="glyphicon glyphicon-bed" aria-hidden="true" ></span>
+	                <spring:url value="/pets/newStay/{petId}" var="petUrlNewStay">
+	                    <spring:param name="petId" value="${pet.id}"/>
+	                </spring:url>
+	                <a href="${fn:escapeXml(petUrlNewStay)}"><span class="glyphicon glyphicon-bed" aria-hidden="true"></span></a>
                 </td>
                 <td>
                 	<spring:url value="/pets/delete/{petId}" var="petUrlCancel">
 	                    <spring:param name="petId" value="${pet.id}"/>
 	                </spring:url>
 	                <a href="${fn:escapeXml(petUrlCancel)}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-                </td>
-				<td>
-                	<spring:url value="/stays/listHistoryByPet/{petId}" var="petUrlHistory">
-	                    <spring:param name="petId" value="${pet.id}"/>
-	                </spring:url>
-	                <a href="${fn:escapeXml(petUrlHistory)}"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></a>
                 </td>
             </tr>
         </c:forEach>

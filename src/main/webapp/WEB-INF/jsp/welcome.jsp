@@ -5,11 +5,12 @@
 <!-- %@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %-->  
 
 <petclinic:layout pageName="home">
-    <h2><fmt:message key="welcome"/></h2>
+    <h2><fmt:message key="welcome.title"/></h2>
+    <h3><fmt:message key="welcome.message"/></h3>
     <div class="row">
         <div class="col-md-12">
-            <spring:url value="/resources/images/pets.png" htmlEscape="true" var="petsImage"/>
-            <img class="img-responsive" src="${petsImage}"/>
+            <!-- <spring:url value="/resources/images/pets.png" htmlEscape="true" var="petsImage"/>
+            <img class="img-responsive" src="${petsImage}"/> -->
         </div>
     </div>
 </petclinic:layout>

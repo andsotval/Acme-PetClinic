@@ -89,7 +89,6 @@ public class PetController {
 	public String newPet(@PathVariable("ownerId") int ownerId, final ModelMap model) {
 		Pet pet = new Pet();
 		Owner owner = ownerService.findEntityById(ownerId).get();
-		//		owner.addPet(pet);
 		pet.setOwner(owner);
 		model.addAttribute("pet", pet);
 		return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
@@ -97,19 +96,25 @@ public class PetController {
 
 	@PostMapping(path = "/save")
 	public String savePet(@Valid final Pet pet, final BindingResult result, final ModelMap modelMap) {
-		String view = "pets/listMyPets";
+		String view = VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		// esto hay que verlo
-		pet.setOwner(owner);
-
-		if (pet.getOwner().getId() != owner.getId())
-			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
-		else if (pet.getBirthDate().isAfter(LocalDate.now())) {
-			result.rejectValue("birthDate", "birthDateFuture", "the birth date cannot be in future");
+		int i = 0;
+		if(result.hasErrors()) {
 			modelMap.addAttribute("pet", pet);
-		} else {
+			i++;
+		}	
+		if (pet.getOwner().getId() != owner.getId()) {
+			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
+			i++;
+		}
+		if ((pet.getBirthDate() != null) && pet.getBirthDate().isAfter(LocalDate.now())) {
+			modelMap.addAttribute("pet", pet);
+			result.rejectValue("birthDate", "birthDateFuture", "the birth date cannot be in future");
+			i++;
+		}	
+		if (i == 0) {
 			petService.saveEntity(pet);
 			modelMap.addAttribute("message", "Stay succesfully updated");
 			return "redirect:/pets/listMyPets";
@@ -142,6 +147,9 @@ public class PetController {
 		visit.setPet(pet);
 		model.addAttribute("visit", visit);
 		model.addAttribute("clinicId", pet.getOwner().getClinic().getId());
+		Iterable<Visit> visits = visitService.findAllVisitByPet(petId);
+		model.addAttribute("visits", visits);
+		
 		return "visits/createOrUpdateVisitForm";
 	}
 
@@ -152,26 +160,13 @@ public class PetController {
 		stay.setClinic(pet.getOwner().getClinic());
 		stay.setPet(pet);
 		model.addAttribute("stay", stay);
-		return "visits/createOrUpdateVisitForm";
+		model.addAttribute("clinicId", pet.getOwner().getClinic().getId());
+		Iterable<Stay> stays = stayService.findAllStayByPet(petId);
+		model.addAttribute("stays", stays);
+		return "stays/createOrUpdateStayForm";
 	}
 
-	// @ModelAttribute("types")
-	// public Collection<PetType> populatePetTypes() {
-	// return this.petService.findPetTypes();
-	// }
-	//
-	// @ModelAttribute("owner")
-	// public Owner findOwner(@PathVariable("ownerId") final int ownerId) {
-	// return this.ownerService.findOwnerById(ownerId);
-	// }
-
-	/*
-	 * @ModelAttribute("pet") public Pet findPet(@PathVariable("petId") Integer
-	 * petId) { Pet result=null; if(petId!=null)
-	 * result=this.clinicService.findPetById(petId); else result=new Pet(); return
-	 * result; }
-	 */
-
+	//Estos métodos ya estaban en PetClinic pero de momento no los usamos
 	@InitBinder("owner")
 	public void initOwnerBinder(final WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
@@ -182,68 +177,11 @@ public class PetController {
 		dataBinder.setValidator(new PetValidator());
 	}
 
-	// @GetMapping(value = "/pets/new")
-	// public String initCreationForm(Owner owner, ModelMap model) {
-	// Pet pet = new Pet();
-	// owner.addPet(pet);
-	// model.put("pet", pet);
-	// return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
-	// }
-	//
-	// @PostMapping(value = "/pets/new")
-	// public String processCreationForm(Owner owner, @Valid Pet pet, BindingResult
-	// result, ModelMap model) {
-	// if (result.hasErrors()) {
-	// model.put("pet", pet);
-	// return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
-	// }
-	// else {
-	// try{
-	// owner.addPet(pet);
-	// this.petService.savePet(pet);
-	// }catch(DuplicatedPetNameException ex){
-	// result.rejectValue("name", "duplicate", "already exists");
-	// return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
-	// }
-	// return "redirect:/owners/{ownerId}";
-	// }
-	// }
-
 	@GetMapping(value = "/pets/{petId}/edit")
 	public String initUpdateForm(@PathVariable("petId") final int petId, final ModelMap model) {
 		Pet pet = petService.findEntityById(petId).get();
 		model.put("pet", pet);
 		return PetController.VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 	}
-
-	/**
-	 *
-	 * @param pet
-	 * @param result
-	 * @param petId
-	 * @param model
-	 * @param owner
-	 * @param model
-	 * @return
-	 */
-	// @PostMapping(value = "/pets/{petId}/edit")
-	// public String processUpdateForm(@Valid final Pet pet, final BindingResult
-	// result, final Owner owner, @PathVariable("petId") final int petId, final
-	// ModelMap model) {
-	// if (result.hasErrors()) {
-	// model.put("pet", pet);
-	// return PetController.VIEWS_PETS_CREATE_OR_UPDATE_FORM;
-	// } else {
-	// Pet petToUpdate = this.petService.findPetById(petId);
-	// BeanUtils.copyProperties(pet, petToUpdate, "id", "owner", "visits");
-	// try {
-	// this.petService.savePet(petToUpdate);
-	// } catch (DuplicatedPetNameException ex) {
-	// result.rejectValue("name", "duplicate", "already exists");
-	// return PetController.VIEWS_PETS_CREATE_OR_UPDATE_FORM;
-	// }
-	// return "redirect:/owners/{ownerId}";
-	// }
-	// }
 
 }

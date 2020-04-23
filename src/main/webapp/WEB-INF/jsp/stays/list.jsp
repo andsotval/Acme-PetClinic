@@ -6,7 +6,7 @@
 
 <petclinic:layout pageName="stays">
     <h2>Stays</h2>
-
+	<c:if test="${not empty stays}">
     <table id="staysTable" class="table table-striped">
         <thead>
         <tr>
@@ -51,17 +51,23 @@
         </c:forEach>
         </tbody>
     </table>
-    
+    </c:if>
 
     
     <table class="table-buttons">
         <tr>
             <td>
                 <c:if test="${accepted == false}"> 
+                	<c:if test="${empty stays}">
+						<h3>You have checked out all the pending stays</h3>
+					</c:if> 
 					<a class="btn btn-default" href='<spring:url value="/stays/listAllAccepted" htmlEscape="true"/>'>List my accepted stays</a>
 				</c:if>
 	
 				<c:if test="${accepted == true}"> 
+					<c:if test="${empty visits}">
+						<h3>You don't have accepted stays</h3>
+					</c:if> 
 					<a class="btn btn-default" href='<spring:url value="/stays/listAllPending" htmlEscape="true"/>'>List my pending stays</a>
 				</c:if>
             </td>            
