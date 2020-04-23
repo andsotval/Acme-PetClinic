@@ -6,6 +6,7 @@
 
 <petclinic:layout pageName="visits/{ownerId}">
 
+		<h1>My Visits</h1>
 		<h2>Accepted Visits</h2>
    		<c:if test="${not empty visitsAccepted}">
         	<table id="visitsTable" class="table table-striped">

@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Stay;
 import org.springframework.samples.petclinic.model.Vet;
-import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.StayService;
 import org.springframework.samples.petclinic.service.VetService;
@@ -144,27 +143,56 @@ public class StayController {
 	}
 
 	@PostMapping(path = "/save")
-	public String updateNewVisit(@Valid final Stay entity, final BindingResult result, final ModelMap model) {
+	public String newStay(@Valid final Stay entity, final BindingResult result, final ModelMap model) {
 
-		String view = "redirect:/pets/newStay/" + entity.getPet().getId();
-
+		String view = "stays/createOrUpdateStayForm";
+		
+		int i = 0;
+		
 		if (result.hasErrors()) {
-			model.addAttribute("visit", entity);
-			model.addAttribute("clinicId", entity.getPet().getOwner().getClinic().getId());
-			return "visits/createOrUpdateVisitForm";
-		} else if (entity.getStartDate().isBefore(LocalDate.now().plusDays(2L))) {
-			result.rejectValue("date", "startLaterFinish", "Debe ser en futuro");
-			model.addAttribute("visit", entity);
-			return view;
-		} else if (entity.getFinishDate().isAfter(entity.getStartDate().plusDays(7L))) {
 			model.addAttribute("stay", entity);
-			result.rejectValue("finishDate", "sevenDays", "you cannot book a stay longer than seven days");
-		} else {
+			i++;
+		}
+		if(entity.getStartDate() == null) {
+			model.addAttribute("stay", entity);
+			result.rejectValue("startDate", "startDateNotNull", "is required");
+			i++;
+		}else {
+			if(entity.getStartDate().isBefore(LocalDate.now().plusDays(2L))) {
+				model.addAttribute("stay", entity);
+				result.rejectValue("startDate", "startFuturePlus2Days", "Minimum 2 days after today");
+				i++;
+			}
+		}
+		
+		if(entity.getFinishDate() == null) {
+			model.addAttribute("stay", entity);
+			result.rejectValue("finishDate", "finishDateNotNull", "is required");
+			i++;
+		}else {
+			if(entity.getFinishDate().isAfter(entity.getStartDate().plusDays(7L))) {
+				model.addAttribute("stay", entity);
+				result.rejectValue("finishDate", "finishDateMinimumOneWeek", "Stays cannot last longer than one week");
+				i++;
+			}
+			if(entity.getFinishDate().isBefore(entity.getStartDate())) {
+				model.addAttribute("stay", entity);
+				result.rejectValue("finishDate", "finishDateAfteStartDate", "The finish date must be after the start date");
+				i++;
+			}
+		}
+		
+		if(i == 0) {
 			stayService.saveEntity(entity);
-			model.addAttribute("message", "Visit succesfully updated");
+			model.addAttribute("message", "Stay succesfully updated");
+			return "redirect:/stays/listByOwner";
+		}else {
+			Iterable<Stay> stays = stayService.findAllStayByPet(entity.getPet().getId());
+			model.addAttribute("stays", stays);
+			model.addAttribute("clinicId", entity.getPet().getOwner().getClinic().getId());
 		}
 
-		return "redirect:/pets/listMyPets";
+		return view;
 	}
 	
 	@GetMapping(value = "/listByOwner")
