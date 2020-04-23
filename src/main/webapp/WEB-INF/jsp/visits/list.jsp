@@ -5,7 +5,14 @@
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
 <petclinic:layout pageName="visits/{vetId}">
-    <h2>Visits</h2>
+
+	<c:if test="${accepted eq true}">
+		<h2>Accepted Visits</h2>
+	</c:if>
+	<c:if test="${accepted eq false}">
+		<h2>Pending Visits</h2>
+	</c:if>
+	
 
 	<c:if test="${not empty visits}">
     <table id="vetsTable" class="table table-striped">
@@ -13,19 +20,39 @@
         <tr>
             <th>Date</th>
             <th>Description</th>
-            <th>Actions</th>
+            <th>Status</th>
+            <c:if test="${accepted eq true}">
+				 <th>Modify</th>
+			</c:if>
+			<c:if test="${accepted eq false}">
+				 <th>Accept</th>
+			</c:if>
+            <th>Reject</th>
         </tr>
         </thead>
         <tbody>
         <c:forEach items="${visits}" var="visit">
             <tr>
-                <td>
+                <td width="20%">
                     <c:out value="${visit.date}"/>
                 </td>
-                <td>
+                <td width="35%">
                     <c:out value="${visit.description} "/>
                 </td>
-                <td>
+                <td width="15%">
+			       <c:choose>
+                		<c:when test="${visit.isAccepted == null}">
+                			<c:out value="PENDING"/>
+                		</c:when>
+                		<c:when test="${visit.isAccepted eq true}">
+                			<c:out value="ACCEPTED"/>
+                		</c:when>
+                		<c:otherwise>
+                			<c:out value="REJECTED"/>
+                		</c:otherwise>
+                	</c:choose>
+			    </td>
+                <td width="15%">
                 <c:if test="${visit.isAccepted == null}">
 	                	<spring:url value="/visits/accept/{visitId}" var="visitUrlAccept">
 	                        <spring:param name="visitId" value="${visit.id}"/>
@@ -38,11 +65,12 @@
 	                    </spring:url>
 	                    <a href="${fn:escapeXml(visitUrlChangeDate)}"><span class="glyphicon glyphicon-time" aria-hidden="true" ></span></a>	
 	                </c:if>
+                </td>
+                <td width="15%">
                 	<spring:url value="/visits/cancel/{visitId}" var="visitUrlCancel">
 	                    <spring:param name="visitId" value="${visit.id}"/>
 	                </spring:url>
 	                <a href="${fn:escapeXml(visitUrlCancel)}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-	                
                 </td>
             </tr>
         </c:forEach>

@@ -25,14 +25,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/stays")
 public class StayController {
 
-	private static final String	VIEWS_STAY_CREATE_OR_UPDATE_FORM	= "/stays/createOrUpdateStayForm";
+	private static final String VIEWS_STAY_CREATE_OR_UPDATE_FORM = "/stays/createOrUpdateStayForm";
 
-	private StayService			stayService;
+	private StayService stayService;
 
-	private VetService			vetService;
-	
-	private OwnerService		ownerService;
+	private VetService vetService;
 
+	private OwnerService ownerService;
 
 	@Autowired
 	public StayController(StayService stayService, VetService vetService, OwnerService ownerService) {
@@ -40,7 +39,6 @@ public class StayController {
 		this.vetService = vetService;
 		this.ownerService = ownerService;
 	}
-
 
 	@GetMapping(path = "/listAllPending")
 	public String listAllPending(final ModelMap modelMap) {
@@ -109,7 +107,7 @@ public class StayController {
 
 	@PostMapping(path = "/save/{stayId}")
 	public String updateStay(@PathVariable("stayId") int stayId, @Valid Stay entity, BindingResult result,
-		ModelMap modelMap) {
+			ModelMap modelMap) {
 
 		String view = StayController.VIEWS_STAY_CREATE_OR_UPDATE_FORM;
 
@@ -119,24 +117,60 @@ public class StayController {
 		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		Stay stay = stayService.findEntityById(stayId).get();
-		stay.setDescription(entity.getDescription());
-		stay.setStartDate(entity.getStartDate());
-		stay.setFinishDate(entity.getFinishDate());
 
-		if (result.hasErrors())
+		int i = 0;
+
+		if (result.hasErrors()) {
 			modelMap.addAttribute("stay", entity);
-		else if (stay.getClinic().getId() != vet.getClinic().getId())
-			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
-		else if (!entity.getStartDate().isBefore(entity.getFinishDate())) {
+			i++;
+		}
+
+		if (stay.getClinic().getId() != vet.getClinic().getId()) {
 			modelMap.addAttribute("stay", entity);
-			result.rejectValue("startDate", "startLaterFinish", "the start date cannot be later than the finish date");
-		} else if (entity.getFinishDate().isAfter(entity.getStartDate().plusDays(7L))) {
+			result.rejectValue("authorized", "notAuthorized", "You are not authorized");
+			i++;
+		}
+
+		if (entity.getStartDate() == null) {
 			modelMap.addAttribute("stay", entity);
-			result.rejectValue("finishDate", "sevenDays", "you cannot book a stay longer than seven days");
+			result.rejectValue("startDate", "startDateNotNull", "is required");
+			i++;
 		} else {
+			if (entity.getStartDate().isBefore(LocalDate.now().plusDays(2L))) {
+				modelMap.addAttribute("stay", entity);
+				result.rejectValue("startDate", "startFuturePlus2Days", "Minimum 2 days after today");
+				i++;
+			}
+		}
+
+		if (entity.getFinishDate() == null) {
+			modelMap.addAttribute("stay", entity);
+			result.rejectValue("finishDate", "finishDateNotNull", "is required");
+			i++;
+		} else {
+			if (entity.getFinishDate().isAfter(entity.getStartDate().plusDays(7L))) {
+				modelMap.addAttribute("stay", entity);
+				result.rejectValue("finishDate", "finishDateMinimumOneWeek", "Stays cannot last longer than one week");
+				i++;
+			}
+			if (entity.getFinishDate().isBefore(entity.getStartDate().plusDays(1L))) {
+				modelMap.addAttribute("stay", entity);
+				result.rejectValue("finishDate", "finishDateAfteStartDate",
+						"The finish date must be after the start date");
+				i++;
+			}
+		}
+
+		if (i == 0) {
+			stay.setDescription(entity.getDescription());
+			stay.setStartDate(entity.getStartDate());
+			stay.setFinishDate(entity.getFinishDate());
 			stayService.saveEntity(stay);
 			modelMap.addAttribute("message", "Stay succesfully updated");
 			return listAllAccepted(modelMap);
+		} else {
+			entity.setId(stay.getId());
+			entity.setPet(stay.getPet());
 		}
 
 		return view;
@@ -146,47 +180,48 @@ public class StayController {
 	public String newStay(@Valid final Stay entity, final BindingResult result, final ModelMap model) {
 
 		String view = "stays/createOrUpdateStayForm";
-		
+
 		int i = 0;
-		
+
 		if (result.hasErrors()) {
 			model.addAttribute("stay", entity);
 			i++;
 		}
-		if(entity.getStartDate() == null) {
+		if (entity.getStartDate() == null) {
 			model.addAttribute("stay", entity);
 			result.rejectValue("startDate", "startDateNotNull", "is required");
 			i++;
-		}else {
-			if(entity.getStartDate().isBefore(LocalDate.now().plusDays(2L))) {
+		} else {
+			if (entity.getStartDate().isBefore(LocalDate.now().plusDays(2L))) {
 				model.addAttribute("stay", entity);
 				result.rejectValue("startDate", "startFuturePlus2Days", "Minimum 2 days after today");
 				i++;
 			}
 		}
-		
-		if(entity.getFinishDate() == null) {
+
+		if (entity.getFinishDate() == null) {
 			model.addAttribute("stay", entity);
 			result.rejectValue("finishDate", "finishDateNotNull", "is required");
 			i++;
-		}else {
-			if(entity.getFinishDate().isAfter(entity.getStartDate().plusDays(7L))) {
+		} else {
+			if (entity.getFinishDate().isAfter(entity.getStartDate().plusDays(7L))) {
 				model.addAttribute("stay", entity);
 				result.rejectValue("finishDate", "finishDateMinimumOneWeek", "Stays cannot last longer than one week");
 				i++;
 			}
-			if(entity.getFinishDate().isBefore(entity.getStartDate())) {
+			if (entity.getFinishDate().isBefore(entity.getStartDate())) {
 				model.addAttribute("stay", entity);
-				result.rejectValue("finishDate", "finishDateAfteStartDate", "The finish date must be after the start date");
+				result.rejectValue("finishDate", "finishDateAfteStartDate",
+						"The finish date must be after the start date");
 				i++;
 			}
 		}
-		
-		if(i == 0) {
+
+		if (i == 0) {
 			stayService.saveEntity(entity);
 			model.addAttribute("message", "Stay succesfully updated");
 			return "redirect:/stays/listByOwner";
-		}else {
+		} else {
 			Iterable<Stay> stays = stayService.findAllStayByPet(entity.getPet().getId());
 			model.addAttribute("stays", stays);
 			model.addAttribute("clinicId", entity.getPet().getOwner().getClinic().getId());
@@ -194,7 +229,7 @@ public class StayController {
 
 		return view;
 	}
-	
+
 	@GetMapping(value = "/listByOwner")
 	public String listAllPendingByOwner(final ModelMap modelMap) {
 		String view = "stays/listByOwner";
@@ -202,11 +237,11 @@ public class StayController {
 		Owner owner = this.ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		Iterable<Stay> staysPending = this.stayService.findAllPendingByOwner(owner);
-		
+
 		Iterable<Stay> staysAccepted = this.stayService.findAllAcceptedByOwner(owner);
 
 		modelMap.addAttribute("staysPending", staysPending);
-		
+
 		modelMap.addAttribute("staysAccepted", staysAccepted);
 
 		return view;

@@ -64,11 +64,11 @@
 							value="${clinicId}" />
                     	<input type="hidden" name="pet"
 							value="${visit.pet.id}" />
-						<button class="btn btn-default" type="submit"
+						<button class="btn btn-default" type="submit" name="authorized"
 							formaction="/visits/save">Save Visit</button> 
                      </c:if>
                      <c:if test="${visit.id != null}">
-						<button class="btn btn-default" type="submit"
+						<button class="btn btn-default" type="submit" name="authorized"
 							formaction="/visits/save/${visit.id}">Save Visit</button> 
                      </c:if>
                     <!-- <button class="btn btn-default" type="submit">Save Visit</button> -->
