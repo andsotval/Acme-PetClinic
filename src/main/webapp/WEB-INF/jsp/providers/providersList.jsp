@@ -43,7 +43,7 @@
         <tr>
             <th>Name</th>
             <th>Mail</th>
-            <th>Action</th>
+            <th>Telephone</th>
         </tr>
         </thead>
         <tbody>
@@ -55,11 +55,8 @@
                 <td>
                     <c:out value="${addedProvider.mail}"/>
                 </td>
-                <td>
-                    <spring:url value="/providers/addProvider/{providerId}" var="providerUrl">                  
-                    	<spring:param name="providerId" value="${addedProvider.id}"/>                      
-                    </spring:url>
-                    <a href="${fn:escapeXml(providerUrl)}"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a>
+                <td>                	
+                    <c:out value="${addedProvider.telephone}"/>
                 </td>                
             </tr>
         </c:forEach>       
