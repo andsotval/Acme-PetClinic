@@ -16,8 +16,6 @@
 
 package org.springframework.samples.petclinic.repository;
 
-import java.util.Collection;
-
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.stereotype.Repository;
@@ -26,9 +24,12 @@ import org.springframework.stereotype.Repository;
 public interface VetRepository extends BaseRepository<Vet> {
 
 	@Query("SELECT vet FROM Vet vet WHERE vet.clinic = null")
-	Collection<Vet> findAvailableVets();
+	Iterable<Vet> findAvailableVets();
 
 	@Query("SELECT v FROM Vet v WHERE v.user.username = ?1")
 	Vet findByVetByUsername(String username);
+
+	@Query("SELECT v FROM Vet v where v.clinic.manager.id=?1")
+	Iterable<Vet> findVetsByManager(int managerId);
 
 }
