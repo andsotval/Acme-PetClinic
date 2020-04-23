@@ -145,12 +145,15 @@ public class StayController {
 
 		if (result.hasErrors())
 			modelMap.addAttribute("stay", entity);
-		else if (stay.getClinic().getId() != vet.getClinic().getId())
+		if (stay.getClinic().getId() != vet.getClinic().getId()) {
 			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
-		else if (!entity.getStartDate().isBefore(entity.getFinishDate())) {
+			result.rejectValue("startDate", "startLaterFinish", "the start date cannot be later than the finish date");
+		}
+		if (!entity.getStartDate().isBefore(entity.getFinishDate())) {
 			modelMap.addAttribute("stay", entity);
 			result.rejectValue("startDate", "startLaterFinish", "the start date cannot be later than the finish date");
-		} else if (entity.getFinishDate().isAfter(entity.getStartDate().plusDays(7L))) {
+		}
+		if (entity.getFinishDate().isAfter(entity.getStartDate().plusDays(7L))) {
 			modelMap.addAttribute("stay", entity);
 			result.rejectValue("finishDate", "sevenDays", "you cannot book a stay longer than seven days");
 		} else {
