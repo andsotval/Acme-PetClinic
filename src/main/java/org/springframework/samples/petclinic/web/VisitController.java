@@ -49,15 +49,6 @@ public class VisitController {
 		dataBinder.setDisallowedFields("id");
 	}
 
-	/**
-	 * Called before each and every @GetMapping or @PostMapping annotated method. 2
-	 * goals: - Make sure we always have fresh data - Since we do not use the
-	 * session scope, make sure that Pet object always has an id (Even though id is
-	 * not part of the form fields)
-	 *
-	 * @param petId
-	 * @return Pet
-	 */
 	// @ModelAttribute("visit")
 	// public Visit loadPetWithVisit(@PathVariable("petId") final int petId) {
 	// Pet pet = this.petService.findPetById(petId);
@@ -164,21 +155,40 @@ public class VisitController {
 
 		Visit visit = visitService.findEntityById(visitId).get();
 
-		visit.setDescription(entity.getDescription());
-		visit.setDate(entity.getDate());
+		int i = 0;
 
-		if (result.hasErrors())
-			modelMap.addAttribute("visit", visit);
-		else if (visit.getClinic().getId() != vet.getClinic().getId())
-			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
-		else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
-			result.rejectValue("date", "startLaterFinish", "Posponer con 2 días de antelación");
-			modelMap.addAttribute("visit", visit);
+		if (result.hasErrors()) {
+			modelMap.addAttribute("visit", entity);
+			i++;
+		}
+
+		if (visit.getClinic().getId() != vet.getClinic().getId()) {
+			modelMap.addAttribute("visit", entity);
+			result.rejectValue("authorized", "notAuthorized", "You are not authorized");
+			i++;
+		}
+
+		if (entity.getDate() == null) {
+			modelMap.addAttribute("visit", entity);
+			result.rejectValue("date", "dateNotNull", "is required");
+			i++;
 		} else {
+			if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
+				modelMap.addAttribute("visit", entity);
+				result.rejectValue("date", "dateInFuture", "Minimum 2 days after today");
+				i++;
+			}
+		}
+
+		if (i == 0) {
+			visit.setDescription(entity.getDescription());
+			visit.setDate(entity.getDate());
 			visitService.saveEntity(visit);
 			modelMap.addAttribute("message", "Visit succesfully updated");
 			return listAllAccepted(modelMap);
-
+		} else {
+			entity.setId(visit.getId());
+			entity.setPet(visit.getPet());
 		}
 
 		return view;
@@ -190,13 +200,13 @@ public class VisitController {
 		String view = "visits/createOrUpdateVisitForm";
 
 		int i = 0;
-		
+
 		if (result.hasErrors()) {
 			model.addAttribute("visit", entity);
 			i++;
 		}
-		
-		if(entity.getDate() == null) {
+
+		if (entity.getDate() == null) {
 			model.addAttribute("visit", entity);
 			result.rejectValue("date", "dateNotNull", "is required");
 			i++;
@@ -206,19 +216,17 @@ public class VisitController {
 				result.rejectValue("date", "dateInFuture", "Minimum 2 days after today");
 				i++;
 			}
-		} 
-		
-		if(i == 0) {
+		}
+
+		if (i == 0) {
 			visitService.saveEntity(entity);
 			model.addAttribute("message", "Visit succesfully updated");
 			return "redirect:/visits/listByOwner";
-		}else {
+		} else {
 			Iterable<Visit> visits = visitService.findAllVisitByPet(entity.getPet().getId());
 			model.addAttribute("visits", visits);
 			model.addAttribute("clinicId", entity.getPet().getOwner().getClinic().getId());
 		}
-		
-		
 
 		return view;
 	}
@@ -230,11 +238,11 @@ public class VisitController {
 		Owner owner = this.ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		Iterable<Visit> visitsPending = this.visitService.findAllPendingByOwner(owner);
-		
+
 		Iterable<Visit> visitsAccepted = this.visitService.findAllAcceptedByOwner(owner);
 
 		modelMap.addAttribute("visitsPending", visitsPending);
-		
+
 		modelMap.addAttribute("visitsAccepted", visitsAccepted);
 
 		return view;
