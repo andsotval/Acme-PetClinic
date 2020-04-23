@@ -18,7 +18,7 @@
         
         <form:form modelAttribute="pet" class="form-horizontal" action="/pets/save/${pet.id}">
             <input type="hidden" name="id" value="${pet.id}"/>
-            <input type="hidden" name="owner" value="${pet.owner}"/>
+            <input type="hidden" name="owner" value="${pet.owner.id}"/>
             
             <div class="form-group has-feedback">
                 <div class="form-group">
