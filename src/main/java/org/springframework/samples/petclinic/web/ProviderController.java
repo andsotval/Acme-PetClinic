@@ -31,8 +31,13 @@ public class ProviderController {
 
 	@GetMapping(value = "/listAvailable")
 	public String listAvailable(final ModelMap model) {
-		Iterable<Provider> providerList = this.providerService.findAvailableProviders();
-		model.addAttribute("providers", providerList);
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		Integer managerId = manager.getId();
+
+		Iterable<Provider> availableProviderList = providerService.findAvailableProviders();
+		Iterable<Provider> addedProviderList = providerService.findProvidersByManagerId(managerId);
+		model.addAttribute("availableProviders", availableProviderList);
+		model.addAttribute("addedProviders", addedProviderList);
 		return "providers/providersList";
 	}
 
@@ -40,12 +45,12 @@ public class ProviderController {
 	@GetMapping(value = "/addProvider/{providerId}")
 	public String initAddProviderToManager(@PathVariable("providerId") final Integer providerId, final Model model) {
 
-		Manager manager = this.managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Provider provider = this.providerService.findEntityById(providerId).get();
+		Provider provider = providerService.findEntityById(providerId).get();
 		if (provider.getManager() == null) {
 			provider.setManager(manager);
-			this.providerService.saveEntity(provider);
+			providerService.saveEntity(provider);
 		} else {
 			model.addAttribute("message", "No es posible añadir un Provider que ya esta asignado a otro Manager");
 			return "redirect:/providers/listAvailable";
