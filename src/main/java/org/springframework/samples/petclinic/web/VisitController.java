@@ -187,24 +187,40 @@ public class VisitController {
 	@PostMapping(path = "/save")
 	public String updateNewVisit(@Valid final Visit entity, final BindingResult result, final ModelMap model) {
 
-		String view = "redirect:/pets/newVisit/" + entity.getPet().getId();
+		String view = "visits/createOrUpdateVisitForm";
 
+		int i = 0;
+		
 		if (result.hasErrors()) {
-			// modelMap.addAttribute("visit", entity);
-			// return view;
 			model.addAttribute("visit", entity);
-			model.addAttribute("clinicId", entity.getPet().getOwner().getClinic().getId());
-			return "visits/createOrUpdateVisitForm";
-		} else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
-			result.rejectValue("date", "startLaterFinish", "Debe ser en futuro");
+			i++;
+		}
+		
+		if(entity.getDate() == null) {
 			model.addAttribute("visit", entity);
-			return view;
+			result.rejectValue("date", "dateNotNull", "is required");
+			i++;
 		} else {
+			if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
+				model.addAttribute("visit", entity);
+				result.rejectValue("date", "dateInFuture", "Minimum 2 days after today");
+				i++;
+			}
+		} 
+		
+		if(i == 0) {
 			visitService.saveEntity(entity);
 			model.addAttribute("message", "Visit succesfully updated");
+			return "redirect:/visits/listByOwner";
+		}else {
+			Iterable<Visit> visits = visitService.findAllVisitByPet(entity.getPet().getId());
+			model.addAttribute("visits", visits);
+			model.addAttribute("clinicId", entity.getPet().getOwner().getClinic().getId());
 		}
+		
+		
 
-		return "redirect:/pets/listMyPets";
+		return view;
 	}
 
 	@GetMapping(value = "/listByOwner")

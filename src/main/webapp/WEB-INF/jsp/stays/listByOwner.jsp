@@ -15,20 +15,25 @@
             	<th>Start Date</th>
             	<th>Finish Date</th>
             	<th>Description</th>
+            	<th>Status</th>
        		</tr>
         	</thead>
       		<tbody>
        			<c:forEach items="${staysAccepted}" var="stayAccepted">
             		<tr>
-                		<td>
+                		<td width="20%">
                    			<c:out value="${stayAccepted.startDate}"/>
                 		</td>
-                		<td>
+                		<td width="20%">
                    			<c:out value="${stayAccepted.finishDate}"/>
                 		</td>
-                		<td>
+                		<td width="45%">
                     		<c:out value="${stayAccepted.description}"/>
                 		</td>
+                		<td width="15%">
+                    		<c:out value="ACCEPTED"/>
+                		</td>
+                		
             		</tr>
         		</c:forEach>
         	</tbody>
@@ -47,19 +52,23 @@
             	<th>Start Date</th>
             	<th>Finish Date</th>
             	<th>Description</th>
+            	<th>Status</th>
        		</tr>
         	</thead>
       		<tbody>
        			<c:forEach items="${staysPending}" var="stayPending">
             		<tr>
-                		<td>
+                		<td width="20%">
                    			<c:out value="${stayPending.startDate}"/>
                 		</td>
-                		<td>
+                		<td width="20%">
                     		<c:out value="${stayPending.finishDate}"/>
                 		</td>
-                		<td>
+                		<td width="45%">
                     		<c:out value="${stayPending.description}"/>
+                		</td>
+                		<td width="15%">
+                    		<c:out value="PENDING"/>
                 		</td>
             		</tr>
         		</c:forEach>

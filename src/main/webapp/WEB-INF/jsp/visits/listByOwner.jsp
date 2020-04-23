@@ -20,24 +20,14 @@
       		<tbody>
        			<c:forEach items="${visitsAccepted}" var="visitAccepted">
             		<tr>
-                		<td>
+                		<td width="35%">
                    			<c:out value="${visitAccepted.date}"/>
                 		</td>
-                		<td>
+                		<td width="50%">
                     		<c:out value="${visitAccepted.description}"/>
                 		</td>
                 		<td width="15%">
-                		<c:choose>
-                			<c:when test="${visitAccepted.isAccepted == null}">
-                				<c:out value="PENDING"/>
-                			</c:when>
-                			<c:when test="${visitAccepted.isAccepted eq true}">
-                				<c:out value="ACCEPTED"/>
-                			</c:when>
-                			<c:otherwise>
-                				<c:out value="REJECTED"/>
-                			</c:otherwise>
-                		</c:choose>
+                			<c:out value="ACCEPTED"/>
                 		</td>
             		</tr>
         		</c:forEach>
@@ -56,16 +46,20 @@
         	<tr>
             	<th>Date</th>
             	<th>Description</th>
+            	<th>Status</th>
        		</tr>
         	</thead>
       		<tbody>
        			<c:forEach items="${visitsPending}" var="visitPending">
             		<tr>
-                		<td>
+                		<td width="35%">
                    			<c:out value="${visitPending.date}"/>
                 		</td>
-                		<td>
+                		<td width="50%">
                     		<c:out value="${visitPending.description}"/>
+                		</td>
+                		<td width="15%">
+                			<c:out value="PENDING"/>
                 		</td>
             		</tr>
         		</c:forEach>
