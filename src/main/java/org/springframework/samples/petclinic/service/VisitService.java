@@ -41,7 +41,7 @@ public class VisitService extends BaseService<Visit> {
 	}
 
 	public void deleteByPetId(Integer id) {
-		Collection<Visit> visit = this.visitRepository.findByPetId(id);
+		Iterable<Visit> visit = this.visitRepository.findByPetId(id);
 		visitRepository.deleteAll(visit);
 		
 	}
@@ -50,5 +50,16 @@ public class VisitService extends BaseService<Visit> {
 	public Iterable<Visit> findAllPendingByOwner(final Owner owner) {
 		return visitRepository.findAllPendingByOwner(owner.getId());
 	}
+	
+	public Iterable<Visit> findAllAcceptedByOwner(Owner owner) {
+		return visitRepository.findAllAcceptedByOwner(owner.getId());
+	}
+	
+	@Transactional(readOnly = true)
+	public Iterable<Visit> findAllVisitByPet(final Integer petId) {
+		return visitRepository.findByPetId(petId);
+	}
+
+
 
 }
