@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
@@ -47,18 +48,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/pets")
 public class PetController {
 
-	private static final String		VIEWS_PETS_CREATE_OR_UPDATE_FORM	= "pets/createOrUpdatePetForm";
+	private static final String VIEWS_PETS_CREATE_OR_UPDATE_FORM = "pets/createOrUpdatePetForm";
 
-	private final PetTypeService	petTypeService;
-	private final PetService		petService;
-	private final VisitService		visitService;
-	private final StayService		stayService;
-	private final OwnerService		ownerService;
-
+	private final PetTypeService petTypeService;
+	private final PetService petService;
+	private final VisitService visitService;
+	private final StayService stayService;
+	private final OwnerService ownerService;
 
 	@Autowired
 	public PetController(final PetService petService, final OwnerService ownerService, final VisitService visitService,
-		final StayService stayService, final PetTypeService petTypeService) {
+			final StayService stayService, final PetTypeService petTypeService) {
 		this.petService = petService;
 		this.petTypeService = petTypeService;
 		this.ownerService = ownerService;
@@ -101,10 +101,10 @@ public class PetController {
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		int i = 0;
-		if(result.hasErrors()) {
+		if (result.hasErrors()) {
 			modelMap.addAttribute("pet", pet);
 			i++;
-		}	
+		}
 		if (pet.getOwner().getId() != owner.getId()) {
 			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
 			i++;
@@ -113,7 +113,7 @@ public class PetController {
 			modelMap.addAttribute("pet", pet);
 			result.rejectValue("birthDate", "birthDateFuture", "the birth date cannot be in future");
 			i++;
-		}	
+		}
 		if (i == 0) {
 			petService.saveEntity(pet);
 			modelMap.addAttribute("message", "Stay succesfully updated");
@@ -143,13 +143,18 @@ public class PetController {
 	public String newVisit(@PathVariable("petId") int petId, final ModelMap model) {
 		Visit visit = new Visit();
 		Pet pet = petService.findEntityById(petId).get();
-		visit.setClinic(pet.getOwner().getClinic());
+		Clinic c = pet.getOwner().getClinic();
+		if (c != null) {
+			visit.setClinic(pet.getOwner().getClinic());
+			model.addAttribute("clinicId", pet.getOwner().getClinic().getId());
+		}else {
+			model.addAttribute("hasClinic", false);
+		}
 		visit.setPet(pet);
 		model.addAttribute("visit", visit);
-		model.addAttribute("clinicId", pet.getOwner().getClinic().getId());
 		Iterable<Visit> visits = visitService.findAllVisitByPet(petId);
 		model.addAttribute("visits", visits);
-		
+
 		return "visits/createOrUpdateVisitForm";
 	}
 
@@ -157,16 +162,21 @@ public class PetController {
 	public String newStay(@PathVariable("petId") int petId, final ModelMap model) {
 		Stay stay = new Stay();
 		Pet pet = petService.findEntityById(petId).get();
-		stay.setClinic(pet.getOwner().getClinic());
+		Clinic c = pet.getOwner().getClinic();
+		if (c != null) {
+			stay.setClinic(pet.getOwner().getClinic());
+			model.addAttribute("clinicId", pet.getOwner().getClinic().getId());
+		}else {
+			model.addAttribute("hasClinic", false);
+		}
 		stay.setPet(pet);
 		model.addAttribute("stay", stay);
-		model.addAttribute("clinicId", pet.getOwner().getClinic().getId());
 		Iterable<Stay> stays = stayService.findAllStayByPet(petId);
 		model.addAttribute("stays", stays);
 		return "stays/createOrUpdateStayForm";
 	}
 
-	//Estos métodos ya estaban en PetClinic pero de momento no los usamos
+	// Estos métodos ya estaban en PetClinic pero de momento no los usamos
 	@InitBinder("owner")
 	public void initOwnerBinder(final WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
