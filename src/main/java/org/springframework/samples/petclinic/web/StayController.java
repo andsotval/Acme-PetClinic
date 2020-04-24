@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Stay;
 import org.springframework.samples.petclinic.model.Vet;
+import org.springframework.samples.petclinic.service.AuthoritiesService;
 import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.StayService;
 import org.springframework.samples.petclinic.service.VetService;
@@ -32,12 +33,16 @@ public class StayController {
 	private VetService vetService;
 
 	private OwnerService ownerService;
+	
+	private AuthoritiesService	authoritiesService;
 
 	@Autowired
-	public StayController(StayService stayService, VetService vetService, OwnerService ownerService) {
+	public StayController(StayService stayService, VetService vetService, OwnerService ownerService,
+			AuthoritiesService authoritiesService) {
 		this.stayService = stayService;
 		this.vetService = vetService;
 		this.ownerService = ownerService;
+		this.authoritiesService = authoritiesService;
 	}
 
 	@GetMapping(path = "/listAllPending")
@@ -86,15 +91,34 @@ public class StayController {
 	public String cancelStay(@PathVariable("stayId") final int stayId, final ModelMap modelMap) {
 		Stay stay = stayService.findEntityById(stayId).get();
 
-		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		String username = SessionUtils.obtainUserInSession().getUsername();
+		String authority = authoritiesService.findAuthorityByUsername(username);
+		
+		if(authority.contains("vet")) {
+			Vet vet = vetService.findPersonByUsername(username);
 
-		if (stay.getClinic().getId() == vet.getClinic().getId()) {
-			stay.setIsAccepted(false);
-			stayService.saveEntity(stay);
-		} else
-			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
+			if (stay.getClinic().getId() == vet.getClinic().getId()) {
+				stay.setIsAccepted(false);
+				stayService.saveEntity(stay);
+			} else {
+				modelMap.addAttribute("nonAuthorized", "No estás autorizado");
+			}
+			return "redirect:/stays/listAllAccepted";
+		}
+		
+		if(authority.contains("owner")) {
+			Owner owner = ownerService.findPersonByUsername(username);
 
-		return "redirect:/stays/listAllAccepted";
+			if (stay.getPet().getOwner().getId() == owner.getId()) {
+				stay.setIsAccepted(false);
+				stayService.saveEntity(stay);
+			} else {
+				modelMap.addAttribute("nonAuthorized", "No estás autorizado");
+			}
+			return "redirect:/stays/listByOwner";
+		}
+
+		return "";
 
 	}
 

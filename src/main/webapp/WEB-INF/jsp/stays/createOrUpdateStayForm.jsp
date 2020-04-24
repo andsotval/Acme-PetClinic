@@ -58,7 +58,7 @@
                 <petclinic:inputField label="Finish Date of the Stay"
 					name="finishDate" />
             </div>
-            
+            <c:if test="${hasClinic == null}">
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <input type="hidden" name="id" value="${stay.id}" />
@@ -66,18 +66,23 @@
                     <input type="hidden" name="pet" value="${stay.pet}"/> --%>
                     <c:if test="${stay.id == null}">
                     	<input type="hidden" name="clinic"
-							value="${clinicId}" />
+								value="${clinicId}" />
                     	<input type="hidden" name="pet"
-							value="${stay.pet.id}" />
+								value="${stay.pet.id}" />
 						<button class="btn btn-default" type="submit"
-							formaction="/stays/save">Save Stay</button> 
+								formaction="/stays/save">Save Stay</button> 
                      </c:if>
                      <c:if test="${stay.id != null}">
 						<button class="btn btn-default" type="submit"
-							formaction="/stays/save/${stay.id}">Save Stay</button> 
+								formaction="/stays/save/${stay.id}">Save Stay</button> 
                      </c:if>
                 </div>
             </div>
+            </c:if>
+            
+             <c:if test="${hasClinic eq false}">
+             	<h3>You cannot request stays if you are not in one Clinic</h3>
+             </c:if>
             
         </form:form>
         <c:if test="${stays != null}">

@@ -3,8 +3,10 @@ package org.springframework.samples.petclinic.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Manager;
+import org.springframework.samples.petclinic.model.Product;
 import org.springframework.samples.petclinic.model.Provider;
 import org.springframework.samples.petclinic.service.ManagerService;
+import org.springframework.samples.petclinic.service.ProductService;
 import org.springframework.samples.petclinic.service.ProviderService;
 import org.springframework.samples.petclinic.util.SessionUtils;
 import org.springframework.stereotype.Controller;
@@ -20,19 +22,26 @@ public class ProviderController {
 
 	private final ManagerService	managerService;
 	private final ProviderService	providerService;
+	private final ProductService	productService;
 
 
 	@Autowired
-	public ProviderController(final ManagerService managerService, final ProviderService providerService) {
+	public ProviderController(final ManagerService managerService, final ProviderService providerService, final ProductService productService) {
 		this.managerService = managerService;
 		this.providerService = providerService;
+		this.productService = productService;
 
 	}
 
 	@GetMapping(value = "/listAvailable")
 	public String listAvailable(final ModelMap model) {
-		Iterable<Provider> providerList = this.providerService.findAvailableProviders();
-		model.addAttribute("providers", providerList);
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		Integer managerId = manager.getId();
+
+		Iterable<Provider> availableProviderList = providerService.findAvailableProviders();
+		Iterable<Provider> addedProviderList = providerService.findProvidersByManagerId(managerId);
+		model.addAttribute("availableProviders", availableProviderList);
+		model.addAttribute("addedProviders", addedProviderList);
 		return "providers/providersList";
 	}
 
@@ -40,12 +49,12 @@ public class ProviderController {
 	@GetMapping(value = "/addProvider/{providerId}")
 	public String initAddProviderToManager(@PathVariable("providerId") final Integer providerId, final Model model) {
 
-		Manager manager = this.managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Provider provider = this.providerService.findEntityById(providerId).get();
+		Provider provider = providerService.findEntityById(providerId).get();
 		if (provider.getManager() == null) {
 			provider.setManager(manager);
-			this.providerService.saveEntity(provider);
+			providerService.saveEntity(provider);
 		} else {
 			model.addAttribute("message", "No es posible añadir un Provider que ya esta asignado a otro Manager");
 			return "redirect:/providers/listAvailable";
@@ -54,4 +63,12 @@ public class ProviderController {
 		return "redirect:/providers/listAvailable";
 	}
 
+	@GetMapping(value = "/listProductsByProvider/{providerId}")
+	public String listProductsByProvider(@PathVariable("providerId") final Integer providerId, final ModelMap model) {
+		Provider provider = providerService.findEntityById(providerId).get();
+		Iterable<Product> availableProducts = productService.findProductsAvailableByProviderId(providerId);
+		model.addAttribute("provider", provider);
+		model.addAttribute("products", availableProducts);
+		return "providers/providerProductsList";
+	}
 }
