@@ -30,7 +30,13 @@
                     	<spring:param name="providerId" value="${avProvider.id}"/>                      
                     </spring:url>
                     <a href="${fn:escapeXml(providerUrl)}"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a>
-                </td>                
+   
+                    <spring:url value="/providers/listProductsByProvider/{providerId}" var="providerUrl">                  
+                    	<spring:param name="providerId" value="${avProvider.id}"/>                      
+                    </spring:url>
+                    <a href="${fn:escapeXml(providerUrl)}"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span></a>
+   
+                </td>          
             </tr>
         </c:forEach>
         </tbody>

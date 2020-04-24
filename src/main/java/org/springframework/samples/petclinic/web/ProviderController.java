@@ -3,8 +3,10 @@ package org.springframework.samples.petclinic.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Manager;
+import org.springframework.samples.petclinic.model.Product;
 import org.springframework.samples.petclinic.model.Provider;
 import org.springframework.samples.petclinic.service.ManagerService;
+import org.springframework.samples.petclinic.service.ProductService;
 import org.springframework.samples.petclinic.service.ProviderService;
 import org.springframework.samples.petclinic.util.SessionUtils;
 import org.springframework.stereotype.Controller;
@@ -20,12 +22,14 @@ public class ProviderController {
 
 	private final ManagerService	managerService;
 	private final ProviderService	providerService;
+	private final ProductService	productService;
 
 
 	@Autowired
-	public ProviderController(final ManagerService managerService, final ProviderService providerService) {
+	public ProviderController(final ManagerService managerService, final ProviderService providerService, final ProductService productService) {
 		this.managerService = managerService;
 		this.providerService = providerService;
+		this.productService = productService;
 
 	}
 
@@ -59,4 +63,12 @@ public class ProviderController {
 		return "redirect:/providers/listAvailable";
 	}
 
+	@GetMapping(value = "/listProductsByProvider/{providerId}")
+	public String listProductsByProvider(@PathVariable("providerId") final Integer providerId, final ModelMap model) {
+		Provider provider = providerService.findEntityById(providerId).get();
+		Iterable<Product> availableProducts = productService.findProductsAvailableByProviderId(providerId);
+		model.addAttribute("provider", provider);
+		model.addAttribute("products", availableProducts);
+		return "providers/providerProductsList";
+	}
 }
