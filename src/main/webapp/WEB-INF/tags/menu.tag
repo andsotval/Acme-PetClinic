@@ -83,16 +83,8 @@
 					<span>Stays</span>
 				</petclinic:menuItem>
 				</sec:authorize>
-				
-				<sec:authorize access="hasAuthority('owner')">
-				<petclinic:menuItem active="${name eq 'clinics'}" url="/clinics/owner"
-					title="Clinic">
-					<span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>
-					<span>Clinic</span>
-				</petclinic:menuItem>
-				</sec:authorize>
         
-				<sec:authorize access="hasAuthority('veterinarian')">
+				<sec:authorize access="hasAnyAuthority('veterinarian','owner')">
 				<petclinic:menuItem active="${name eq 'clinics'}" url="/clinics/getDetail"
 					title="stays">
 					<span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>
@@ -136,7 +128,7 @@
 				</sec:authorize>
 				<sec:authorize access="isAuthenticated()">
 					<li class="dropdown"><a href="#" class="dropdown-toggle"
-						data-toggle="dropdown"> <span class="glyphicon glyphicon-user"></span>Â 
+						data-toggle="dropdown"> <span class="glyphicon glyphicon-user"></span> 
 							<strong><sec:authentication property="name" /></strong> <span
 							class="glyphicon glyphicon-chevron-down"></span>
 					</a>

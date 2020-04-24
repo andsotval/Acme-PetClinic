@@ -19,7 +19,9 @@ import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.samples.petclinic.service.OwnerService;
+import org.springframework.samples.petclinic.service.StayService;
 import org.springframework.samples.petclinic.service.VetService;
+import org.springframework.samples.petclinic.service.VisitService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -46,6 +48,12 @@ class ClinicControllerTests {
 
 	@MockBean
 	private OwnerService		ownerService;
+	
+	@MockBean
+	private StayService			stayService;
+	
+	@MockBean
+	private VisitService		visitService;
 
 
 	@BeforeEach
