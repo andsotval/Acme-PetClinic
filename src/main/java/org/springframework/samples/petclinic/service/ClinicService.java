@@ -30,8 +30,9 @@ public class ClinicService extends BaseService<Clinic> {
 	public Clinic findClinicByManagerId(Integer id) {
 		return clinicRepository.findClinicByManagerId(id);
 	}
-	
-	public Iterable<Pet> findPetsCyClinic(Clinic id){
-		return this.clinicRepository.findPetsByClinic(id);
+
+	@Transactional(readOnly = true)
+	public Iterable<Pet> findPetsCyClinic(Clinic id) {
+		return clinicRepository.findPetsByClinic(id);
 	}
 }

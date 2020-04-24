@@ -40,6 +40,11 @@
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>Pet types</span>
 				</petclinic:menuItem>
+				<petclinic:menuItem active="${name eq 'suggestions'}" url="/suggestion/admin/list"
+					title="suggestions">
+					<span class="glyphicon glyphicon-bell" aria-hidden="true"></span>
+					<span>Suggestions</span>
+				</petclinic:menuItem>
 				</sec:authorize>
 				
 				<sec:authorize access="hasAuthority('owner')">
@@ -98,7 +103,6 @@
 					<span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>
 					<span>My Clinic</span>
 				</petclinic:menuItem>
-				
 				</sec:authorize>
 				
 				<sec:authorize access="hasAuthority('owner')">
@@ -115,6 +119,14 @@
 					<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
 					<span>My Stays</span>
 				</petclinic:menuItem>
+				</sec:authorize>
+        
+        <sec:authorize access="isAuthenticated() and !hasAuthority('admin')">
+				<petclinic:menuItem active="${name eq 'suggestions'}" url="#"
+					title="suggestions">
+					<span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>
+					<span>Suggestions</span>
+         </petclinic:menuItem>
 				</sec:authorize>
 
 				<%-- <petclinic:menuItem active="${name eq 'error'}" url="/oups"
