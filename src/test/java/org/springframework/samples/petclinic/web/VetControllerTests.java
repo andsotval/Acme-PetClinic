@@ -110,11 +110,12 @@ class VetControllerTests {
 
 	}
 
-	@WithMockUser(value = "spring")
+	@WithMockUser(value = "pepito")
 	@Test
-	void testShowVetsAvailable() throws Exception {
+	void testVetsAvailableAndOwnList() throws Exception {
 		mockMvc.perform(get("/vets/vetsAvailable")).andExpect(status().isOk())
-			.andExpect(model().attributeExists("vets2")).andExpect(view().name("vets/vetsAvailable"));
+			.andExpect(model().attributeExists("vets2")).andExpect(model().attributeExists("hiredVets"))
+			.andExpect(view().name("vets/vetsAvailable"));
 	}
 
 	@WithMockUser(value = "pepito")
@@ -122,6 +123,13 @@ class VetControllerTests {
 	void testAcceptVet() throws Exception {
 		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET_ID)).andExpect(status().isFound())
 			.andExpect(view().name("redirect:/vets/vetsAvailable"));
+	}
+
+	@WithMockUser(value = "pepito")
+	@Test
+	void testShowVet() throws Exception {
+		mockMvc.perform(get("/vets/{vetId}", TEST_VET_ID)).andExpect(status().isOk())
+			.andExpect(model().attributeExists("vet")).andExpect(view().name("vets/vetDetails"));
 	}
 
 }
