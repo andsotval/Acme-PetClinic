@@ -33,10 +33,13 @@ public class ClinicController {
 
 
 	@Autowired
-	public ClinicController(final ClinicService clinicService, final OwnerService ownerService, final VetService vetService) {
+	public ClinicController(final ClinicService clinicService, OwnerService ownerService, VetService vetService,
+		VisitService visitService, StayService stayService) {
 		this.clinicService = clinicService;
 		this.ownerService = ownerService;
 		this.vetService = vetService;
+		this.visitService = visitService;
+		this.stayService = stayService;
 	}
 
 	@GetMapping(value = "/getDetail")
@@ -48,27 +51,25 @@ public class ClinicController {
 		Clinic clinic = null;
 
 		if (roles.contains("veterinarian")) {
-			Vet vet = this.vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
-
-			Vet _aux = this.vetService.findEntityById(vet.getId()).get();
-			clinic = _aux.getClinic();
-			List<Owner> owners = this.ownerService.findOwnersByClinicId(clinic.getId());
+			Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+			clinic = vet.getClinic();
+			List<Owner> owners = ownerService.findOwnersByClinicId(clinic.getId());
 			modelMap.addAttribute("owners", owners);
 		} else if (roles.contains("owner")) {
-			Owner owner = this.ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+			Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 			modelMap.addAttribute("owner", owner);
-			Owner _aux = this.ownerService.findEntityById(owner.getId()).get();
-			clinic = _aux.getClinic();
+			clinic = owner.getClinic();
 
-			List<Visit> visitsAccepted = (List<Visit>) this.visitService.findAllAcceptedByOwner(owner);
+			List<Visit> visitsAccepted = (List<Visit>) visitService.findAllAcceptedByOwner(owner);
 
-			List<Visit> visitsPending = (List<Visit>) this.visitService.findAllPendingByOwner(owner);
+			List<Visit> visitsPending = (List<Visit>) visitService.findAllPendingByOwner(owner);
 
-			List<Stay> staysAccepted = (List<Stay>) this.stayService.findAllAcceptedByOwner(owner);
+			List<Stay> staysAccepted = (List<Stay>) stayService.findAllAcceptedByOwner(owner);
 
-			List<Stay> stayPending = (List<Stay>) this.stayService.findAllPendingByOwner(owner);
+			List<Stay> stayPending = (List<Stay>) stayService.findAllPendingByOwner(owner);
 
-			Boolean notUnsubscribe = visitsAccepted.size() > 0 || visitsPending.size() > 0 || staysAccepted.size() > 0 || stayPending.size() > 0;
+			Boolean notUnsubscribe = visitsAccepted.size() > 0 || visitsPending.size() > 0 || staysAccepted.size() > 0
+				|| stayPending.size() > 0;
 
 			modelMap.addAttribute("notUnsubscribe", notUnsubscribe);
 
@@ -81,24 +82,23 @@ public class ClinicController {
 
 	@GetMapping(path = "/owner")
 	public String initClinicView(final ModelMap modelMap) {
-		Owner owner = this.obtainOwnerInSession();
+		Owner owner = obtainOwnerInSession();
 		String returnView;
 		modelMap.addAttribute("owner", owner);
 
-		if (owner.getClinic() == null) {
-			returnView = this.listAvailable(modelMap);
-		} else {
+		if (owner.getClinic() == null)
+			returnView = listAvailable(modelMap);
+		else
 			//			returnView = "clinics/owner/" + owner.getClinic().getId();
-			returnView = this.showClinic(owner.getClinic().getId(), modelMap);
-		}
+			returnView = showClinic(owner.getClinic().getId(), modelMap);
 
 		return returnView;
 	}
 
 	@GetMapping(path = "/owner/{clinicId}")
 	public String showClinic(@PathVariable("clinicId") final Integer clinicId, final ModelMap modelMap) {
-		Owner owner = this.obtainOwnerInSession();
-		Clinic clinic = this.clinicService.findEntityById(clinicId).get();
+		Owner owner = obtainOwnerInSession();
+		Clinic clinic = clinicService.findEntityById(clinicId).get();
 
 		modelMap.addAttribute("clinic", clinic);
 		modelMap.addAttribute("owner", owner);
@@ -108,24 +108,25 @@ public class ClinicController {
 
 	@GetMapping(path = "/owner/unsubscribeFromClinic")
 	public String unsubscribeOwnerFromClinic(final ModelMap modelMap) {
-		Owner owner = this.obtainOwnerInSession();
+		Owner owner = obtainOwnerInSession();
 		Clinic clinic = owner.getClinic();
-		clinic = this.clinicService.findEntityById(clinic.getId()).get();
+		clinic = clinicService.findEntityById(clinic.getId()).get();
 
-		List<Visit> visitsAccepted = (List<Visit>) this.visitService.findAllAcceptedByOwner(owner);
+		List<Visit> visitsAccepted = (List<Visit>) visitService.findAllAcceptedByOwner(owner);
 
-		List<Visit> visitsPending = (List<Visit>) this.visitService.findAllPendingByOwner(owner);
+		List<Visit> visitsPending = (List<Visit>) visitService.findAllPendingByOwner(owner);
 
-		List<Stay> staysAccepted = (List<Stay>) this.stayService.findAllAcceptedByOwner(owner);
+		List<Stay> staysAccepted = (List<Stay>) stayService.findAllAcceptedByOwner(owner);
 
-		List<Stay> stayPending = (List<Stay>) this.stayService.findAllPendingByOwner(owner);
+		List<Stay> stayPending = (List<Stay>) stayService.findAllPendingByOwner(owner);
 
-		Boolean notUnsubscribe = visitsAccepted.size() > 0 || visitsPending.size() > 0 || staysAccepted.size() > 0 || stayPending.size() > 0;
+		Boolean notUnsubscribe = visitsAccepted.size() > 0 || visitsPending.size() > 0 || staysAccepted.size() > 0
+			|| stayPending.size() > 0;
 
 		if (clinic != null && !notUnsubscribe) {
 			owner.setClinic(null);
-			this.ownerService.saveEntity(owner);
-			return this.initClinicView(modelMap);
+			ownerService.saveEntity(owner);
+			return initClinicView(modelMap);
 		} else if (clinic != null && !notUnsubscribe) {
 			modelMap.addAttribute("message", "Este propietario tiene alguna visit o stay pendiente o aceptada");
 			return "redirect:/oups";
@@ -137,24 +138,25 @@ public class ClinicController {
 
 	@GetMapping(path = "/owner/listAvailable")
 	public String listAvailable(final ModelMap modelMap) {
-		Iterable<Clinic> clinicList = this.clinicService.findAllEntities();
+		Iterable<Clinic> clinicList = clinicService.findAllEntities();
 		modelMap.addAttribute("clinics", clinicList);
 		return "/clinics/owner/clinicsList";
 	}
 
 	@GetMapping(path = "/owner/subscribeToClinic/{clinicId}")
 	public String subscribeToClinic(@PathVariable("clinicId") final Integer clinicId, final ModelMap modelMap) {
-		Owner owner = this.obtainOwnerInSession();
-		Clinic clinic = this.clinicService.findEntityById(clinicId).get();
+		Owner owner = obtainOwnerInSession();
+		Clinic clinic = clinicService.findEntityById(clinicId).get();
 
 		String returnView;
 		if (owner.getClinic() == null) {
 			owner.setClinic(clinic);
-			this.ownerService.saveEntity(owner);
+			ownerService.saveEntity(owner);
 
-			returnView = this.initClinicView(modelMap);
+			returnView = initClinicView(modelMap);
 		} else {
-			modelMap.addAttribute("message", "No es posible dar de alta al propietario a dicha clinica porque ya esta dado de alta a una clinica");
+			modelMap.addAttribute("message",
+				"No es posible dar de alta al propietario a dicha clinica porque ya esta dado de alta a una clinica");
 			returnView = "redirect:/oups";
 		}
 
@@ -162,8 +164,8 @@ public class ClinicController {
 	}
 
 	private Owner obtainOwnerInSession() {
-		Owner owner = this.ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
-		return this.ownerService.findEntityById(owner.getId()).get();
+		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		return ownerService.findEntityById(owner.getId()).get();
 	}
 
 }
