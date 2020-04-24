@@ -120,7 +120,7 @@ public class SuggestionAdminController {
 	}
 
 	@GetMapping(path = "/moveAllTrash")
-	public String moveTrash(ModelMap modelMap) {
+	public String moveAllTrash(ModelMap modelMap) {
 		suggestionService.moveAllTrash();
 		return "redirect:/suggestion/admin/list";
 	}
@@ -147,11 +147,11 @@ public class SuggestionAdminController {
 			return ownerService.findPersonByUsername(username);
 		case "provider":
 			return providerService.findPersonByUsername(username);
-		case "vet":
+		case "veterinarian":
 			return vetService.findPersonByUsername(username);
 		default:
 			return null;
 		}
-
 	}
+
 }

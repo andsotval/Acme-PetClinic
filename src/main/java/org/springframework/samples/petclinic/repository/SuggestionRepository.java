@@ -21,4 +21,11 @@ public interface SuggestionRepository extends BaseRepository<Suggestion> {
 	@Query("UPDATE Suggestion s SET s.isTrash = true WHERE s.isTrash = false")
 	void moveAllTrash();
 
+	@Query("SELECT s FROM Suggestion s WHERE s.user.username = ?1 and s.isAvailable = true ORDER BY created asc")
+	Collection<Suggestion> findAllEntitiesByUsername(String username);
+
+	@Modifying
+	@Query("UPDATE Suggestion s SET s.isAvailable = false WHERE s.isAvailable = true and s.user = (SELECT u FROM User u WHERE u.username = ?1)")
+	void updateAllIsAvailableFalse(String username);
+
 }
