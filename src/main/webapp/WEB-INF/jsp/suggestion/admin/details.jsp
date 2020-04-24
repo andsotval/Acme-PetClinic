@@ -16,7 +16,7 @@
 		</tr>
 		<tr>
 			<th>Date</th>
-			<td><petclinic:localDateTime date="${suggestion.created}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+			<td><petclinic:localDateTime date="${suggestion.created}" pattern="yyyy/MM/dd HH:mm:ss" /></td>
 		</tr>
 		<tr>
 			<th>Description</th>

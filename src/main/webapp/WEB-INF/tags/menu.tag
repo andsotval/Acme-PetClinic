@@ -114,7 +114,7 @@
 				</sec:authorize>
 				
 				<sec:authorize access="isAuthenticated() and !hasAuthority('admin')">
-				<petclinic:menuItem active="${name eq 'suggestions'}" url="#"
+				<petclinic:menuItem active="${name eq 'suggestions'}" url="/suggestion/user/list"
 					title="suggestions">
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>My Suggestions</span>

@@ -41,4 +41,14 @@ public class SuggestionService extends BaseService<Suggestion> {
 	public void deleteAllTrash(Collection<Suggestion> collection) {
 		suggestionRepository.deleteAll(collection);
 	}
+
+	@Transactional(readOnly = true)
+	public Collection<Suggestion> findAllEntitiesByUsername(String username) {
+		return suggestionRepository.findAllEntitiesByUsername(username);
+	}
+
+	@Transactional
+	public void updateAllIsAvailableFalse(String username) {
+		suggestionRepository.updateAllIsAvailableFalse(username);
+	}
 }
