@@ -36,9 +36,12 @@ public interface VisitRepository extends BaseRepository<Visit> {
 	Iterable<Visit> findAllAcceptedByVet(LocalDate actualDate, Integer vetId);
 
 	@Query("SELECT v FROM Visit v WHERE v.pet.id = ?1 ")
-	Collection<Visit> findByPetId(int petId);
+	Iterable<Visit> findByPetId(int id);
 	
 	@Query("SELECT v FROM Visit v WHERE v.isAccepted IS NULL AND v.pet.owner.id=?1")
-	Iterable<Visit> findAllPendingByOwner(Integer ownerId);
+	Iterable<Visit> findAllPendingByOwner(Integer id);
+
+	@Query("SELECT v FROM Visit v WHERE v.isAccepted IS TRUE AND v.pet.owner.id=?1")
+	Iterable<Visit> findAllAcceptedByOwner(Integer id);
 
 }
