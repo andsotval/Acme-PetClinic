@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
+import org.springframework.samples.petclinic.service.AuthoritiesService;
 import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.samples.petclinic.service.VisitService;
@@ -33,15 +34,18 @@ public class VisitController {
 	private VetService vetService;
 
 	private OwnerService ownerService;
+	
+	private AuthoritiesService	authoritiesService;
 
 	private static final String VIEWS_VISIT_CREATE_OR_UPDATE_FORM = "/visits/createOrUpdateVisitForm";
 
 	@Autowired
 	public VisitController(final VisitService visitService, final VetService vetService,
-			final OwnerService ownerService) {
+			final OwnerService ownerService,final AuthoritiesService authoritiesService) {
 		this.visitService = visitService;
 		this.vetService = vetService;
 		this.ownerService = ownerService;
+		this.authoritiesService = authoritiesService;
 	}
 
 	@InitBinder
@@ -123,16 +127,36 @@ public class VisitController {
 	public String cancelVisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
 		Visit visit = visitService.findEntityById(visitId).get();
 
-		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		String username = SessionUtils.obtainUserInSession().getUsername();
+		String authority = authoritiesService.findAuthorityByUsername(username);
+		
+		if(authority.contains("vet")) {
+			Vet vet = vetService.findPersonByUsername(username);
+			
+			if (visit.getClinic().getId() == vet.getClinic().getId()) {
+				visit.setIsAccepted(false);
+				visitService.saveEntity(visit);
+			} else {
+				modelMap.addAttribute("nonAuthorized", "No estás autorizado");
+			}
+			
+			return "redirect:/visits/listAllAccepted";
+		}
+		
+		if(authority.contains("owner")) {
+			Owner owner = ownerService.findPersonByUsername(username);
 
-		if (visit.getClinic().getId() == vet.getClinic().getId()) {
-			visit.setIsAccepted(false);
-			visitService.saveEntity(visit);
-		} else
-			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
-
-		return "redirect:/visits/listAllAccepted";
-
+			if (visit.getPet().getOwner().getId() == owner.getId()) {
+				visit.setIsAccepted(false);
+				visitService.saveEntity(visit);
+			} else {
+				modelMap.addAttribute("nonAuthorized", "No estás autorizado");
+			}
+			
+			return "redirect:/visits/listByOwner";
+		}
+		
+		return "";
 	}
 
 	@GetMapping(path = "/changeDate/{visitId}")
