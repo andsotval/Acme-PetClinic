@@ -43,10 +43,21 @@
 				</div>
 			</c:when>
 			<c:otherwise>
-				<div class="text-right">
-					<a class="btn btn-default" href='<spring:url value="/clinics/owner/unsubscribeFromClinic" htmlEscape="true"/>'> Unsubscribe
-						from Clinic </a>
-				</div>
+				<c:choose>
+					<c:when test="${!notUnsubscribe}">
+						<div class="text-left">
+							<a class="btn btn-default"
+								href='<spring:url value="/clinics/owner/unsubscribeFromClinic" htmlEscape="true">
+					<spring:param name="clinicId" value="${clinic.id}"/> </spring:url>'>
+								Unsubscribe to Clinic</a>
+						</div>
+					</c:when>
+					<c:otherwise>
+						<div class="text-right">
+							<p>You cannot unsubscribe to clinic</p>
+						</div>
+					</c:otherwise>
+				</c:choose>
 			</c:otherwise>
 		</c:choose>
 	</sec:authorize>
