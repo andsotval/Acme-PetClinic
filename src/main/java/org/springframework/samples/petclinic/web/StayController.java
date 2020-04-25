@@ -115,7 +115,7 @@ public class StayController {
 			} else {
 				modelMap.addAttribute("nonAuthorized", "No estás autorizado");
 			}
-			return "redirect:/visits/listByOwner";
+			return "redirect:/stays/listByOwner";
 		}
 
 		return "";

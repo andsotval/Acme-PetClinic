@@ -27,9 +27,7 @@ import org.springframework.samples.petclinic.model.Vets;
 import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.samples.petclinic.service.ManagerService;
 import org.springframework.samples.petclinic.service.VetService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.samples.petclinic.util.SessionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,9 +57,7 @@ public class VetController {
 		this.managerService = managerService;
 	}
 
-	@GetMapping(value = {
-		"/vetsList"
-	})
+	@GetMapping(value = {"/vetsList"})
 	public String showVetList(Map<String, Object> model) {
 		// Here we are returning an object of type 'Vets' rather than a collection of Vet
 		// objects
@@ -84,35 +80,45 @@ public class VetController {
 		return vets;
 	}
 
-	@GetMapping(value = "/vetsAvailable")
-	public String vetsAvailableList(ModelMap modelMap) {
+	//este metodo devuelve la lista de vets disponibles y la de los ya registrados de la clinica
+	//a la que pertenece el manager que este conectado
+	@GetMapping(path = "/vetsAvailable")
+	public String vetsAvailableAndOwnList(ModelMap modelMap) {
 		String vista = "vets/vetsAvailable";
-		Iterable<Vet> vets = vetService.findAvailableVets();
-		modelMap.addAttribute("vets2", vets);
+		Iterable<Vet> vetsAvailable = vetService.findAvailableVets();
+		modelMap.addAttribute("vets2", vetsAvailable);
+
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		Iterable<Vet> hiredVets = vetService.findVetsByManager(manager.getId());
+		modelMap.addAttribute("hiredVets", hiredVets);
+
 		return vista;
 	}
 
 	@GetMapping(path = "/accept/{vetId}")
 	public String acceptVet(@PathVariable("vetId") final int vetId, final ModelMap modelMap) {
+		String returnView;
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		User user = (User) authentication.getPrincipal();
-
-		Manager manager = managerService.findPersonByUsername(user.getUsername());
-
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		Clinic clinic = clinicService.findClinicByManagerId(manager.getId());
-
 		Vet vet = vetService.findEntityById(vetId).get();
 
 		if (vet.getClinic() == null) {
 			vet.setClinic(clinic);
 			vetService.saveEntity(vet);
+			returnView = "redirect:/vets/vetsAvailable";
 		} else
-			return "redirect:/oups";
+			returnView = "redirect:/oups";
 
-		return "redirect:/vets/vetsAvailable";
+		return returnView;
 
+	}
+
+	@GetMapping(path = "/{vetId}")
+	public String showVet(@PathVariable("vetId") int vetId, ModelMap modelMap) {
+		Vet vet = vetService.findEntityById(vetId).get();
+		modelMap.addAttribute("vet", vet);
+		return "vets/vetDetails";
 	}
 
 }

@@ -16,8 +16,8 @@
 
 package org.springframework.samples.petclinic.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,6 +104,13 @@ class VetServiceTests {
 		Vet vet = vetService.findPersonByUsername("vet5");
 		assertNotEquals("vet7@gmail.com", vet.getMail());
 
+	}
+
+	@Test
+	public void testFindVetsByManager() {
+		int managerId = 2;
+		vetService.findVetsByManager(managerId)
+			.forEach(v -> assertEquals(managerId, v.getClinic().getManager().getId()));
 	}
 
 }

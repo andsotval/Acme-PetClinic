@@ -266,7 +266,7 @@ INSERT INTO stay(id,start_date,finish_date,description,is_accepted,clinic_id, pe
 
 
 -- SUGGESTIONS
-INSERT INTO suggestion(id,name,description,is_read,created,is_trash,user_id) VALUES (1, 'Mas clínicas', 'Estaría muy bien disponer de mas clínicas, no encuentro ninguna en mi zona', true, '2020-04-11 12:30:11',false, 26);
-INSERT INTO suggestion(id,name,description,is_read,created,is_trash,user_id) VALUES (2, 'Mas veterinarios', 'Estaría muy bien disponer de mas veterinarios, no me gusta ninguno', true, '2020-04-18 16:30:41',false, 27);
-INSERT INTO suggestion(id,name,description,is_read,created,is_trash,user_id) VALUES (3, 'Mas proveedores', 'Estaría muy bien disponer de mas proveedores, son todos muy caros', false, '2020-04-20 19:15:35',false, 2);
-INSERT INTO suggestion(id,name,description,is_read,created,is_trash,user_id) VALUES (4, 'Intervalo de tiempo en estancias', 'Estaría muy bien poder dejar mi mascota mas tiempo en la clínica', false, '2020-04-19 21:09:24',false, 26);
+INSERT INTO suggestion(id,name,description,is_read,created,is_trash,is_available,user_id) VALUES (1, 'Mas clínicas', 'Estaría muy bien disponer de mas clínicas, no encuentro ninguna en mi zona', true, '2020-04-11 12:30:11',false, true, 26);
+INSERT INTO suggestion(id,name,description,is_read,created,is_trash,is_available,user_id) VALUES (2, 'Mas veterinarios', 'Estaría muy bien disponer de mas veterinarios, no me gusta ninguno', true, '2020-04-18 16:30:41',false, true, 27);
+INSERT INTO suggestion(id,name,description,is_read,created,is_trash,is_available,user_id) VALUES (3, 'Mas proveedores', 'Estaría muy bien disponer de mas proveedores, son todos muy caros', false, '2020-04-20 19:15:35',false, true, 2);
+INSERT INTO suggestion(id,name,description,is_read,created,is_trash,is_available,user_id) VALUES (4, 'Intervalo de tiempo en estancias', 'Estaría muy bien poder dejar mi mascota mas tiempo en la clínica', false, '2020-04-19 21:09:24',false, true, 26);
