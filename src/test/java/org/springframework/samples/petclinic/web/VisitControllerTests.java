@@ -18,6 +18,7 @@ import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
+import org.springframework.samples.petclinic.service.AuthoritiesService;
 import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.samples.petclinic.service.VisitService;
@@ -28,7 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-@WebMvcTest(controllers = VisitController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
+@WebMvcTest(value = SuggestionAdminController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
 class VisitControllerTests {
 
 	private static final int TEST_VET_ID = 1;
@@ -36,18 +37,21 @@ class VisitControllerTests {
 	private static final int TEST_VISIT_ID = 1;
 
 	private static final int TEST_CLINIC_ID = 1;
-
-	@MockBean
-	private VisitService visitService;
-
-	@MockBean
-	private VetService vetService;
-
-	@MockBean
-	private OwnerService ownerService;
-
+	
 	@Autowired
 	private MockMvc mockMvc;
+	
+	@MockBean
+	private VisitService		visitService;
+
+	@MockBean
+	private VetService			vetService;
+
+	@MockBean
+	private OwnerService		ownerService;
+
+	@MockBean
+	private AuthoritiesService	authoritiesService;
 
 	@BeforeEach
 	void setup() {
@@ -89,6 +93,27 @@ class VisitControllerTests {
 
 	}
 
+	
+	//listAllPending
+	
+	//listAllAccepted
+	
+	//acceptVisit
+	
+	//cancelVisit
+	
+	//initUpdateVisit
+	
+	//updateVisit
+	
+	
+	
+	//createVisit
+	
+	//listAllPendingAndAcceptedByOwner
+	
+	
+/*
 	// listAllPending (todas las visits devueltas tienen que tener isAcepted a null)
 	@WithMockUser(value = "spring")
 	@Test
@@ -150,7 +175,7 @@ class VisitControllerTests {
 				.param("date", "2020/06/09")).andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.view().name("visits/list"));
 	}
-
+*/
 	// @WithMockUser(value = "spring")
 	// @Test
 	// void testInitNewVisitForm() throws Exception {

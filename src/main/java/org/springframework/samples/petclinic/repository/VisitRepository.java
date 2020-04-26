@@ -26,19 +26,19 @@ import org.springframework.stereotype.Repository;
 public interface VisitRepository extends BaseRepository<Visit> {
 
 	@Query("SELECT v FROM Visit v INNER JOIN Clinic c ON c.id=v.clinic.id WHERE v.isAccepted IS NULL AND ?2 IN (SELECT v2.id FROM Vet v2 WHERE v2.clinic.id=c.id) AND v.dateTime > ?1 ")
-	Iterable<Visit> findAllPendingByVet(LocalDateTime actualDate, Integer vetId);
+	Iterable<Visit> findAllPendingByVetId(LocalDateTime actualDate, Integer vetId);
 
 	@Query("SELECT v FROM Visit v INNER JOIN Clinic c ON c.id=v.clinic.id WHERE v.isAccepted = true AND ?2 IN (SELECT v2.id FROM Vet v2 WHERE v2.clinic.id=c.id) AND v.dateTime > ?1 ")
-	Iterable<Visit> findAllAcceptedByVet(LocalDateTime actualDate, Integer vetId);
+	Iterable<Visit> findAllAcceptedByVetId(LocalDateTime actualDate, Integer vetId);
 
 	@Query("SELECT v FROM Visit v WHERE v.pet.id = ?1 ")
-	Iterable<Visit> findByPetId(int id);
+	Iterable<Visit> findAllByPetId(int id);
 
 	@Query("SELECT v FROM Visit v WHERE v.isAccepted IS NULL AND v.pet.owner.id=?1")
-	Iterable<Visit> findAllPendingByOwner(Integer id);
+	Iterable<Visit> findAllPendingByOwnerId(Integer id);
 
 	@Query("SELECT v FROM Visit v WHERE v.isAccepted IS TRUE AND v.pet.owner.id=?1")
-	Iterable<Visit> findAllAcceptedByOwner(Integer id);
+	Iterable<Visit> findAllAcceptedByOwnerId(Integer id);
 
 	@Query("SELECT v FROM Visit v WHERE v.dateTime=?1")
 	Iterable<Visit> findVisitsByDateTime(LocalDateTime dateTime);

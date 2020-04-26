@@ -16,34 +16,58 @@
 
 package org.springframework.samples.petclinic.service;
 
-import org.junit.Assert;
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.stereotype.Service;
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 class VisitServiceTests {
 
 	@Autowired
-	protected VisitService	visitService;
-
-	@Autowired
-	protected VetService	vetService;
-
+	protected VisitService	service;
 
 	@Test
 	public void testFindAllPendingByVet() {
-		vetService.findAllEntities().forEach(v -> visitService.findAllPendingByVet(v)
-			.forEach(visit -> Assert.assertEquals(visit.getIsAccepted(), null)));
+		Iterable<Visit> visits = service.findAllPendingByVetId(1);
+		
 	}
-
+	
 	@Test
 	public void testFindAllAcceptedByVet() {
-		vetService.findAllEntities().forEach(v -> visitService.findAllAcceptedByVet(v)
-			.forEach(visit -> Assert.assertEquals(visit.getIsAccepted(), true)));
-
+		Iterable<Visit> visits = service.findAllAcceptedByVetId(1);
 	}
+	
+	@Test
+	public void testDeleteByPetId() {
+		service.deleteByPetId(1);
+	}
+	
+	@Test
+	public void testFindAllPendingByOwnerId() {
+		Iterable<Visit> visits = service.findAllPendingByOwnerId(1);
+	}
+	
+	@Test
+	public void testFindAllAcceptedByOwnerId() {
+		Iterable<Visit> visits = service.findAllAcceptedByOwnerId(1);
+	}
+	
+	@Test
+	public void testFindAllByPetId() {
+		Iterable<Visit> visits = service.findAllByPetId(1);
+	}
+	
+	@Test
+	public void testFindAllByDateTime() {
+		LocalDateTime dateTime = LocalDateTime.of(2020, 6, 9, 8, 30, 00);
+		Iterable<Visit> visits = service.findAllByDateTime(dateTime);
+	}
+
+
 
 }

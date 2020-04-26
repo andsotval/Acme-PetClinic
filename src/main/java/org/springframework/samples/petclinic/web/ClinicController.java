@@ -60,9 +60,9 @@ public class ClinicController {
 			modelMap.addAttribute("owner", owner);
 			clinic = owner.getClinic();
 
-			List<Visit> visitsAccepted = (List<Visit>) visitService.findAllAcceptedByOwner(owner);
+			List<Visit> visitsAccepted = (List<Visit>) visitService.findAllAcceptedByOwnerId(owner.getId());
 
-			List<Visit> visitsPending = (List<Visit>) visitService.findAllPendingByOwner(owner);
+			List<Visit> visitsPending = (List<Visit>) visitService.findAllPendingByOwnerId(owner.getId());
 
 			List<Stay> staysAccepted = (List<Stay>) stayService.findAllAcceptedByOwner(owner);
 
@@ -112,9 +112,9 @@ public class ClinicController {
 		Clinic clinic = owner.getClinic();
 		clinic = clinicService.findEntityById(clinic.getId()).get();
 
-		List<Visit> visitsAccepted = (List<Visit>) visitService.findAllAcceptedByOwner(owner);
+		List<Visit> visitsAccepted = (List<Visit>) visitService.findAllAcceptedByOwnerId(owner.getId());
 
-		List<Visit> visitsPending = (List<Visit>) visitService.findAllPendingByOwner(owner);
+		List<Visit> visitsPending = (List<Visit>) visitService.findAllPendingByOwnerId(owner.getId());
 
 		List<Stay> staysAccepted = (List<Stay>) stayService.findAllAcceptedByOwner(owner);
 

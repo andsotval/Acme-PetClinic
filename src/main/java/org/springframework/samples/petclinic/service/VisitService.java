@@ -4,8 +4,6 @@ package org.springframework.samples.petclinic.service;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.BaseRepository;
 import org.springframework.samples.petclinic.repository.VisitRepository;
@@ -24,42 +22,44 @@ public class VisitService extends BaseService<Visit> {
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Visit> findAllPendingByVet(final Vet vet) {
+	public Iterable<Visit> findAllPendingByVetId(Integer vetId) {
 		LocalDateTime actualDate = LocalDateTime.now();
-		return visitRepository.findAllPendingByVet(actualDate, vet.getId());
+		return visitRepository.findAllPendingByVetId(actualDate, vetId);
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Visit> findAllAcceptedByVet(final Vet vet) {
+	public Iterable<Visit> findAllAcceptedByVetId(Integer vetId) {
 		LocalDateTime actualDate = LocalDateTime.now();
-		return visitRepository.findAllAcceptedByVet(actualDate, vet.getId());
+		return visitRepository.findAllAcceptedByVetId(actualDate, vetId);
 	}
 
 	@Transactional
 	public void deleteByPetId(Integer id) {
-		Iterable<Visit> visit = visitRepository.findByPetId(id);
+		Iterable<Visit> visit = visitRepository.findAllByPetId(id);
 		visitRepository.deleteAll(visit);
 
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Visit> findAllPendingByOwner(final Owner owner) {
-		return visitRepository.findAllPendingByOwner(owner.getId());
+	public Iterable<Visit> findAllPendingByOwnerId(Integer ownerId) {
+		return visitRepository.findAllPendingByOwnerId(ownerId);
 	}
 
 	@Transactional
-	public Iterable<Visit> findAllAcceptedByOwner(Owner owner) {
-		return visitRepository.findAllAcceptedByOwner(owner.getId());
+	public Iterable<Visit> findAllAcceptedByOwnerId(Integer ownerId) {
+		return visitRepository.findAllAcceptedByOwnerId(ownerId);
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Visit> findAllVisitByPet(final Integer petId) {
-		return visitRepository.findByPetId(petId);
+	public Iterable<Visit> findAllByPetId(Integer petId) {
+		return visitRepository.findAllByPetId(petId);
 	}
 
-	public Iterable<Visit> findVisitsByDateTime(LocalDateTime dateTime) {
+	public Iterable<Visit> findAllByDateTime(LocalDateTime dateTime) {
 		return visitRepository.findVisitsByDateTime(dateTime);
 	}
+	
+	
 	/* MÉTODO PARA LA SIGUIENTE FASE
 	public boolean isInInterval(LocalDateTime dateTime) {
 		LocalTime opening = LocalTime.of(8, 0);
