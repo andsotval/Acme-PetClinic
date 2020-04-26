@@ -204,7 +204,7 @@ public class VisitController {
 
 			Iterable<Visit> visits = visitService.findVisitsByDateTime(entity.getDateTime());
 
-			Iterable<Vet> vets = vetService.findVetsByClinicId(entity.getClinic().getId());
+			Iterable<Vet> vets = vetService.findVetsByClinicId(visit.getClinic().getId());
 
 			Long visitsNumber = StreamSupport.stream(visits.spliterator(), false).count();
 
@@ -280,6 +280,7 @@ public class VisitController {
 
 		return view;
 	}
+
 
 	@GetMapping(value = "/listByOwner")
 	public String listAllPendingByOwner(final ModelMap modelMap) {

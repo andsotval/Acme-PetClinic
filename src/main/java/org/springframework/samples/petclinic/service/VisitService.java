@@ -60,5 +60,16 @@ public class VisitService extends BaseService<Visit> {
 	public Iterable<Visit> findVisitsByDateTime(LocalDateTime dateTime) {
 		return visitRepository.findVisitsByDateTime(dateTime);
 	}
-
+	/* MÉTODO PARA LA SIGUIENTE FASE
+	public boolean isInInterval(LocalDateTime dateTime) {
+		LocalTime opening = LocalTime.of(8, 0);
+		LocalTime closing = LocalTime.of(20, 0);
+		LocalTime visitTime = LocalTime.of(dateTime.getHour(), dateTime.getMinute());
+		if(visitTime.isAfter(opening) && visitTime.isBefore(closing)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	 */
 }
