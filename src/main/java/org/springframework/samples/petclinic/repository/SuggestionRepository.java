@@ -22,7 +22,7 @@ public interface SuggestionRepository extends BaseRepository<Suggestion> {
 	void moveAllTrash();
 
 	@Query("SELECT s FROM Suggestion s WHERE s.user.username = ?1 and s.isAvailable = true ORDER BY created asc")
-	Collection<Suggestion> findAllEntitiesByUsername(String username);
+	Collection<Suggestion> findAllEntitiesAvailableByUsername(String username);
 
 	@Modifying
 	@Query("UPDATE Suggestion s SET s.isAvailable = false WHERE s.isAvailable = true and s.user = (SELECT u FROM User u WHERE u.username = ?1)")

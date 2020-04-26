@@ -28,9 +28,15 @@ public class PetTypeServiceTest {
 	}
 
 	@Test
+	public void testFindNotAvailable() {
+		Collection<PetType> collection = service.findNotAvailable();
+		assertEquals(collection.size(), 1);
+	}
+
+	@Test
 	public void testFindAllEntities() {
 		Collection<PetType> collection = (Collection<PetType>) service.findAllEntities();
-		assertEquals(collection.size(), 6);
+		assertEquals(collection.size(), 7);
 	}
 
 	@Test
@@ -41,14 +47,18 @@ public class PetTypeServiceTest {
 
 	@Test
 	public void testSaveEntity() {
+		Collection<PetType> collection = (Collection<PetType>) service.findAllEntities();
+		assertEquals(collection.size(), 7);
+
 		PetType entity = new PetType();
 		entity.setAvailable(true);
 		entity.setName("name1");
 		service.saveEntity(entity);
 
-		// Al no tener método para buscar la entidad por ninguna propiedad
-		// buscamos la entidad por el identificador creado (1 + MAX(identificador en BD)
-		Optional<PetType> newEntity = service.findEntityById(7);
+		collection = (Collection<PetType>) service.findAllEntities();
+		assertEquals(collection.size(), 8);
+
+		Optional<PetType> newEntity = service.findEntityById(8);
 		assertTrue(newEntity.isPresent());
 		assertEquals(newEntity.get().getAvailable(), true);
 		assertEquals(newEntity.get().getName(), "name1");

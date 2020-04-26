@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -45,7 +45,7 @@ public class Suggestion extends NamedEntity {
 	@NotNull
 	private Boolean			isAvailable;
 
-	@OneToOne
-	@JoinColumn(name = "user_id")
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "user_id", nullable = false)
 	private User			user;
 }

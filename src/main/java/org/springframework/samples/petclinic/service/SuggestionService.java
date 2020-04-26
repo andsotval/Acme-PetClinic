@@ -43,12 +43,13 @@ public class SuggestionService extends BaseService<Suggestion> {
 	}
 
 	@Transactional(readOnly = true)
-	public Collection<Suggestion> findAllEntitiesByUsername(String username) {
-		return suggestionRepository.findAllEntitiesByUsername(username);
+	public Collection<Suggestion> findAllEntitiesAvailableByUsername(String username) {
+		return suggestionRepository.findAllEntitiesAvailableByUsername(username);
 	}
 
 	@Transactional
 	public void updateAllIsAvailableFalse(String username) {
 		suggestionRepository.updateAllIsAvailableFalse(username);
 	}
+
 }
