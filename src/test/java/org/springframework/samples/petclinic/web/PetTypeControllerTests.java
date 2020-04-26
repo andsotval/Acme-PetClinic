@@ -27,13 +27,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 	excludeAutoConfiguration = SecurityConfiguration.class)
 public class PetTypeControllerTests {
 
-	private static final String	VIEWS_PETTYPE_CREATE_OR_UPDATE_FORM	= "/pettype/createOrUpdatePettypeForm";
+	private static final int	TEST_PETTYPE_ID_1	= 1;
 
-	private static final String	VIEWS_PETTYPE_LIST					= "/pettype/list";
-
-	private static final int	TEST_PETTYPE_ID_1					= 1;
-
-	private static final int	TEST_PETTYPE_ID_2					= 2;
+	private static final int	TEST_PETTYPE_ID_2	= 2;
 
 	@Autowired
 	private MockMvc				mockMvc;
@@ -67,7 +63,7 @@ public class PetTypeControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.model().attributeExists("pettypes"))
 			.andExpect(MockMvcResultMatchers.model().attribute("available", true))
-			.andExpect(MockMvcResultMatchers.view().name(VIEWS_PETTYPE_LIST));
+			.andExpect(MockMvcResultMatchers.view().name("/pettype/list"));
 	}
 
 	@WithMockUser(value = "spring")
@@ -77,15 +73,15 @@ public class PetTypeControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.model().attributeExists("pettypes"))
 			.andExpect(MockMvcResultMatchers.model().attribute("available", false))
-			.andExpect(MockMvcResultMatchers.view().name(VIEWS_PETTYPE_LIST));
+			.andExpect(MockMvcResultMatchers.view().name("/pettype/list"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	void testInitCreationForm() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/pettype/new")).andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.model().attributeExists("pettype"))
-			.andExpect(MockMvcResultMatchers.view().name(VIEWS_PETTYPE_CREATE_OR_UPDATE_FORM));
+			.andExpect(MockMvcResultMatchers.model().attributeExists("petType"))
+			.andExpect(MockMvcResultMatchers.view().name("pettype/createOrUpdatePettypeForm"));
 	}
 
 	@WithMockUser(value = "spring")
@@ -94,9 +90,8 @@ public class PetTypeControllerTests {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/pettype/new").with(SecurityMockMvcRequestPostProcessors.csrf())
 				.param("name", "name1").param("available", "true"))
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.model().attributeExists("pettypes"))
-			.andExpect(MockMvcResultMatchers.view().name(VIEWS_PETTYPE_LIST));
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/pettype/listAvailable"));
 	}
 
 	@WithMockUser(value = "spring")
@@ -109,7 +104,7 @@ public class PetTypeControllerTests {
 			.andExpect(MockMvcResultMatchers.model().attributeHasErrors("petType"))
 			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrors("petType", "available"))
 			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrors("petType", "name"))
-			.andExpect(MockMvcResultMatchers.view().name(VIEWS_PETTYPE_CREATE_OR_UPDATE_FORM));
+			.andExpect(MockMvcResultMatchers.view().name("pettype/createOrUpdatePettypeForm"));
 	}
 
 	@WithMockUser(value = "spring")
@@ -117,8 +112,8 @@ public class PetTypeControllerTests {
 	void testInitUpdateForm() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/pettype/edit/{pettypeId}", TEST_PETTYPE_ID_1))
 			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.model().attributeExists("pettype"))
-			.andExpect(MockMvcResultMatchers.view().name(VIEWS_PETTYPE_CREATE_OR_UPDATE_FORM));
+			.andExpect(MockMvcResultMatchers.model().attributeExists("petType"))
+			.andExpect(MockMvcResultMatchers.view().name("pettype/createOrUpdatePettypeForm"));
 	}
 
 	@WithMockUser(value = "spring")
@@ -127,9 +122,8 @@ public class PetTypeControllerTests {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/pettype/edit/{pettypeId}", TEST_PETTYPE_ID_1)
 				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("name", "name1").param("available", "true"))
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.model().attributeExists("pettypes"))
-			.andExpect(MockMvcResultMatchers.view().name(VIEWS_PETTYPE_LIST));
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/pettype/listAvailable"));
 	}
 
 	@WithMockUser(value = "spring")
@@ -142,27 +136,23 @@ public class PetTypeControllerTests {
 			.andExpect(MockMvcResultMatchers.model().attributeHasErrors("petType"))
 			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrors("petType", "available"))
 			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrors("petType", "name"))
-			.andExpect(MockMvcResultMatchers.view().name(VIEWS_PETTYPE_CREATE_OR_UPDATE_FORM));
+			.andExpect(MockMvcResultMatchers.view().name("pettype/createOrUpdatePettypeForm"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	void testAvailable() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/pettype/available/{pettypeId}", TEST_PETTYPE_ID_1))
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.model().attributeExists("pettypes"))
-			.andExpect(MockMvcResultMatchers.model().attribute("available", true))
-			.andExpect(MockMvcResultMatchers.view().name(VIEWS_PETTYPE_LIST));
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/pettype/listAvailable"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	void testNotAvailable() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/pettype/notAvailable/{pettypeId}", TEST_PETTYPE_ID_1))
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.model().attributeExists("pettypes"))
-			.andExpect(MockMvcResultMatchers.model().attribute("available", false))
-			.andExpect(MockMvcResultMatchers.view().name(VIEWS_PETTYPE_LIST));
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/pettype/listNotAvailable"));
 	}
 
 }

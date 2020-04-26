@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/pettype")
 public class PetTypeController {
 
-	private static final String	VIEWS_PETTYPE_CREATE_OR_UPDATE_FORM	= "/pettype/createOrUpdatePettypeForm";
-
-	private PetTypeService		petTypeService;
+	private PetTypeService petTypeService;
 
 
 	@Autowired
@@ -49,63 +47,70 @@ public class PetTypeController {
 	@GetMapping(path = "/new")
 	public String initCreationForm(ModelMap model) {
 
-		model.addAttribute("pettype", new PetType());
+		PetType petType = new PetType();
+		petType.setAvailable(true);
+		model.addAttribute("petType", petType);
 
-		return VIEWS_PETTYPE_CREATE_OR_UPDATE_FORM;
+		return "pettype/createOrUpdatePettypeForm";
 	}
 
 	@PostMapping(path = "/new")
-	public String processCreationForm(@Valid PetType pettype, BindingResult result, ModelMap model) {
-		if (result.hasErrors())
-			return VIEWS_PETTYPE_CREATE_OR_UPDATE_FORM;
-		else {
-			petTypeService.saveEntity(pettype);
-			return listAvailable(model);
+	public String processCreationForm(@Valid PetType petType, BindingResult result, ModelMap model) {
+		if (result.hasErrors()) {
+			model.addAttribute("petType", petType);
+			return "pettype/createOrUpdatePettypeForm";
+		} else {
+			petTypeService.saveEntity(petType);
+			return "redirect:/pettype/listAvailable";
 		}
 	}
 
 	@GetMapping(path = "/edit/{pettypeId}")
-	public String initUpdateForm(@PathVariable("pettypeId") int pettypeId, ModelMap model) {
-		PetType petType = petTypeService.findEntityById(pettypeId).get();
-		model.addAttribute("pettype", petType);
+	public String initUpdateForm(@PathVariable("pettypeId") int petTypeId, ModelMap model) {
+		PetType petType = petTypeService.findEntityById(petTypeId).get();
+		model.addAttribute("petType", petType);
 
-		return VIEWS_PETTYPE_CREATE_OR_UPDATE_FORM;
+		return "pettype/createOrUpdatePettypeForm";
 	}
 
 	@PostMapping(path = "/edit/{pettypeId}")
-	public String processUpdateForm(@PathVariable("pettypeId") int pettypeId, @Valid PetType entity,
+	public String processUpdateForm(@PathVariable("pettypeId") int petTypeId, @Valid PetType entity,
 		BindingResult result, ModelMap model) {
-		PetType petType = petTypeService.findEntityById(pettypeId).get();
+		PetType petType = petTypeService.findEntityById(petTypeId).get();
 
 		petType.setName(entity.getName());
 
 		if (result.hasErrors())
-			model.addAttribute("pettype", petType);
+			model.addAttribute("petType", entity);
 		else {
 			petTypeService.saveEntity(petType);
-			return listAvailable(model);
+
+			if (petType.getAvailable())
+				return "redirect:/pettype/listAvailable";
+			else
+				return "redirect:/pettype/listNotAvailable";
 		}
 
-		return VIEWS_PETTYPE_CREATE_OR_UPDATE_FORM;
+		return "pettype/createOrUpdatePettypeForm";
 	}
 
 	@GetMapping(path = "/available/{pettypeId}")
-	public String available(@PathVariable("pettypeId") int pettypeId, ModelMap model) {
-		PetType petType = petTypeService.findEntityById(pettypeId).get();
+	public String available(@PathVariable("pettypeId") int petTypeId, ModelMap model) {
+		PetType petType = petTypeService.findEntityById(petTypeId).get();
 
 		petType.setAvailable(true);
 		petTypeService.saveEntity(petType);
 
-		return listAvailable(model);
+		return "redirect:/pettype/listAvailable";
 	}
 
 	@GetMapping(path = "/notAvailable/{pettypeId}")
-	public String notAvailable(@PathVariable("pettypeId") int pettypeId, ModelMap model) {
-		PetType petType = petTypeService.findEntityById(pettypeId).get();
+	public String notAvailable(@PathVariable("pettypeId") int petTypeId, ModelMap model) {
+		PetType petType = petTypeService.findEntityById(petTypeId).get();
 
 		petType.setAvailable(false);
 		petTypeService.saveEntity(petType);
 
-		return listNotAvailable(model);
+		return "redirect:/pettype/listNotAvailable";
 	}
 }
