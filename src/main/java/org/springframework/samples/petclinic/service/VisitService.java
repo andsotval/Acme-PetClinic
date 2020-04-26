@@ -1,7 +1,7 @@
 
 package org.springframework.samples.petclinic.service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
@@ -17,7 +17,6 @@ public class VisitService extends BaseService<Visit> {
 
 	private VisitRepository visitRepository;
 
-
 	@Autowired
 	public VisitService(BaseRepository<Visit> repository, VisitRepository visitRepository) {
 		super(repository);
@@ -26,13 +25,13 @@ public class VisitService extends BaseService<Visit> {
 
 	@Transactional(readOnly = true)
 	public Iterable<Visit> findAllPendingByVet(final Vet vet) {
-		LocalDate actualDate = LocalDate.now();
+		LocalDateTime actualDate = LocalDateTime.now();
 		return visitRepository.findAllPendingByVet(actualDate, vet.getId());
 	}
 
 	@Transactional(readOnly = true)
 	public Iterable<Visit> findAllAcceptedByVet(final Vet vet) {
-		LocalDate actualDate = LocalDate.now();
+		LocalDateTime actualDate = LocalDateTime.now();
 		return visitRepository.findAllAcceptedByVet(actualDate, vet.getId());
 	}
 
@@ -56,6 +55,10 @@ public class VisitService extends BaseService<Visit> {
 	@Transactional(readOnly = true)
 	public Iterable<Visit> findAllVisitByPet(final Integer petId) {
 		return visitRepository.findByPetId(petId);
+	}
+
+	public Iterable<Visit> findVisitsByDateTime(LocalDateTime dateTime) {
+		return visitRepository.findVisitsByDateTime(dateTime);
 	}
 
 }

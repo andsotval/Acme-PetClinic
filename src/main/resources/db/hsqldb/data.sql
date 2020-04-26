@@ -238,17 +238,17 @@ INSERT INTO pet(id,name,birth_date,type_id,owner_id) VALUES (13, 'Sly', '2012-06
 
 -- VISITS
 
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (1, 1, '2020-06-09', 'visit aceptada',true,1);
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (2, 2, '2020-06-09', 'visit rechazada',false,2);
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (3, 3, '2020-06-09', 'visit aceptada',true,3);
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (4, 4, '2020-06-09', 'visit pendiente',null,4);
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (5, 5, '2020-06-09', 'visit pendiente',null,5);
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (6, 6, '2020-06-09', 'visit pendiente',null,1);
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (7, 7, '2020-06-09', 'visit pendiente',null,2);
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (8, 8, '2020-06-09', 'visit pendiente',null,3);
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (9, 6, '2020-06-09', 'visit pendiente',null,4);
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (10, 10, '2020-06-09', 'visit pendiente',null,5);
-INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (11, 11, '2020-06-09', 'visit pendiente',null,1);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (1, 1, '2020-08-09 09:30:00', 'visit aceptada',true,1);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (2, 2, '2020-06-12 12:30:00', 'visit rechazada',false,2);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (3, 3, '2020-12-23 17:00:00', 'visit aceptada',true,3);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (4, 4, '2020-06-09 11:30:00', 'visit pendiente',null,4);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (5, 5, '2020-10-10 16:30:00', 'visit pendiente',null,5);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (6, 6, '2020-11-05 13:00:00', 'visit pendiente',null,1);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (7, 7, '2020-12-13 13:30:00', 'visit pendiente',null,2);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (8, 8, '2020-06-01 19:00:00', 'visit pendiente',null,3);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (9, 6, '2020-07-19 18:30:00', 'visit pendiente',null,4);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (10, 10, '2020-07-14 10:00:00', 'visit pendiente',null,5);
+INSERT INTO visit(id,pet_id,visit_date,description,is_accepted,clinic_id) VALUES (11, 11, '2020-06-17 08:30:00', 'visit pendiente',null,1);
 
 -- STAYS
 

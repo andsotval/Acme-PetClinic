@@ -1,8 +1,9 @@
 
 package org.springframework.samples.petclinic.web;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.stream.StreamSupport;
 
 import javax.validation.Valid;
 
@@ -191,19 +192,34 @@ public class VisitController {
 			i++;
 		}
 
-		if (entity.getDate() == null) {
+		if (entity.getDateTime() == null) {
 			modelMap.addAttribute("visit", entity);
-			result.rejectValue("date", "dateNotNull", "is required");
+			result.rejectValue("dateTime", "dateNotNull", "is required");
 			i++;
-		} else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
+		} else if (entity.getDateTime().isBefore(LocalDateTime.now().plusDays(2L))) {
 			modelMap.addAttribute("visit", entity);
-			result.rejectValue("date", "dateInFuture", "Minimum 2 days after today");
+			result.rejectValue("dateTime", "dateInFuture", "Minimum 2 days after today");
 			i++;
+		} else if (!entity.getDateTime().equals(visit.getDateTime())) {
+
+			Iterable<Visit> visits = visitService.findVisitsByDateTime(entity.getDateTime());
+
+			Iterable<Vet> vets = vetService.findVetsByClinicId(entity.getClinic().getId());
+
+			Long visitsNumber = StreamSupport.stream(visits.spliterator(), false).count();
+
+			Long vetsNumber = StreamSupport.stream(vets.spliterator(), false).count();
+
+			if (visitsNumber >= vetsNumber) {
+				modelMap.addAttribute("visit", entity);
+				result.rejectValue("dateTime", "dateNotPossible", "There are no vets available at that time");
+				i++;
+			}
 		}
 
 		if (i == 0) {
 			visit.setDescription(entity.getDescription());
-			visit.setDate(entity.getDate());
+			visit.setDateTime(entity.getDateTime());
 			visitService.saveEntity(visit);
 			modelMap.addAttribute("message", "Visit succesfully updated");
 			return listAllAccepted(modelMap);
@@ -216,7 +232,7 @@ public class VisitController {
 	}
 
 	@PostMapping(path = "/save")
-	public String updateNewVisit(@Valid final Visit entity, final BindingResult result, final ModelMap model) {
+	public String saveNewVisit(@Valid final Visit entity, final BindingResult result, final ModelMap model) {
 
 		String view = "visits/createOrUpdateVisitForm";
 
@@ -227,14 +243,29 @@ public class VisitController {
 			i++;
 		}
 
-		if (entity.getDate() == null) {
+		if (entity.getDateTime() == null) {
 			model.addAttribute("visit", entity);
-			result.rejectValue("date", "dateNotNull", "is required");
+			result.rejectValue("dateTime", "dateNotNull", "is required");
 			i++;
-		} else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
+		} else if (entity.getDateTime().isBefore(LocalDateTime.now().plusDays(2L))) {
 			model.addAttribute("visit", entity);
-			result.rejectValue("date", "dateInFuture", "Minimum 2 days after today");
+			result.rejectValue("dateTime", "dateInFuture", "Minimum 2 days after today");
 			i++;
+		} else {
+
+			Iterable<Visit> visits = visitService.findVisitsByDateTime(entity.getDateTime());
+
+			Iterable<Vet> vets = vetService.findVetsByClinicId(entity.getClinic().getId());
+
+			Long visitsNumber = StreamSupport.stream(visits.spliterator(), false).count();
+
+			Long vetsNumber = StreamSupport.stream(vets.spliterator(), false).count();
+
+			if (visitsNumber >= vetsNumber) {
+				model.addAttribute("visit", entity);
+				result.rejectValue("dateTime", "dateNotPossible", "There are no vets available at that time");
+				i++;
+			}
 		}
 
 		if (i == 0) {

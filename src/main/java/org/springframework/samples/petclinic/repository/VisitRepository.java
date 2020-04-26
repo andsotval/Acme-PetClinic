@@ -16,32 +16,31 @@
 
 package org.springframework.samples.petclinic.repository;
 
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Set;
+import java.time.LocalDateTime;
 
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VisitRepository extends BaseRepository<Visit> {
 
-	@Query("SELECT v FROM Visit v INNER JOIN Clinic c ON c.id=v.clinic.id WHERE v.isAccepted IS NULL AND ?2 IN (SELECT v2.id FROM Vet v2 WHERE v2.clinic.id=c.id) AND v.date > ?1 ")
-	Iterable<Visit> findAllPendingByVet(LocalDate actualDate, Integer vetId);
+	@Query("SELECT v FROM Visit v INNER JOIN Clinic c ON c.id=v.clinic.id WHERE v.isAccepted IS NULL AND ?2 IN (SELECT v2.id FROM Vet v2 WHERE v2.clinic.id=c.id) AND v.dateTime > ?1 ")
+	Iterable<Visit> findAllPendingByVet(LocalDateTime actualDate, Integer vetId);
 
-	@Query("SELECT v FROM Visit v INNER JOIN Clinic c ON c.id=v.clinic.id WHERE v.isAccepted = true AND ?2 IN (SELECT v2.id FROM Vet v2 WHERE v2.clinic.id=c.id) AND v.date > ?1 ")
-	Iterable<Visit> findAllAcceptedByVet(LocalDate actualDate, Integer vetId);
+	@Query("SELECT v FROM Visit v INNER JOIN Clinic c ON c.id=v.clinic.id WHERE v.isAccepted = true AND ?2 IN (SELECT v2.id FROM Vet v2 WHERE v2.clinic.id=c.id) AND v.dateTime > ?1 ")
+	Iterable<Visit> findAllAcceptedByVet(LocalDateTime actualDate, Integer vetId);
 
 	@Query("SELECT v FROM Visit v WHERE v.pet.id = ?1 ")
 	Iterable<Visit> findByPetId(int id);
-	
+
 	@Query("SELECT v FROM Visit v WHERE v.isAccepted IS NULL AND v.pet.owner.id=?1")
 	Iterable<Visit> findAllPendingByOwner(Integer id);
 
 	@Query("SELECT v FROM Visit v WHERE v.isAccepted IS TRUE AND v.pet.owner.id=?1")
 	Iterable<Visit> findAllAcceptedByOwner(Integer id);
+
+	@Query("SELECT v FROM Visit v WHERE v.dateTime=?1")
+	Iterable<Visit> findVisitsByDateTime(LocalDateTime dateTime);
 
 }

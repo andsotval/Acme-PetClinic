@@ -33,8 +33,8 @@
         <tbody>
         <c:forEach items="${visits}" var="visit">
             <tr>
-                <td width="20%">
-                    <c:out value="${visit.date}"/>
+                <td width="20%"><petclinic:localDateTime date="${visit.dateTime}" pattern="yyyy-MM-dd HH:mm:ss" />
+                		
                 </td>
                 <td width="35%">
                     <c:out value="${visit.description} "/>
