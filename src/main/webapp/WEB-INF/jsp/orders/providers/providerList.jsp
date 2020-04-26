@@ -8,6 +8,11 @@
 <petclinic:layout pageName="orders/providers">
     <h2>Select a Provider</h2>
 
+	<c:if test="${empty providers}">
+		<h3>You don't have providers by the moment...</h3>
+	</c:if>
+
+	<c:if test="${not empty providers}">
     <table id="providersTable" class="table table-striped">
         <thead>
         <tr>
@@ -35,12 +40,6 @@
         </c:forEach>
         </tbody>
     </table>
-
-    <table class="table-buttons">
-        <tr>
-            <td>
-                <a href="<spring:url value="/providers.xml" htmlEscape="true" />">View as XML</a>
-            </td>            
-        </tr>
-    </table>
+    <a class="btn btn-default" href='<spring:url value="/orders/list" htmlEscape="true"/>'>Back to Orders List</a>
+	</c:if>
 </petclinic:layout>

@@ -16,9 +16,22 @@
 					pattern="yyyy-MM-dd" /></td>
 		</tr>
 		<tr>
-			<th>Is Accepted?</th>
-			<td><c:out value="${order.isAccepted}" /></td>
+			<th>Status</th>
+			<td>
+				<c:choose>
+					<c:when test="${order.isAccepted eq false}">
+						<c:out value="PENDING" />
+					</c:when>
+					<c:otherwise>
+						<c:out value="ACCEPTED" />
+					</c:otherwise>
+				</c:choose>
+			</td>
 		</tr>
+	</table>
+	
+	<h2>Products</h2>
+	<table class="table table-striped">
 		<tr>
 			<th>Products</th>
 			<c:forEach var="product" items="${order.product}">
@@ -28,6 +41,10 @@
 				</tr>
 			</c:forEach>
 		</tr>
+	</table>
+	
+	<h2>Provider</h2>
+	<table class="table table-striped">
 		<tr>
 			<th>Provider</th>
 			<td><c:out value="${orderProvider.firstName} ${orderProvider.lastName}"/></td>

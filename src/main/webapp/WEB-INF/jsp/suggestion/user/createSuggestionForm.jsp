@@ -6,11 +6,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
-<petclinic:layout pageName="orders">
+<petclinic:layout pageName="suggestion">
     <h2>
         New Suggestion
     </h2>
-    <form:form modelAttribute="suggestion" class="form-horizontal" id="create-order-form" action="/suggestion/user/save">
+    <form:form modelAttribute="suggestion" class="form-horizontal" id="create-suggestion-form" action="/suggestion/user/save">
 		<input type="hidden" name="created" value="<petclinic:localDateTime date="${suggestion.created}" pattern="yyyy/MM/dd HH:mm:ss" />"/>
 		<input type="hidden" name="isRead" value="${suggestion.isRead}"/>
 		<input type="hidden" name="isTrash" value="${suggestion.isTrash}"/>
