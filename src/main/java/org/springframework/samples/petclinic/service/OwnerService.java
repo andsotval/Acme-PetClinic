@@ -17,11 +17,11 @@
 package org.springframework.samples.petclinic.service;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.repository.BaseRepository;
 import org.springframework.samples.petclinic.repository.OwnerRepository;
 import org.springframework.stereotype.Service;
@@ -40,19 +40,24 @@ public class OwnerService extends PersonService<Owner> {
 
 
 	@Autowired
-	public OwnerService(BaseRepository<Owner> repository, OwnerRepository ownerRepository) {
+	public OwnerService(final BaseRepository<Owner> repository, final OwnerRepository ownerRepository) {
 		super(repository, Owner.class);
 		this.ownerRepository = ownerRepository;
 	}
 
 	@Transactional(readOnly = true)
 	public Collection<Owner> findOwnerByLastName(final String lastName) throws DataAccessException {
-		return ownerRepository.findByLastName(lastName);
+		return this.ownerRepository.findByLastName(lastName);
 	}
-	
+
 	@Transactional(readOnly = true)
 	public Owner findByOwnerByUsername(final String username) {
-		return ownerRepository.findByOwnerByUsername(username);
+		return this.ownerRepository.findByOwnerByUsername(username);
+	}
+
+	@Transactional(readOnly = true)
+	public List<Owner> findOwnersByClinicId(final Integer id) {
+		return this.ownerRepository.findByClinicId(id);
 	}
 
 }

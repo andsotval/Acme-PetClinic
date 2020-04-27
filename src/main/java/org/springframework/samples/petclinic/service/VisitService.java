@@ -2,13 +2,9 @@
 package org.springframework.samples.petclinic.service;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.model.Pet;
-import org.springframework.samples.petclinic.model.Stay;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.BaseRepository;
@@ -40,26 +36,26 @@ public class VisitService extends BaseService<Visit> {
 		return visitRepository.findAllAcceptedByVet(actualDate, vet.getId());
 	}
 
+	@Transactional
 	public void deleteByPetId(Integer id) {
-		Iterable<Visit> visit = this.visitRepository.findByPetId(id);
+		Iterable<Visit> visit = visitRepository.findByPetId(id);
 		visitRepository.deleteAll(visit);
-		
+
 	}
-	
+
 	@Transactional(readOnly = true)
 	public Iterable<Visit> findAllPendingByOwner(final Owner owner) {
 		return visitRepository.findAllPendingByOwner(owner.getId());
 	}
-	
+
+	@Transactional
 	public Iterable<Visit> findAllAcceptedByOwner(Owner owner) {
 		return visitRepository.findAllAcceptedByOwner(owner.getId());
 	}
-	
+
 	@Transactional(readOnly = true)
 	public Iterable<Visit> findAllVisitByPet(final Integer petId) {
 		return visitRepository.findByPetId(petId);
 	}
-
-
 
 }

@@ -54,6 +54,7 @@
 					name="date" />
             </div>
             
+            <c:if test="${hasClinic == null}">
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <input type="hidden" name="id" value="${visit.id}" />
@@ -74,6 +75,10 @@
                     <!-- <button class="btn btn-default" type="submit">Save Visit</button> -->
                 </div>
             </div>
+            </c:if>
+             <c:if test="${hasClinic eq false}">
+             	<h3>You cannot request visits if you are not in one Clinic</h3>
+             </c:if>
         </form:form>
        
        <c:if test="${visit.id == null}">

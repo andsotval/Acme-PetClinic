@@ -1,6 +1,8 @@
 
 package org.springframework.samples.petclinic.web;
 
+import java.time.LocalDate;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +50,7 @@ public class OrderController {
 
 		Order order = new Order();
 		order.setManager(managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername()));
+		order.setDate(LocalDate.now());
 		model.addAttribute("order", order);
 
 		Iterable<Product> product = productService.findProductsAvailableByProviderId(providerId);
