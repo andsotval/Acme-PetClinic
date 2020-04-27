@@ -85,5 +85,12 @@
 				</c:forEach>
 			</tbody>
 		</table>
+		
+		<script>
+		$(document).ready( function () {
+		    $('#ownersTable').DataTable();
+		} );
+		</script>
 	</sec:authorize>
+	
 </petclinic:layout>
