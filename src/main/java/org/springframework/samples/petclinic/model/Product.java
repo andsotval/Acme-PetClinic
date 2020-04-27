@@ -31,4 +31,9 @@ public class Product extends NamedEntity {
 	@JoinColumn(name = "provider_id")
 	private Provider	provider;
 
+
+	@Override
+	public String toString() {
+		return getName() + " - " + getPrice() + "€";
+	}
 }

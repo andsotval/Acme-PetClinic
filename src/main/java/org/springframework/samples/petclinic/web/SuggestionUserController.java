@@ -56,7 +56,7 @@ public class SuggestionUserController {
 	@GetMapping(path = "/list")
 	public String list(ModelMap modelMap) {
 		Collection<Suggestion> list = suggestionService
-			.findAllEntitiesByUsername(SessionUtils.obtainUserInSession().getUsername());
+			.findAllEntitiesAvailableByUsername(SessionUtils.obtainUserInSession().getUsername());
 		modelMap.addAttribute("suggestions", list);
 		modelMap.addAttribute("isTrash", false);
 		return "suggestion/user/list";
