@@ -56,14 +56,14 @@ class VisitControllerTests {
 	@BeforeEach
 	void setup() {
 
-		LocalDateTime actualDate = LocalDateTime.now();
+	
 
 		Clinic clinic = new Clinic();
 		clinic.setId(TEST_CLINIC_ID);
 
 		Visit visit = new Visit();
-		visit.setDescription("Descripcion");
-		visit.setDateTime(actualDate);
+		visit.setDescription("Descripcion visita pendiente");
+		visit.setDateTime(LocalDateTime.now().plusMonths(2L));
 		visit.setIsAccepted(null);
 		visit.setClinic(clinic);
 
@@ -73,20 +73,21 @@ class VisitControllerTests {
 
 		User user = new User();
 		user.setEnabled(true);
-		user.setUsername("pepito");
-		user.setPassword("pepito");
+		user.setUsername("VetUser");
+		user.setPassword("Password");
 
 		Authorities authority = new Authorities();
-		authority.setAuthority("Vet");
-		authority.setUsername("pepito");
+		authority.setAuthority("veterinarian");
+		authority.setUsername("VetUser");
+		
 		Vet pepe = new Vet();
 		pepe.setUser(user);
 		pepe.setId(TEST_VET_ID);
-		pepe.setFirstName("Pepe");
-		pepe.setLastName("Leary");
-		pepe.setAddress("110 W. Liberty St.");
-		pepe.setCity("Madison");
-		pepe.setTelephone("6085551023");
+		pepe.setFirstName("Vet");
+		pepe.setLastName("User");
+		pepe.setAddress("Calle calle 1");
+		pepe.setCity("Ciudad");
+		pepe.setTelephone("654321000");
 		pepe.setClinic(clinic);
 
 		BDDMockito.given(vetService.findPersonByUsername("pepito")).willReturn(pepe);

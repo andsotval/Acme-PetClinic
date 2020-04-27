@@ -16,7 +16,13 @@
 
 package org.springframework.samples.petclinic.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.time.LocalDateTime;
+import java.util.stream.StreamSupport;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,13 +39,14 @@ class VisitServiceTests {
 
 	@Test
 	public void testFindAllPendingByVet() {
-		Iterable<Visit> visits = service.findAllPendingByVetId(1);
-		
+		Iterable<Visit> visits = service.findAllPendingByVetId(4);
+		visits.forEach(v -> assertNull(v.getIsAccepted()));
 	}
 	
 	@Test
 	public void testFindAllAcceptedByVet() {
 		Iterable<Visit> visits = service.findAllAcceptedByVetId(1);
+		visits.forEach(v -> assertTrue(v.getIsAccepted()));
 	}
 	
 	@Test
@@ -49,23 +56,31 @@ class VisitServiceTests {
 	
 	@Test
 	public void testFindAllPendingByOwnerId() {
-		Iterable<Visit> visits = service.findAllPendingByOwnerId(1);
+		Iterable<Visit> visits = service.findAllPendingByOwnerId(4);
+		visits.forEach(v -> assertNull(v.getIsAccepted()));
 	}
 	
 	@Test
 	public void testFindAllAcceptedByOwnerId() {
 		Iterable<Visit> visits = service.findAllAcceptedByOwnerId(1);
+		visits.forEach(v -> assertTrue(v.getIsAccepted()));
 	}
 	
 	@Test
 	public void testFindAllByPetId() {
 		Iterable<Visit> visits = service.findAllByPetId(1);
+		Integer visitsNumber = (int) StreamSupport.stream(visits.spliterator(), false).count();
+		assertEquals(visitsNumber, 1);
+		
+		
 	}
 	
 	@Test
 	public void testFindAllByDateTime() {
-		LocalDateTime dateTime = LocalDateTime.of(2020, 6, 9, 8, 30, 00);
+		LocalDateTime dateTime = LocalDateTime.of(2020, 8, 9, 9, 30, 00);
 		Iterable<Visit> visits = service.findAllByDateTime(dateTime);
+		Integer visitsNumber = (int) StreamSupport.stream(visits.spliterator(), false).count();
+		assertEquals(visitsNumber, 1);
 	}
 
 
