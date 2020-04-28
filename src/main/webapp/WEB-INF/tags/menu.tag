@@ -77,14 +77,6 @@
 					<span>Stays</span>
 				</petclinic:menuItem>
 				</sec:authorize>
-        
-        		<sec:authorize access="hasAuthority('owner')">
-				<petclinic:menuItem active="${name eq 'clinics'}" url="/clinics/owner"
-					title="Clinic">
-					<span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>
-					<span>Clinic</span>
-				</petclinic:menuItem>
-				</sec:authorize>
 				
 				<sec:authorize access="hasAuthority('veterinarian')">
 				<petclinic:menuItem active="${name eq 'clinics'}" url="/clinics/getDetail"
