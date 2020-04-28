@@ -1,6 +1,8 @@
 
 package org.springframework.samples.petclinic.service;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.samples.petclinic.model.Clinic;
+import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.stereotype.Service;
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
@@ -36,7 +39,7 @@ public class ClinicServiceTest {
 	public void TestFindClinicByManagerIdNegativeNotPresent() {
 		int managerId = 15;
 		Clinic clinic = clinicService.findClinicByManagerId(managerId);
-		assertEquals(null, clinic);
+		assertNull(clinic);
 	}
 
 	@Test
@@ -58,4 +61,23 @@ public class ClinicServiceTest {
 		assertNotEquals(nameWrong, clinicService.findClinicByName(name).getName());
 	}
 
+	@Test
+	public void TestFindPetsByClinicPositive() {
+		String name = "Clinic1";
+
+		Clinic clinic = clinicService.findClinicByName(name);
+		assertNotNull(clinic);
+		Iterable<Pet> pets = clinicService.findPetsCyClinic(clinic);
+		assertNotNull(pets);
+	}
+
+	@Test
+	public void TestFindPetsByClinicNegative() {
+		String name = "ClinicaDePrueba";
+
+		Clinic clinic = clinicService.findClinicByName(name);
+		assertNull(clinic);
+		Iterable<Pet> pets = clinicService.findPetsCyClinic(clinic);
+		assertNotNull(pets);
+	}
 }

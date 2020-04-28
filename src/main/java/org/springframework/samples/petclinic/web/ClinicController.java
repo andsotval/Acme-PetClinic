@@ -43,7 +43,7 @@ public class ClinicController {
 	}
 
 	@GetMapping(value = "/getDetail")
-	public String listAllPending(final ModelMap modelMap) {
+	public String getDetail(final ModelMap modelMap) {
 		String view = "/clinics/clinicDetails";
 
 		List<String> roles = SessionUtils.obtainRoleUserInSession();
@@ -90,7 +90,7 @@ public class ClinicController {
 			returnView = listAvailable(modelMap);
 		else
 			//			returnView = "clinics/owner/" + owner.getClinic().getId();
-			returnView = showClinic(owner.getClinic().getId(), modelMap);
+			returnView = "redirect:/clinics/getDetail";
 
 		return returnView;
 	}
@@ -127,12 +127,12 @@ public class ClinicController {
 			owner.setClinic(null);
 			ownerService.saveEntity(owner);
 			return initClinicView(modelMap);
-		} else if (clinic != null && !notUnsubscribe) {
+		} else if (clinic != null && notUnsubscribe) {
 			modelMap.addAttribute("message", "Este propietario tiene alguna visit o stay pendiente o aceptada");
-			return "redirect:/oups";
+			return "redirect:/clinics/getDetail";
 		} else {
 			modelMap.addAttribute("message", "Este propietario no esta dado de alta en ninguna clínica");
-			return "redirect:/oups";
+			return "redirect:/clinics/getDetail";
 		}
 	}
 
