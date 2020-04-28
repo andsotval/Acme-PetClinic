@@ -90,9 +90,9 @@ public class VisitController {
 		if (visit.getClinic().getId() == vet.getClinic().getId()) {
 			visit.setIsAccepted(true);
 			visitService.saveEntity(visit);
-		} else
+		} else {
 			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
-
+		}
 		return "redirect:/visits/listAllAccepted";
 
 	}
