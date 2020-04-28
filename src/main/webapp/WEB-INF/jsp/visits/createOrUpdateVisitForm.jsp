@@ -5,17 +5,7 @@
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags"%>
 
 
-<petclinic:layout pageName="visitsByPet">
-	<jsp:attribute name="customScript">
-        <script>
-									$(function() {
-										$("#date").datepicker({
-											dateFormat : 'yy/mm/dd'
-										});
-									});
-								</script>
-    </jsp:attribute>
-
+<petclinic:layout pageName="visitsByPet">    
 	<jsp:body>
     	<c:if test="${visit.id != null}">
 				<h2>Update Visit</h2>
@@ -51,15 +41,13 @@
            		<petclinic:inputField label="Description"
 					name="description" />	
                 <petclinic:inputField label="Date of the Visit"
-					name="date" />
+					name="dateTime" />
             </div>
             
             <c:if test="${hasClinic == null}">
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <input type="hidden" name="id" value="${visit.id}" />
-                   <!--! <input type="hidden" name="clinic" value="${visit.clinic.id}"/>
-                    <input type="hidden" name="pet" value="${visit.pet.id}"/>-->
                      <c:if test="${visit.id == null}">
                     	<input type="hidden" name="clinic"
 							value="${clinicId}" />
@@ -72,7 +60,6 @@
 						<button class="btn btn-default" type="submit" name="authorized"
 							formaction="/visits/save/${visit.id}">Save Visit</button> 
                      </c:if>
-                    <!-- <button class="btn btn-default" type="submit">Save Visit</button> -->
                 </div>
             </div>
             </c:if>
@@ -96,7 +83,7 @@
 			        <c:forEach items="${visits}" var="visit">
 			            <tr>
 			                <td>
-			                    <c:out value="${visit.date}" />
+			                    <c:out value="${visit.dateTime}" />
 			                </td>
 			                <td>
 			                    <c:out value="${visit.description}" />
