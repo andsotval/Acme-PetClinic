@@ -16,6 +16,10 @@
 
 package org.springframework.samples.petclinic.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
@@ -59,6 +63,26 @@ class PetServiceTests {
 
 	@Autowired
 	protected OwnerService	ownerService;
+
+
+	@Test
+	void TestFindPetsByOwnerIdPositive() {
+		int ownerId = 2;
+		petService.findPetsByOwnerId(ownerId).forEach(p -> assertEquals(ownerId, p.getOwner().getId()));
+	}
+
+	@Test
+	void TestFindPetsByOwnerIdNegative() {
+		int ownerId = 2;
+		int notOwnerId = 4;
+		petService.findPetsByOwnerId(notOwnerId).forEach(p -> assertNotEquals(ownerId, p.getOwner().getId()));
+	}
+
+	@Test
+	void TestFindPetsByOwnerIdNotPresent() {
+		int ownerId = 20;
+		petService.findPetsByOwnerId(ownerId).forEach(p -> assertEquals(null, p.getOwner()));
+	}
 
 	//	@Test
 	//	void shouldFindPetWithCorrectId() {

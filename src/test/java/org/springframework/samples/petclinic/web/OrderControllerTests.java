@@ -47,7 +47,7 @@ public class OrderControllerTests {
 
 	private static final int	TEST_PRODUCT_ID_1	= 1;
 
-	private static final int	TEST_PRODUCT_ID_2	= 1;
+	private static final int	TEST_PRODUCT_ID_2	= 2;
 
 	private static Product		product1;
 	private static Product		product2;
@@ -192,14 +192,15 @@ public class OrderControllerTests {
 		//				.with(SecurityMockMvcRequestPostProcessors.csrf()))
 		//			.andExpect(MockMvcResultMatchers.status().isOk())
 		//			.andExpect(MockMvcResultMatchers.view().name("stays/list"));
+		Set<Product> selectProducts = new HashSet<Product>();
+		selectProducts.add(product1);
+		selectProducts.add(product2);
 
-		mockMvc
-			.perform(MockMvcRequestBuilders.post("/orders/new/{providerId}", TEST_PROVIDER_ID)
-				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("date", "2020/06/10")
-				.param("isAccepted", "false").param("manager.id", "1").param("product[0].id", "1")
-				.param("product[0].price", "12.5").param("product[0].available", "true"))
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.view().name("stays/list"));
+		mockMvc.perform(MockMvcRequestBuilders.post("/orders/new/{providerId}", TEST_PROVIDER_ID)
+			.sessionAttr("product", selectProducts).with(SecurityMockMvcRequestPostProcessors.csrf())
+			.param("date", "2020/04/27").param("isAccepted", "false").param("manager.id", "1")
+		/* .param("product", "products") */).andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/orders/" + order.getId()));
 	}
 
 	@WithMockUser(value = "juan")
