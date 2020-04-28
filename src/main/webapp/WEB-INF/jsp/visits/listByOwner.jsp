@@ -26,7 +26,7 @@
                    			<c:out value="${visitAccepted.pet.name}"/>
                 		</td>
                 		<td width="30%">
-                   			<c:out value="${visitAccepted.date}"/>
+                   			<petclinic:localDateTime date="${visitAccepted.dateTime}" pattern="yyyy-MM-dd HH:mm:ss" />
                 		</td>
                 		<td width="30%">
                     		<c:out value="${visitAccepted.description}"/>
@@ -69,7 +69,7 @@
                    			<c:out value="${visitPending.pet.name}"/>
                 		</td>
                 		<td width="30%">
-                   			<c:out value="${visitPending.date}"/>
+                			<petclinic:localDateTime date="${visitPending.dateTime}" pattern="yyyy-MM-dd HH:mm:ss" />
                 		</td>
                 		<td width="30%">
                     		<c:out value="${visitPending.description}"/>

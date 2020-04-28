@@ -167,7 +167,7 @@ public class StayController {
 			}
 		}
 
-		if (entity.getFinishDate() == null) {
+		if (entity.getFinishDate() == null && entity.getStartDate() != null) {
 			modelMap.addAttribute("stay", entity);
 			result.rejectValue("finishDate", "finishDateNotNull", "is required");
 			i++;
@@ -223,7 +223,7 @@ public class StayController {
 			}
 		}
 
-		if (entity.getFinishDate() == null) {
+		if (entity.getFinishDate() == null && entity.getStartDate() != null) {
 			model.addAttribute("stay", entity);
 			result.rejectValue("finishDate", "finishDateNotNull", "is required");
 			i++;

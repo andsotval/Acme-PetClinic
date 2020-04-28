@@ -152,7 +152,7 @@ public class PetController {
 			model.addAttribute("hasClinic", false);
 		visit.setPet(pet);
 		model.addAttribute("visit", visit);
-		Iterable<Visit> visits = visitService.findAllVisitByPet(petId);
+		Iterable<Visit> visits = visitService.findAllByPetId(petId);
 		model.addAttribute("visits", visits);
 
 		return "visits/createOrUpdateVisitForm";
