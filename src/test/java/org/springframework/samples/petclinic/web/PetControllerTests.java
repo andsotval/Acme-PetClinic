@@ -49,10 +49,12 @@ import org.springframework.test.web.servlet.MockMvc;
 	excludeAutoConfiguration = SecurityConfiguration.class)
 public class PetControllerTests {
 
-	private static final int	TEST_OWNER_ID	= 1;
+	private static final int	TEST_OWNER_ID		= 1;
+	private static final int	TEST_OWNER_ID_2		= 2;
 
-	private static final int	TEST_PET_ID		= 1;
-	private static final int	TEST_PET_ID_2	= 2;
+	private static final int	TEST_PET_ID			= 1;
+	private static final int	TEST_PET_ID_2		= 2;
+	private static final int	TEST_PET_ID_WRONG	= 5;
 
 	private static Pet			pet1;
 	private static Pet			pet2;
@@ -110,6 +112,30 @@ public class PetControllerTests {
 		Optional<Owner> optOwner = Optional.of(owner);
 		BDDMockito.given(ownerService.findEntityById(TEST_OWNER_ID)).willReturn(optOwner);
 		BDDMockito.given(ownerService.findPersonByUsername("George")).willReturn(owner);
+
+		User userOwner2 = new User();
+		userOwner2.setEnabled(true);
+		userOwner2.setId(TEST_OWNER_ID_2);
+		userOwner2.setUsername("Lucas");
+		userOwner2.setPassword("Lucas");
+
+		Authorities authorityOwner2 = new Authorities();
+		authorityOwner2.setAuthority("owner");
+		authorityOwner2.setUsername("Lucas");
+
+		Owner owner2 = new Owner();
+		owner2.setId(TEST_OWNER_ID_2);
+		owner2.setUser(userOwner);
+		owner2.setFirstName("Lucas");
+		owner2.setLastName("Smith");
+		owner2.setAddress("110 W. Liberty St.");
+		owner2.setCity("Madison");
+		owner2.setMail("owner2@owner2.com");
+		owner2.setTelephone("6085551789");
+
+		Optional<Owner> optOwner2 = Optional.of(owner2);
+		BDDMockito.given(ownerService.findEntityById(TEST_OWNER_ID_2)).willReturn(optOwner2);
+		BDDMockito.given(ownerService.findPersonByUsername("Lucas")).willReturn(owner2);
 
 		PetType cat = new PetType();
 		cat.setId(1);
@@ -191,6 +217,51 @@ public class PetControllerTests {
 
 	@WithMockUser(value = "George")
 	@Test
+	void testSavePetWrongBirthDate() throws Exception {
+		mockMvc
+			.perform(post("/pets/save").with(csrf()).param("name", "rex").param("birthDate", "2021/04/11")
+				.param("type", "dog").param("owner.id", String.valueOf(TEST_OWNER_ID)))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeHasFieldErrorCode("pet", "birthDate", "birthDateFuture"))
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+
+	}
+
+	@WithMockUser(value = "George")
+	@Test
+	void testSavePetWrongType() throws Exception {
+		mockMvc
+			.perform(post("/pets/save").with(csrf()).param("name", "rex").param("birthDate", "2019/04/11")
+				.param("type", "bird").param("owner.id", String.valueOf(TEST_OWNER_ID)))
+			.andExpect(status().isOk()).andExpect(model().attributeHasFieldErrors("pet", "type"))
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+
+	}
+
+	@WithMockUser(value = "George")
+	@Test
+	void testSavePetWrongName() throws Exception {
+		mockMvc
+			.perform(post("/pets/save").with(csrf()).param("name", "wn").param("birthDate", "2019/04/11")
+				.param("type", "dog").param("owner.id", String.valueOf(TEST_OWNER_ID)))
+			.andExpect(status().isOk()).andExpect(model().attributeHasFieldErrors("pet", "name"))
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+
+	}
+
+	@WithMockUser(value = "Lucas")
+	@Test
+	void testSavePetDeniedAccess() throws Exception {
+		mockMvc
+			.perform(post("/pets/save").with(csrf()).param("name", "rex").param("birthDate", "2019/04/11")
+				.param("type", "dog").param("owner.id", String.valueOf(TEST_OWNER_ID)))
+			.andExpect(status().is3xxRedirection())/* .andExpect(model().attributeExists("exception")) */
+			.andExpect(view().name("redirect:/oups"));
+
+	}
+
+	@WithMockUser(value = "George")
+	@Test
 	void testCancelVisit() throws Exception {
 		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID)).andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/pets/listMyPets"));
@@ -214,10 +285,25 @@ public class PetControllerTests {
 
 	@WithMockUser(value = "George")
 	@Test
-	void testInitUpdateForm() throws Exception {
+	void testInitUpdateFormPet1() throws Exception {
+		mockMvc.perform(get("/pets/{petId}/edit", TEST_PET_ID)).andExpect(status().isOk())
+			.andExpect(model().attributeExists("pet")).andExpect(model().attribute("pet", pet1))
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+
+	@WithMockUser(value = "George")
+	@Test
+	void testInitUpdateFormPet2() throws Exception {
 		mockMvc.perform(get("/pets/{petId}/edit", TEST_PET_ID_2)).andExpect(status().isOk())
 			.andExpect(model().attributeExists("pet")).andExpect(model().attribute("pet", pet2))
 			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+
+	@WithMockUser(value = "George")
+	@Test
+	void testInitUpdateFormPetIdWrong() throws Exception {
+		mockMvc.perform(get("/pets/{petId}/edit", TEST_PET_ID_WRONG)).andExpect(status().isOk())
+			.andExpect(model().attributeDoesNotExist("pet")).andExpect(view().name("exception"));
 	}
 
 	//	@WithMockUser(value = "spring")

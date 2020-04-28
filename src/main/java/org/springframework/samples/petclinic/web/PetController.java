@@ -36,9 +36,7 @@ import org.springframework.samples.petclinic.util.SessionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,12 +46,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/pets")
 public class PetController {
 
-	private static final String		VIEWS_PETS_CREATE_OR_UPDATE_FORM	= "pets/createOrUpdatePetForm";
+	private static final String	VIEWS_PETS_CREATE_OR_UPDATE_FORM	= "pets/createOrUpdatePetForm";
 
-	private PetTypeService	petTypeService;
-	private PetService		petService;
+	private PetTypeService		petTypeService;
+	private PetService			petService;
 	private VisitService		visitService;
-	private StayService		stayService;
+	private StayService			stayService;
 	private OwnerService		ownerService;
 
 
@@ -107,7 +105,9 @@ public class PetController {
 			i++;
 		}
 		if (pet.getOwner().getId() != owner.getId()) {
-			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
+			//			Exception e = new Exception("No estás autorizado");
+			//			modelMap.addAttribute("exception", e);
+			view = "redirect:/oups";
 			i++;
 		}
 		if (pet.getBirthDate() != null && pet.getBirthDate().isAfter(LocalDate.now())) {
@@ -125,7 +125,7 @@ public class PetController {
 	}
 
 	@GetMapping(path = "/delete/{petId}")
-	public String cancelVisit(@PathVariable("petId") int petId, ModelMap modelMap) {
+	public String deletePet(@PathVariable("petId") int petId, ModelMap modelMap) {
 		Pet pet = petService.findEntityById(petId).get();
 
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
@@ -175,22 +175,22 @@ public class PetController {
 		return "stays/createOrUpdateStayForm";
 	}
 
-	// Estos métodos ya estaban en PetClinic pero de momento no los usamos
-	@InitBinder("owner")
-	public void initOwnerBinder(WebDataBinder dataBinder) {
-		dataBinder.setDisallowedFields("id");
-	}
-
-	@InitBinder("pet")
-	public void initPetBinder(WebDataBinder dataBinder) {
-		dataBinder.setValidator(new PetValidator());
-	}
-
 	@GetMapping(value = "/{petId}/edit")
 	public String initUpdateForm(@PathVariable("petId") int petId, ModelMap model) {
 		Pet pet = petService.findEntityById(petId).get();
-		model.put("pet", pet);
+		model.addAttribute("pet", pet);
 		return PetController.VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 	}
+
+	// Estos métodos ya estaban en PetClinic pero de momento no los usamos
+	//	@InitBinder("owner")
+	//	public void initOwnerBinder(WebDataBinder dataBinder) {
+	//		dataBinder.setDisallowedFields("id");
+	//	}
+	//
+	//	@InitBinder("pet")
+	//	public void initPetBinder(WebDataBinder dataBinder) {
+	//		dataBinder.setValidator(new PetValidator());
+	//	}
 
 }
