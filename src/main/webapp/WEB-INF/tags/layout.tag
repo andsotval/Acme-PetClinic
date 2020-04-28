@@ -5,13 +5,13 @@
 <%@ attribute name="customScript" required="false" fragment="true"%>
 
 <!doctype html>
-<html>
+<html style="height: 100%;">
 <petclinic:htmlHeader/>
 
-<body>
+<body style="height: 84%;">
 <petclinic:bodyHeader menuName="${pageName}"/>
 
-<div class="container-fluid">
+<div style="height: 100%;" class="container-fluid">
     <div class="container xd-container">
 
         <jsp:doBody/>
