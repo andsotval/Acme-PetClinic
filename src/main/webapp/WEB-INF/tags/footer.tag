@@ -1,7 +1,5 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-
-
 <%-- Placed at the end of the document so the pages load faster --%>
 <spring:url value="/webjars/jquery/2.2.4/jquery.min.js" var="jQuery"/>
 <script src="${jQuery}"></script>
@@ -18,7 +16,7 @@
 <footer style="padding-bottom: 13px;padding-top: 13px;background-color: white;" class="page-footer font-small pt-4">
 
   <!-- Copyright -->
-  <div class="footer-copyright text-center py-3">© 2020 Copyright: DP2 - Grupo 8 - LAB F1.33
+  <div class="footer-copyright text-center py-3">&#64; 2020 Copyright: DP2 - Grupo 8 - LAB F1.33
     <a href="https://github.com/andsotval/Acme-PetClinic"> Github</a>
   </div>
   <!-- Copyright -->

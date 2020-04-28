@@ -22,7 +22,10 @@
         <c:forEach items="${pets}" var="pet">
             <tr>
                 <td>
-                    <c:out value="${pet.name}"/>
+                    <spring:url value="/pets/{petId}/edit" var="petUrl">
+                        <spring:param name="petId" value="${pet.id}"/>
+                    </spring:url>
+                    <a href="${fn:escapeXml(petUrl)}"><c:out value="${pet.name}"/></a>
                 </td>
                 <td>
                     <c:out value="${pet.type.name}"/>
