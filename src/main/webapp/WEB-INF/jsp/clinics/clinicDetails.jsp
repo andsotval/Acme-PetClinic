@@ -54,7 +54,7 @@
 					</c:when>
 					<c:otherwise>
 						<div class="text-right">
-							<p>You cannot unsubscribe to clinic</p>
+							<p>You cannot unsubscribe to clinic while you have <a href="/visits/listByOwner">active visits</a> or <a href="/stays/listByOwner">active stays</a></p>
 						</div>
 					</c:otherwise>
 				</c:choose>
