@@ -342,7 +342,6 @@ class VisitControllerTests {
 				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listByOwner"));
 	}
 
-	// TODO: Prueba negativa
 	@WithMockUser(value = "Vet")
 	@Test
 	void testInitUpdateVisit() throws Exception {
