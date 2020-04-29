@@ -17,7 +17,7 @@
 
   <!-- Copyright -->
   <div style="color:white" class="footer-copyright text-center py-3">&#64; 2020 Copyright: DP2 - Grupo 8 - LAB F1.33
-    <a href="https://github.com/andsotval/Acme-PetClinic"> Link to out Repository in Github</a>
+    <a href="https://github.com/andsotval/Acme-PetClinic/wiki"> Link to our Repository in Github</a>
   </div>
   <!-- Copyright -->
 
