@@ -31,5 +31,8 @@ public interface VetRepository extends BaseRepository<Vet> {
 
 	@Query("SELECT v FROM Vet v where v.clinic.manager.id=?1")
 	Iterable<Vet> findVetsByManager(int managerId);
+	
+	@Query("SELECT v FROM Vet v where v.clinic.id=?1")
+	Iterable<Vet> findVetsByClinicId(Integer clinicId);
 
 }

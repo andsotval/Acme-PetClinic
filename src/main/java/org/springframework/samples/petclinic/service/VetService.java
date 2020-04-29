@@ -51,4 +51,8 @@ public class VetService extends PersonService<Vet> {
 		return vetRepository.findVetsByManager(managerId);
 	}
 
+	public Iterable<Vet> findVetsByClinicId(Integer clinicId) {
+		return vetRepository.findVetsByClinicId(clinicId);
+	}
+
 }

@@ -167,7 +167,7 @@ public class StayController {
 			}
 		}
 
-		if (entity.getFinishDate() == null) {
+		if (entity.getFinishDate() == null && entity.getStartDate() != null) {
 			modelMap.addAttribute("stay", entity);
 			result.rejectValue("finishDate", "finishDateNotNull", "is required");
 			i++;
@@ -228,17 +228,24 @@ public class StayController {
 			result.rejectValue("finishDate", "finishDateNotNull", "is required");
 			i++;
 		} else {
-			if (entity.getFinishDate().isAfter(entity.getStartDate().plusDays(7L))) {
+			if(entity.getStartDate() != null) {
+				if (entity.getFinishDate().isAfter(entity.getStartDate().plusDays(7L))) {
+					model.addAttribute("stay", entity);
+					result.rejectValue("finishDate", "finishDateMinimumOneWeek", "Stays cannot last longer than one week");
+					i++;
+				}
+				if (entity.getFinishDate().isBefore(entity.getStartDate())) {
+					model.addAttribute("stay", entity);
+					result.rejectValue("finishDate", "finishDateAfteStartDate",
+							"The finish date must be after the start date");
+					i++;
+				}
+			} else {
 				model.addAttribute("stay", entity);
-				result.rejectValue("finishDate", "finishDateMinimumOneWeek", "Stays cannot last longer than one week");
+				result.rejectValue("finishDate", "finishDateNotNull", "first put the start date");
 				i++;
 			}
-			if (entity.getFinishDate().isBefore(entity.getStartDate())) {
-				model.addAttribute("stay", entity);
-				result.rejectValue("finishDate", "finishDateAfteStartDate",
-						"The finish date must be after the start date");
-				i++;
-			}
+
 		}
 
 		if (i == 0) {
