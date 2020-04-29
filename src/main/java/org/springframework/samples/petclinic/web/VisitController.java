@@ -1,8 +1,8 @@
 
 package org.springframework.samples.petclinic.web;
 
-import java.time.LocalDate;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.stream.StreamSupport;
 
 import javax.validation.Valid;
 
@@ -29,20 +29,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/visits")
 public class VisitController {
 
-	private VisitService		visitService;
+	private VisitService visitService;
 
-	private VetService			vetService;
+	private VetService vetService;
 
-	private OwnerService		ownerService;
+	private OwnerService ownerService;
 
-	private AuthoritiesService	authoritiesService;
+	private AuthoritiesService authoritiesService;
 
-	private static final String	VIEWS_VISIT_CREATE_OR_UPDATE_FORM	= "/visits/createOrUpdateVisitForm";
-
+	private static final String VIEWS_VISIT_CREATE_OR_UPDATE_FORM = "/visits/createOrUpdateVisitForm";
 
 	@Autowired
 	public VisitController(final VisitService visitService, final VetService vetService,
-		final OwnerService ownerService, final AuthoritiesService authoritiesService) {
+			final OwnerService ownerService, final AuthoritiesService authoritiesService) {
 		this.visitService = visitService;
 		this.vetService = vetService;
 		this.ownerService = ownerService;
@@ -54,45 +53,21 @@ public class VisitController {
 		dataBinder.setDisallowedFields("id");
 	}
 
-	// @ModelAttribute("visit")
-	// public Visit loadPetWithVisit(@PathVariable("petId") final int petId) {
-	// Pet pet = this.petService.findPetById(petId);
-	// Visit visit = new Visit();
-	// pet.addVisit(visit);
-	// return visit;
-	// }
-
-	// Spring MVC calls method loadPetWithVisit(...) before initNewVisitForm is
-	// called
-	@GetMapping(value = "/owners/*/pets/{petId}/visits/new")
-	public String initNewVisitForm(@PathVariable("petId") final int petId, final Map<String, Object> model) {
-		return "pets/createOrUpdateVisitForm";
-	}
-
-	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is
-	// called
-	@PostMapping(value = "/owners/{ownerId}/pets/{petId}/visits/new")
-	public String processNewVisitForm(@Valid final Visit visit, final BindingResult result) {
-		if (result.hasErrors())
-			return "pets/createOrUpdateVisitForm";
-		else {
-			visitService.saveEntity(visit);
-			return "redirect:/owners/{ownerId}";
-		}
-	}
-
 	@GetMapping(value = "/listAllPending")
 	public String listAllPending(final ModelMap modelMap) {
 		String view = "visits/list";
 
 		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Iterable<Visit> visits = visitService.findAllPendingByVet(vet);
+		if (vet != null) {
+			Iterable<Visit> visits = visitService.findAllPendingByVetId(vet.getId());
 
-		modelMap.addAttribute("visits", visits);
-		modelMap.addAttribute("accepted", false);
-		return view;
-
+			modelMap.addAttribute("visits", visits);
+			modelMap.addAttribute("accepted", false);
+			return view;
+		} else {
+			return "redirect:/oups";
+		}
 	}
 
 	@GetMapping(value = "/listAllAccepted")
@@ -101,11 +76,14 @@ public class VisitController {
 
 		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Iterable<Visit> visits = visitService.findAllAcceptedByVet(vet);
-		modelMap.addAttribute("visits", visits);
-		modelMap.addAttribute("accepted", true);
-		return view;
-
+		if (vet != null) {
+			Iterable<Visit> visits = visitService.findAllAcceptedByVetId(vet.getId());
+			modelMap.addAttribute("visits", visits);
+			modelMap.addAttribute("accepted", true);
+			return view;
+		} else {
+			return "redirect:/oups";
+		}
 	}
 
 	@GetMapping(path = "/accept/{visitId}")
@@ -117,9 +95,9 @@ public class VisitController {
 		if (visit.getClinic().getId() == vet.getClinic().getId()) {
 			visit.setIsAccepted(true);
 			visitService.saveEntity(visit);
-		} else
-			modelMap.addAttribute("nonAuthorized", "No estás autorizado");
-
+		} else {
+			modelMap.addAttribute("nonAuthorized", true);
+		}
 		return "redirect:/visits/listAllAccepted";
 
 	}
@@ -137,9 +115,9 @@ public class VisitController {
 			if (visit.getClinic().getId() == vet.getClinic().getId()) {
 				visit.setIsAccepted(false);
 				visitService.saveEntity(visit);
-			} else
-				modelMap.addAttribute("nonAuthorized", "No estás autorizado");
-
+			} else {
+				modelMap.addAttribute("notAuthorizedVet", true);
+			}
 			return "redirect:/visits/listAllAccepted";
 		}
 
@@ -149,9 +127,9 @@ public class VisitController {
 			if (visit.getPet().getOwner().getId() == owner.getId()) {
 				visit.setIsAccepted(false);
 				visitService.saveEntity(visit);
-			} else
-				modelMap.addAttribute("nonAuthorized", "No estás autorizado");
-
+			} else {
+				modelMap.addAttribute("notAuthorizedOwner", true);
+			}
 			return "redirect:/visits/listByOwner";
 		}
 
@@ -159,15 +137,21 @@ public class VisitController {
 	}
 
 	@GetMapping(path = "/changeDate/{visitId}")
-	public String changeDatevisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
-		Visit visit = visitService.findEntityById(visitId).get();
-		modelMap.addAttribute(visit);
-		return "/visits/createOrUpdateVisitForm";
+	public String initUpdateVisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
+
+		if (!visitService.findEntityById(visitId).isPresent()) {
+			return "redirect:/oups";
+		} else {
+			Visit visit = visitService.findEntityById(visitId).get();
+			modelMap.addAttribute(visit);
+			return "/visits/createOrUpdateVisitForm";
+		}
+
 	}
 
 	@PostMapping(path = "/save/{visitId}")
 	public String updateVisit(@PathVariable("visitId") final int visitId, @Valid final Visit entity,
-		final BindingResult result, final ModelMap modelMap) {
+			final BindingResult result, final ModelMap modelMap) {
 
 		String view = VisitController.VIEWS_VISIT_CREATE_OR_UPDATE_FORM;
 
@@ -191,21 +175,36 @@ public class VisitController {
 			i++;
 		}
 
-		if (entity.getDate() == null) {
+		if (entity.getDateTime() == null) {
 			modelMap.addAttribute("visit", entity);
-			result.rejectValue("date", "dateNotNull", "is required");
+			result.rejectValue("dateTime", "dateNotNull", "is required");
 			i++;
-		} else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
+		} else if (entity.getDateTime().isBefore(LocalDateTime.now().plusDays(2L))) {
 			modelMap.addAttribute("visit", entity);
-			result.rejectValue("date", "dateInFuture", "Minimum 2 days after today");
+			result.rejectValue("dateTime", "dateInFuture", "Minimum 2 days after today");
 			i++;
+		} else if (!entity.getDateTime().equals(visit.getDateTime())) {
+
+			Iterable<Visit> visits = visitService.findAllByDateTime(entity.getDateTime());
+
+			Iterable<Vet> vets = vetService.findVetsByClinicId(visit.getClinic().getId());
+
+			Long visitsNumber = StreamSupport.stream(visits.spliterator(), false).count();
+
+			Long vetsNumber = StreamSupport.stream(vets.spliterator(), false).count();
+
+			if (visitsNumber >= vetsNumber) {
+				modelMap.addAttribute("visit", entity);
+				result.rejectValue("dateTime", "dateNotPossible", "There are no vets available at that time");
+				i++;
+			}
 		}
 
 		if (i == 0) {
 			visit.setDescription(entity.getDescription());
-			visit.setDate(entity.getDate());
+			visit.setDateTime(entity.getDateTime());
 			visitService.saveEntity(visit);
-			modelMap.addAttribute("message", "Visit succesfully updated");
+			modelMap.addAttribute("messageSuccesful", "Visit succesfully updated");
 			return listAllAccepted(modelMap);
 		} else {
 			entity.setId(visit.getId());
@@ -216,9 +215,9 @@ public class VisitController {
 	}
 
 	@PostMapping(path = "/save")
-	public String updateNewVisit(@Valid final Visit entity, final BindingResult result, final ModelMap model) {
+	public String createVisit(@Valid final Visit entity, final BindingResult result, final ModelMap model) {
 
-		String view = "visits/createOrUpdateVisitForm";
+		String view = "/visits/createOrUpdateVisitForm";
 
 		int i = 0;
 
@@ -227,14 +226,29 @@ public class VisitController {
 			i++;
 		}
 
-		if (entity.getDate() == null) {
+		if (entity.getDateTime() == null) {
 			model.addAttribute("visit", entity);
-			result.rejectValue("date", "dateNotNull", "is required");
+			result.rejectValue("dateTime", "dateNotNull", "is required");
 			i++;
-		} else if (entity.getDate().isBefore(LocalDate.now().plusDays(2L))) {
+		} else if (entity.getDateTime().isBefore(LocalDateTime.now().plusDays(2L))) {
 			model.addAttribute("visit", entity);
-			result.rejectValue("date", "dateInFuture", "Minimum 2 days after today");
+			result.rejectValue("dateTime", "dateInFuture", "Minimum 2 days after today");
 			i++;
+		} else {
+
+			Iterable<Visit> visits = visitService.findAllByDateTime(entity.getDateTime());
+
+			Iterable<Vet> vets = vetService.findVetsByClinicId(entity.getClinic().getId());
+
+			Long visitsNumber = StreamSupport.stream(visits.spliterator(), false).count();
+
+			Long vetsNumber = StreamSupport.stream(vets.spliterator(), false).count();
+
+			if (visitsNumber >= vetsNumber) {
+				model.addAttribute("visit", entity);
+				result.rejectValue("dateTime", "dateNotPossible", "There are no vets available at that time");
+				i++;
+			}
 		}
 
 		if (i == 0) {
@@ -242,7 +256,7 @@ public class VisitController {
 			model.addAttribute("message", "Visit succesfully updated");
 			return "redirect:/visits/listByOwner";
 		} else {
-			Iterable<Visit> visits = visitService.findAllVisitByPet(entity.getPet().getId());
+			Iterable<Visit> visits = visitService.findAllByPetId(entity.getPet().getId());
 			model.addAttribute("visits", visits);
 			model.addAttribute("clinicId", entity.getPet().getOwner().getClinic().getId());
 		}
@@ -251,20 +265,24 @@ public class VisitController {
 	}
 
 	@GetMapping(value = "/listByOwner")
-	public String listAllPendingByOwner(final ModelMap modelMap) {
+	public String listAllPendingAndAcceptedByOwner(final ModelMap modelMap) {
 		String view = "visits/listByOwner";
 
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Iterable<Visit> visitsPending = visitService.findAllPendingByOwner(owner);
+		if (owner != null) {
+			Iterable<Visit> visitsPending = visitService.findAllPendingByOwnerId(owner.getId());
 
-		Iterable<Visit> visitsAccepted = visitService.findAllAcceptedByOwner(owner);
+			Iterable<Visit> visitsAccepted = visitService.findAllAcceptedByOwnerId(owner.getId());
 
-		modelMap.addAttribute("visitsPending", visitsPending);
+			modelMap.addAttribute("visitsPending", visitsPending);
 
-		modelMap.addAttribute("visitsAccepted", visitsAccepted);
+			modelMap.addAttribute("visitsAccepted", visitsAccepted);
 
-		return view;
+			return view;
+		} else {
+			return "redirect:/oups";
+		}
 
 	}
 

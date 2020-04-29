@@ -41,6 +41,8 @@ public class SuggestionUserControllerTest {
 
 	private static final int	TEST_SUGGESTION_ID_3	= 3;
 
+	private static final int	TEST_SUGGESTION_ID_99	= 99;
+
 	@Autowired
 	private MockMvc				mockMvc;
 
@@ -122,11 +124,18 @@ public class SuggestionUserControllerTest {
 
 	@WithMockUser(value = "spring")
 	@Test
-	void testDetail() throws Exception {
+	void testDetailPositive() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/details/{suggestionId}", TEST_SUGGESTION_ID_1))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.model().attributeExists("suggestion"))
 			.andExpect(MockMvcResultMatchers.view().name("suggestion/user/details"));
+	}
+
+	@WithMockUser(value = "spring")
+	@Test
+	void testDetailValueNotPresent() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/details/{suggestionId}", TEST_SUGGESTION_ID_99))
+			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("exception"));
 	}
 
 	@WithMockUser(value = "pepito")
