@@ -6,7 +6,7 @@
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
 <petclinic:layout pageName="/providers">
-	<h2>${provider.firstName} ${provider.lastName}</h2>
+	<h2>Provider: ${provider.firstName} - ${provider.lastName}</h2>
 
 
     <table id="productsTable" class="table table-striped">
@@ -30,4 +30,7 @@
         </tbody>
     </table>
     
+   	<a class="btn btn-default"
+	href='<spring:url value="/providers/listAvailable" htmlEscape="true"/>'>Back to list of Providers</a>
+   
 </petclinic:layout>
