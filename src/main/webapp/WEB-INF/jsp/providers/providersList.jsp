@@ -13,7 +13,9 @@
         <tr>
             <th>Name</th>
             <th>Mail</th>
-            <th>Action</th>
+            <th >Add provider</th>
+ 
+            <th align = "center">See more</th>
         </tr>
         </thead>
         <tbody>
@@ -26,17 +28,21 @@
                     <c:out value="${avProvider.mail}"/>
                 </td>
                 <td>
-                    <spring:url value="/providers/addProvider/{providerId}" var="providerUrl">                  
-                    	<spring:param name="providerId" value="${avProvider.id}"/>                      
-                    </spring:url>
-                    <a href="${fn:escapeXml(providerUrl)}"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a>
-   
-                    <spring:url value="/providers/listProductsByProvider/{providerId}" var="providerUrl">                  
-                    	<spring:param name="providerId" value="${avProvider.id}"/>                      
-                    </spring:url>
-                    <a href="${fn:escapeXml(providerUrl)}"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span></a>
-   
+                	<div align = "center">
+	                    <spring:url value="/providers/addProvider/{providerId}" var="providerUrl">                  
+	                    	<spring:param name="providerId" value="${avProvider.id}"/>                      
+	                    </spring:url>
+	                    <a href="${fn:escapeXml(providerUrl)}"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a>
+               		</div>
                 </td>          
+                <td>
+	                <div align = "center">
+						<spring:url value="/providers/listProductsByProvider/{providerId}" var="providerUrl">                  
+	                    	<spring:param name="providerId" value="${avProvider.id}"/>                      
+	                    </spring:url>
+	                    <a href="${fn:escapeXml(providerUrl)}"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span></a>
+	               </div>
+                </td>
             </tr>
         </c:forEach>
         </tbody>
@@ -44,7 +50,7 @@
     
         <h2>Already added providers</h2>
 
-    <table id="providersTable" class="table table-striped">
+    <table id="addedProvidersTable" class="table table-striped">
         <thead>
         <tr>
             <th>Name</th>
@@ -69,11 +75,4 @@
         </tbody>
     </table>     
 
-    <table class="table-buttons">
-        <tr>
-            <td>
-                <a href="<spring:url value="/providers.xml" htmlEscape="true" />">View as XML</a>
-            </td>            
-        </tr>
-    </table>
 </petclinic:layout>
