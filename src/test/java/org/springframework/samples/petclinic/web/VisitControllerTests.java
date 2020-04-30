@@ -10,11 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
-import org.assertj.core.internal.Iterables;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,11 +36,9 @@ import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.samples.petclinic.service.VisitService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.result.ModelResultMatchers;
 
 @WebMvcTest(value = VisitController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
 class VisitControllerTests {
@@ -304,7 +299,6 @@ class VisitControllerTests {
 	void testAcceptVisitNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED))
 				.andExpect(status().is3xxRedirection())
-				// .andExpect(MockMvcResultMatchers.model().attributeExists("nonAuthorized"))
 				.andExpect(view().name("redirect:/visits/listAllAccepted"));
 	}
 
@@ -321,7 +315,6 @@ class VisitControllerTests {
 	@Test
 	void testCancelVisitAsVetNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/cancel/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED))
-				// .andExpect(model().attribute("notAuthorizedVet", true))
 				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listAllAccepted"));
 	}
 
@@ -338,7 +331,6 @@ class VisitControllerTests {
 	@Test
 	void testCancelVisitAsOwnerNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/cancel/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED))
-				// .andExpect(MockMvcResultMatchers.model().attributeExists("notAuthorizedVet"))
 				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listByOwner"));
 	}
 
