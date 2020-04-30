@@ -92,9 +92,15 @@ public class SuggestionServiceTests {
 	}
 
 	@Test
-	public void testFindEntityById() {
+	public void testFindEntityByIdPositive() {
 		Optional<Suggestion> entity = service.findEntityById(1);
 		assertTrue(entity.isPresent());
+	}
+
+	@Test
+	public void testFindEntityByIdNegative() {
+		Optional<Suggestion> entity = service.findEntityById(99);
+		assertTrue(!entity.isPresent());
 	}
 
 	@Test
