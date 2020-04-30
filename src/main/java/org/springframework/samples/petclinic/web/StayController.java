@@ -51,7 +51,7 @@ public class StayController {
 
 		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Iterable<Stay> stays = stayService.findAllPendingByVet(vet);
+		Iterable<Stay> stays = stayService.findAllPendingByVet(vet.getId());
 		modelMap.addAttribute("stays", stays);
 		modelMap.addAttribute("accepted", false);
 		return view;
@@ -63,7 +63,7 @@ public class StayController {
 
 		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Iterable<Stay> stays = stayService.findAllAcceptedByVet(vet);
+		Iterable<Stay> stays = stayService.findAllAcceptedByVet(vet.getId());
 		modelMap.addAttribute("stays", stays);
 		modelMap.addAttribute("accepted", true);
 		return view;

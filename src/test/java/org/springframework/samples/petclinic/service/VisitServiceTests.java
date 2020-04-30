@@ -16,9 +16,9 @@
 
 package org.springframework.samples.petclinic.service;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
@@ -44,6 +44,7 @@ class VisitServiceTests {
 
 	@Autowired
 	protected VisitService service;
+
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -80,7 +81,7 @@ class VisitServiceTests {
 	@Test
 	public void testDeleteByPetId() {
 		service.deleteByPetId(1);
-		
+
 	}
 
 	@Test
@@ -197,44 +198,45 @@ class VisitServiceTests {
 		Optional<Visit> entity = service.findEntityById(1);
 		assertTrue(entity.isPresent());
 		service.deleteEntity(entity.get());
-		
+
 		Optional<Visit> deleteEntity = service.findEntityById(1);
 		assertTrue(!deleteEntity.isPresent());
 	}
-	
+
 	@Test
 	public void testDeleteVisitNonExisisting() {
 		Collection<Visit> collection = (Collection<Visit>) service.findAllEntities();
 		assertEquals(collection.size(), 11);
-		
+
 		service.deleteEntity(null);
-		
+
 		Collection<Visit> collectionAfter = (Collection<Visit>) service.findAllEntities();
 		assertEquals(collectionAfter.size(), 11);
 	}
-	
 
 	@Test
 	public void testDeleteVisitById() {
 		Collection<Visit> collection = (Collection<Visit>) service.findAllEntities();
 		assertEquals(collection.size(), 11);
-		
+
 		service.deleteEntityById(1);
-		
+
 		Collection<Visit> collectionAfter = (Collection<Visit>) service.findAllEntities();
-		assertEquals(collectionAfter.size(), 11-1);
+		assertEquals(collectionAfter.size(), 11 - 1);
 	}
-	
-	/*@Test
-	public void testDeleteVisitByIdNonExisting() {
-		Collection<Visit> collection = (Collection<Visit>) service.findAllEntities();
-		assertEquals(collection.size(), 11);
-		
-		service.deleteEntityById(90000);
-		
-		Collection<Visit> collectionAfter = (Collection<Visit>) service.findAllEntities();
-		assertEquals(collectionAfter.size(), 11);
-	}*/
+
+	/*
+	 * @Test
+	 * public void testDeleteVisitByIdNonExisting() {
+	 * Collection<Visit> collection = (Collection<Visit>) service.findAllEntities();
+	 * assertEquals(collection.size(), 11);
+	 * 
+	 * service.deleteEntityById(90000);
+	 * 
+	 * Collection<Visit> collectionAfter = (Collection<Visit>) service.findAllEntities();
+	 * assertEquals(collectionAfter.size(), 11);
+	 * }
+	 */
 
 	@Test
 	public void testFindAllVisits() {
@@ -245,14 +247,14 @@ class VisitServiceTests {
 	@Test
 	public void testFindVisitById() {
 		Optional<Visit> entity = service.findEntityById(1);
-		assertTrue(entity.isPresent());		
+		assertTrue(entity.isPresent());
 		assertEquals(entity.get().getId(), 1);
 	}
-	
+
 	@Test
 	public void testFindVisitByIdNonExisiting() {
 		Optional<Visit> entity = service.findEntityById(900000);
-		assertFalse(entity.isPresent());	
+		assertFalse(entity.isPresent());
 	}
 
 }
