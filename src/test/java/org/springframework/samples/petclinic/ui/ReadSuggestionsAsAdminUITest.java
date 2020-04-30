@@ -24,7 +24,7 @@ public class ReadSuggestionsAsAdminUITest {
 	private StringBuffer verificationErrors = new StringBuffer();
 
 	@BeforeEach
-	public void setUp() throws Exception {
+	public void setUp() throws Exception {		
 		driver = new FirefoxDriver();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 	}
