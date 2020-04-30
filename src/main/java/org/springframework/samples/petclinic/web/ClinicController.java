@@ -33,8 +33,7 @@ public class ClinicController {
 
 
 	@Autowired
-	public ClinicController(final ClinicService clinicService, OwnerService ownerService, VetService vetService,
-		VisitService visitService, StayService stayService) {
+	public ClinicController(final ClinicService clinicService, OwnerService ownerService, VetService vetService, VisitService visitService, StayService stayService) {
 		this.clinicService = clinicService;
 		this.ownerService = ownerService;
 		this.vetService = vetService;
@@ -64,12 +63,11 @@ public class ClinicController {
 
 			List<Visit> visitsPending = (List<Visit>) visitService.findAllPendingByOwner(owner);
 
-			List<Stay> staysAccepted = (List<Stay>) stayService.findAllAcceptedByOwner(owner);
+			List<Stay> staysAccepted = (List<Stay>) stayService.findAllAcceptedByOwner(owner.getId());
 
-			List<Stay> stayPending = (List<Stay>) stayService.findAllPendingByOwner(owner);
+			List<Stay> stayPending = (List<Stay>) stayService.findAllPendingByOwner(owner.getId());
 
-			Boolean notUnsubscribe = visitsAccepted.size() > 0 || visitsPending.size() > 0 || staysAccepted.size() > 0
-				|| stayPending.size() > 0;
+			Boolean notUnsubscribe = visitsAccepted.size() > 0 || visitsPending.size() > 0 || staysAccepted.size() > 0 || stayPending.size() > 0;
 
 			modelMap.addAttribute("notUnsubscribe", notUnsubscribe);
 
@@ -116,12 +114,11 @@ public class ClinicController {
 
 		List<Visit> visitsPending = (List<Visit>) visitService.findAllPendingByOwner(owner);
 
-		List<Stay> staysAccepted = (List<Stay>) stayService.findAllAcceptedByOwner(owner);
+		List<Stay> staysAccepted = (List<Stay>) stayService.findAllAcceptedByOwner(owner.getId());
 
-		List<Stay> stayPending = (List<Stay>) stayService.findAllPendingByOwner(owner);
+		List<Stay> stayPending = (List<Stay>) stayService.findAllPendingByOwner(owner.getId());
 
-		Boolean notUnsubscribe = visitsAccepted.size() > 0 || visitsPending.size() > 0 || staysAccepted.size() > 0
-			|| stayPending.size() > 0;
+		Boolean notUnsubscribe = visitsAccepted.size() > 0 || visitsPending.size() > 0 || staysAccepted.size() > 0 || stayPending.size() > 0;
 
 		if (clinic != null && !notUnsubscribe) {
 			owner.setClinic(null);
@@ -155,8 +152,7 @@ public class ClinicController {
 
 			returnView = initClinicView(modelMap);
 		} else {
-			modelMap.addAttribute("message",
-				"No es posible dar de alta al propietario a dicha clinica porque ya esta dado de alta a una clinica");
+			modelMap.addAttribute("message", "No es posible dar de alta al propietario a dicha clinica porque ya esta dado de alta a una clinica");
 			returnView = "redirect:/oups";
 		}
 

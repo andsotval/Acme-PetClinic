@@ -57,7 +57,9 @@ public class VetController {
 		this.managerService = managerService;
 	}
 
-	@GetMapping(value = {"/vetsList"})
+	@GetMapping(value = {
+		"/vetsList"
+	})
 	public String showVetList(Map<String, Object> model) {
 		// Here we are returning an object of type 'Vets' rather than a collection of Vet
 		// objects
@@ -85,14 +87,20 @@ public class VetController {
 	@GetMapping(path = "/vetsAvailable")
 	public String vetsAvailableAndOwnList(ModelMap modelMap) {
 		String vista = "vets/vetsAvailable";
-		Iterable<Vet> vetsAvailable = vetService.findAvailableVets();
-		modelMap.addAttribute("vets2", vetsAvailable);
 
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
-		Iterable<Vet> hiredVets = vetService.findVetsByManager(manager.getId());
-		modelMap.addAttribute("hiredVets", hiredVets);
 
-		return vista;
+		if (manager != null) {
+			Iterable<Vet> vetsAvailable = vetService.findAvailableVets();
+			modelMap.addAttribute("vets2", vetsAvailable);
+
+			Iterable<Vet> hiredVets = vetService.findVetsByManager(manager.getId());
+			modelMap.addAttribute("hiredVets", hiredVets);
+
+			return vista;
+		} else
+			return "redirect:/oups";
+
 	}
 
 	@GetMapping(path = "/accept/{vetId}")
@@ -111,14 +119,18 @@ public class VetController {
 			returnView = "redirect:/oups";
 
 		return returnView;
-
 	}
 
 	@GetMapping(path = "/{vetId}")
 	public String showVet(@PathVariable("vetId") int vetId, ModelMap modelMap) {
-		Vet vet = vetService.findEntityById(vetId).get();
-		modelMap.addAttribute("vet", vet);
-		return "vets/vetDetails";
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+
+		if (manager != null) {
+			Vet vet = vetService.findEntityById(vetId).get();
+			modelMap.addAttribute("vet", vet);
+			return "vets/vetDetails";
+		} else
+			return "redirect:/oups";
 	}
 
 }
