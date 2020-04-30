@@ -34,12 +34,11 @@ import org.springframework.test.web.servlet.MockMvc;
 /**
  * Test class for the {@link VetController}
  */
-@WebMvcTest(controllers = VetController.class,
-	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
-	excludeAutoConfiguration = SecurityConfiguration.class)
+@WebMvcTest(controllers = VetController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
 class VetControllerTests {
 
-	private static final int	TEST_VET_ID		= 1;
+	private static final int	TEST_VET1_ID	= 1;
+	private static final int	TEST_VET2_ID	= 2;
 
 	private static final int	TEST_MANAGER_ID	= 3;
 
@@ -58,17 +57,17 @@ class VetControllerTests {
 
 	@BeforeEach
 	void setup() {
+		Clinic clinic = new Clinic();
+		clinic.setId(1);
+		clinic.setCity("Sevilla");
 
 		Vet james = new Vet();
-		james.setId(TEST_VET_ID);
+		james.setId(TEST_VET1_ID);
 		james.setFirstName("James");
 		james.setLastName("Carter");
 		james.setAddress("110 W. Liberty St.");
 		james.setCity("Madison");
 		james.setTelephone("6085551023");
-
-		Optional<Vet> opt = Optional.of(james);
-		BDDMockito.given(vetService.findEntityById(TEST_VET_ID)).willReturn(opt);
 
 		Vet helen = new Vet();
 		helen.setFirstName("Helen");
@@ -76,7 +75,13 @@ class VetControllerTests {
 		helen.setAddress("110 W. Liberty St.");
 		helen.setCity("Madison");
 		helen.setTelephone("6085551023");
-		helen.setId(2);
+		helen.setClinic(clinic);
+		helen.setId(TEST_VET2_ID);
+
+		Optional<Vet> opt = Optional.of(james);
+		Optional<Vet> opt2 = Optional.of(helen);
+		BDDMockito.given(vetService.findEntityById(TEST_VET1_ID)).willReturn(opt);
+		BDDMockito.given(vetService.findEntityById(TEST_VET2_ID)).willReturn(opt2);
 
 		Specialty radiology = new Specialty();
 		radiology.setId(1);
@@ -103,9 +108,6 @@ class VetControllerTests {
 
 		BDDMockito.given(managerService.findPersonByUsername("pepito")).willReturn(pepe);
 
-		Clinic clinic = new Clinic();
-		clinic.setId(1);
-		clinic.setCity("Sevilla");
 		BDDMockito.given(clinicService.findClinicByManagerId(TEST_MANAGER_ID)).willReturn(clinic);
 
 	}
@@ -113,23 +115,40 @@ class VetControllerTests {
 	@WithMockUser(value = "pepito")
 	@Test
 	void testVetsAvailableAndOwnList() throws Exception {
-		mockMvc.perform(get("/vets/vetsAvailable")).andExpect(status().isOk())
-			.andExpect(model().attributeExists("vets2")).andExpect(model().attributeExists("hiredVets"))
-			.andExpect(view().name("vets/vetsAvailable"));
+		mockMvc.perform(get("/vets/vetsAvailable")).andExpect(status().isOk()).andExpect(model().attributeExists("vets2")).andExpect(model().attributeExists("hiredVets")).andExpect(view().name("vets/vetsAvailable"));
+	}
+
+	//Al añadir con otro tipo de usuario
+	@WithMockUser(value = "vet")
+	@Test
+	void testVetsAvailableAndOwnListNegative() throws Exception {
+		mockMvc.perform(get("/vets/vetsAvailable")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "pepito")
 	@Test
 	void testAcceptVet() throws Exception {
-		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET_ID)).andExpect(status().isFound())
-			.andExpect(view().name("redirect:/vets/vetsAvailable"));
+		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET1_ID)).andExpect(status().isFound()).andExpect(view().name("redirect:/vets/vetsAvailable"));
+	}
+
+	//añadir un veterinario con clínica ya asignada
+	@WithMockUser(value = "pepito")
+	@Test
+	void testAcceptVetNegative() throws Exception {
+		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET2_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "pepito")
 	@Test
 	void testShowVet() throws Exception {
-		mockMvc.perform(get("/vets/{vetId}", TEST_VET_ID)).andExpect(status().isOk())
-			.andExpect(model().attributeExists("vet")).andExpect(view().name("vets/vetDetails"));
+		mockMvc.perform(get("/vets/{vetId}", TEST_VET1_ID)).andExpect(status().isOk()).andExpect(model().attributeExists("vet")).andExpect(view().name("vets/vetDetails"));
+	}
+
+	//Acceder desde otro tipo usuario
+	@WithMockUser(value = "vet")
+	@Test
+	void testShowVetNegative() throws Exception {
+		mockMvc.perform(get("/vets/{vetId}", TEST_VET1_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 }

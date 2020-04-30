@@ -35,7 +35,10 @@ public abstract class BaseService<T extends BaseEntity> {
 
 	@Transactional
 	public void deleteEntity(T entity) {
-		repository.delete(entity);
+		if(entity != null) {
+			repository.delete(entity);
+		}
+		
 	}
 
 	@Transactional
