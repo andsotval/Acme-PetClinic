@@ -14,7 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class NewSuggestionsAsUserWrongParametersUITest {
+public class ListSuggestionsTrashAsAdminUITest {
 	
 
 	@LocalServerPort
@@ -33,26 +33,19 @@ public class NewSuggestionsAsUserWrongParametersUITest {
 	public void testUntitledTestCase() throws Exception {
 		driver.get("http://localhost:" + port);
 		
-		LogInAsOwner();
+		LogInAsAdmin();
 	    
-		driver.get("http://localhost:" + port + "/suggestion/user/list");
-		driver.findElement(By.xpath("//h2")).click();
-	    assertEquals("Suggestions send", driver.findElement(By.xpath("//h2")).getText());
-	    driver.findElement(By.linkText("New Suggestion")).click();
+	    driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a/span[2]")).click();
 	    driver.findElement(By.xpath("//h2")).click();
-	    assertEquals("New Suggestion", driver.findElement(By.xpath("//h2")).getText());
-	    driver.findElement(By.id("name")).click();
-	    driver.findElement(By.id("name")).clear();
-	    driver.findElement(By.id("name")).sendKeys("");
-	    driver.findElement(By.id("description")).click();
-	    driver.findElement(By.id("description")).clear();
-	    driver.findElement(By.id("description")).sendKeys("TEST WITH NULL TITLE MUST SHOW AN ERROR");
-	    driver.findElement(By.xpath("//button[@type='submit']")).click();
+	    assertEquals("Suggestions Received", driver.findElement(By.xpath("//h2")).getText());
+	    assertEquals("Mas clínicas", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[3]/td/a/strong")).getText());
+	    driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[3]/td[3]/a[2]/span")).click();
+	    driver.findElement(By.linkText("List Trash")).click();
+	    assertEquals("Mas clínicas", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td/a/strong")).getText());
 	    driver.findElement(By.xpath("//h2")).click();
-	    assertEquals("New Suggestion", driver.findElement(By.xpath("//h2")).getText());
-	    assertEquals("el tamaño tiene que estar entre 3 y 50", driver.findElement(By.xpath("//form[@id='create-suggestion-form']/div/div/span[2]")).getText());
-		
-	    LogOut();
+	    assertEquals("Suggestions Trash", driver.findElement(By.xpath("//h2")).getText());
+	    
+		LogOut();
 
 	}
 
@@ -66,14 +59,14 @@ public class NewSuggestionsAsUserWrongParametersUITest {
 		}
 	}
 	
-	private WebDriver LogInAsOwner() {
+	private WebDriver LogInAsAdmin() {
 	    driver.findElement(By.xpath("//a[contains(text(),'Login')]")).click();
 	    driver.findElement(By.id("username")).click();
 	    driver.findElement(By.id("username")).clear();
-	    driver.findElement(By.id("username")).sendKeys("owner1");
+	    driver.findElement(By.id("username")).sendKeys("admin");
 	    driver.findElement(By.id("password")).click();
 	    driver.findElement(By.id("password")).clear();
-	    driver.findElement(By.id("password")).sendKeys("owner1");
+	    driver.findElement(By.id("password")).sendKeys("admin");
 	    driver.findElement(By.xpath("//button[@type='submit']")).click();
 		return driver;	
 	}
