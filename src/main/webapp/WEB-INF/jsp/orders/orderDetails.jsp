@@ -3,6 +3,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <petclinic:layout pageName="orders">
 
@@ -28,23 +29,36 @@
 		</tr>
 	</table>
 
+	<c:set var = "total" value = "${0}"/>
 	<h2>Products</h2>
 	<table class="table table-striped">
-		<tr>
-			<th>Products</th>
-			<th>Unit price</th>
-			<th>Amount</th>
-			<th>Total price</th>
+		<thead>
+			<tr>
+				<th>Products</th>
+				<th>Unit price</th>
+				<th>Amount</th>
+				<th>Total price</th>
+			</tr>
+		</thead>
+		<tbody>
 			<c:forEach var="product" items="${productsOrder}">
 				<tr>
 					<td><c:out value="${product.name}" /></td>
-					<td><c:out value="${product.price + product.tax}" /></td>
+					<td><c:out value="${product.price}" /> &#8364</td>
 					<td><c:out value="${product.amount}" /></td>
-					<td><c:out
-							value="${(product.price + product.tax) * product.amount}" /></td>
+					<td><fmt:formatNumber type = "number" maxFractionDigits = "2" 
+						value = "${product.price * product.amount}" /> &#8364</td>
 				</tr>
+				<c:set var = "total" value = "${total + (product.price * product.amount)}"/>
 			</c:forEach>
-		</tr>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td><strong><c:out value="TOTAL" /></strong></td>
+				<td colspan="2"></td>
+				<td><strong><c:out value="${total}" /> &#8364</strong></td>
+			</tr>
+		</tfoot>
 	</table>
 
 	<h2>Provider</h2>

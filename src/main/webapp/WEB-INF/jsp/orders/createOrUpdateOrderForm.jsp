@@ -14,9 +14,9 @@
 		<table id="productsTable" class="table table-striped">
 			<thead>
 				<tr>
-					<th>Name</th>
+					<th width="70%">Name</th>
 					<th>Price</th>
-					<th>Tax %</th>
+					<th>Tax % Include</th>
 					<th>Amount</th>
 				</tr>
 			</thead>
@@ -25,10 +25,10 @@
 					<input type="hidden" name="productIds" value="${product.id}"/>
 					<tr>
 						<td><c:out value="${product.name}" /></td>
-						<td><c:out value="${product.price}" /></td>
-						<td><c:out value="${product.tax}" /></td>
+						<td align="center"><c:out value="${product.price}" /></td>
+						<td align="center"><c:out value="${product.tax}" /></td>
 						<td>
-							<input id="input"  type="number" min="0" name="amountNumber" value="${productOrder.amount}">
+							<input id="input"  type="number" min="0" name="amountNumber" value="0">
 						</td>
 					</tr>
 				</c:forEach>
