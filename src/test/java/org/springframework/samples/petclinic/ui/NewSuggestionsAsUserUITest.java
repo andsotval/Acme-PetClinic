@@ -14,7 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ReadSuggestionsAsAdminUITest {
+public class NewSuggestionsAsUserUITest {
 	
 
 	@LocalServerPort
@@ -33,20 +33,23 @@ public class ReadSuggestionsAsAdminUITest {
 	public void testUntitledTestCase() throws Exception {
 		driver.get("http://localhost:" + port);
 		
-		LogInAsAdmin();
+		LogInAsOwner();
 	    
-	    driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a/span[2]")).click();
+		driver.get("http://localhost:" + port + "/suggestion/user/list");
+		driver.findElement(By.xpath("//h2")).click();
+	    assertEquals("Suggestions send", driver.findElement(By.xpath("//h2")).getText());
+	    driver.findElement(By.linkText("New Suggestion")).click();
 	    driver.findElement(By.xpath("//h2")).click();
-	    assertEquals("Suggestions Received", driver.findElement(By.xpath("//h2")).getText());
-	    assertEquals("Intervalo de tiempo en estancias", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td/a/strong")).getText());
-	    assertEquals("Mas proveedores", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[2]/td/a/strong")).getText());
-	    assertEquals("Mas clínicas", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[3]/td/a/strong")).getText());
-	    driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td[3]/a/span")).click();
-	    driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td[3]/a/span")).click();
-	    driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td[3]/a/span")).click();
-	    assertEquals("Mas clínicas", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td/a/strong")).getText());
-	    assertEquals("Intervalo de tiempo en estancias", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[2]/td/a/strong")).getText());
-	    assertEquals("Mas proveedores", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[3]/td/a/strong")).getText());
+	    assertEquals("New Suggestion", driver.findElement(By.xpath("//h2")).getText());
+	    driver.findElement(By.id("name")).click();
+	    driver.findElement(By.id("name")).clear();
+	    driver.findElement(By.id("name")).sendKeys("SUGGESTION");
+	    driver.findElement(By.id("description")).click();
+	    driver.findElement(By.id("description")).clear();
+	    driver.findElement(By.id("description")).sendKeys("UI TESTING SUGGESTION DESCRIPTION");
+	    driver.findElement(By.xpath("//button[@type='submit']")).click();
+	    assertEquals("Suggestions send", driver.findElement(By.xpath("//h2")).getText());
+	    assertEquals("SUGGESTION", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[3]/td/a/strong")).getText());
 	    
 		LogOut();
 
@@ -62,14 +65,14 @@ public class ReadSuggestionsAsAdminUITest {
 		}
 	}
 	
-	private WebDriver LogInAsAdmin() {
+	private WebDriver LogInAsOwner() {
 	    driver.findElement(By.xpath("//a[contains(text(),'Login')]")).click();
 	    driver.findElement(By.id("username")).click();
 	    driver.findElement(By.id("username")).clear();
-	    driver.findElement(By.id("username")).sendKeys("admin");
+	    driver.findElement(By.id("username")).sendKeys("owner1");
 	    driver.findElement(By.id("password")).click();
 	    driver.findElement(By.id("password")).clear();
-	    driver.findElement(By.id("password")).sendKeys("admin");
+	    driver.findElement(By.id("password")).sendKeys("owner1");
 	    driver.findElement(By.xpath("//button[@type='submit']")).click();
 		return driver;	
 	}

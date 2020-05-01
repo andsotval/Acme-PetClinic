@@ -14,7 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ReadSuggestionsAsAdminUITest {
+public class ReadSuggestionsAsAdminWrongSuggestionUITest {
 	
 
 	@LocalServerPort
@@ -35,18 +35,19 @@ public class ReadSuggestionsAsAdminUITest {
 		
 		LogInAsAdmin();
 	    
+		//Accede a la lista de suggestions y comprueba que ha llegado
 	    driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a/span[2]")).click();
 	    driver.findElement(By.xpath("//h2")).click();
 	    assertEquals("Suggestions Received", driver.findElement(By.xpath("//h2")).getText());
-	    assertEquals("Intervalo de tiempo en estancias", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td/a/strong")).getText());
-	    assertEquals("Mas proveedores", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[2]/td/a/strong")).getText());
-	    assertEquals("Mas clínicas", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[3]/td/a/strong")).getText());
-	    driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td[3]/a/span")).click();
-	    driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td[3]/a/span")).click();
-	    driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td[3]/a/span")).click();
-	    assertEquals("Mas clínicas", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td/a/strong")).getText());
-	    assertEquals("Intervalo de tiempo en estancias", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[2]/td/a/strong")).getText());
-	    assertEquals("Mas proveedores", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[3]/td/a/strong")).getText());
+	    
+	    //Intenta marcar mediante la url una suggestion que no existe
+	    driver.get("http://localhost:" + port + "/suggestion/admin/read/999");
+	    
+	    //Comprueba que ha llegado a la pagina de error
+	    driver.findElement(By.xpath("//h2")).click();
+	    assertEquals("Something happened...", driver.findElement(By.xpath("//h2")).getText());
+	    driver.findElement(By.xpath("//body/div/div/p")).click();
+	    assertEquals("No value present", driver.findElement(By.xpath("//body/div/div/p")).getText());
 	    
 		LogOut();
 
