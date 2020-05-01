@@ -9,7 +9,7 @@
 <petclinic:layout pageName="orders">
 	<h2>New Order</h2>
 	<form:form modelAttribute="products" class="form-horizontal"
-		id="create-order-form">
+		id="create-order-form" action="/orders/save/${providerId}">
 
 		<input type="hidden" name="id" value="${order.id}" />
 		<input type="hidden" name="manager.id" value="${order.manager.id}" />
@@ -24,22 +24,19 @@
 					<th>Price</th>
 					<th>Tax %</th>
 					<th>Amount</th>
-					<th>Add to Order</th>
 				</tr>
 			</thead>
 			<tbody>
 				<c:forEach items="${products}" var="product">
-					<input type="hidden" name="name" value="${product.name}" />
+					<%--  <input type="hidden" name="name" value="${product.name}" />
 					<input type="hidden" name="price" value="${product.price}" />
-					<input type="hidden" name="tax" value="${product.tax}" />
+					<input type="hidden" name="tax" value="${product.tax}" /> --%>
 					<tr>
 						<td><c:out value="${product.name}" /></td>
 						<td><c:out value="${product.price}" /></td>
 						<td><c:out value="${product.tax}" /></td>
-						<td><input type="number" name="product.amount"
+						<td width="25%"><input type="number" name="amountNumber_${product.id}"
 							value="${product.amount}"></td>
-						<td><input type="checkbox" name="product.order.id"
-							value="${order.id}"></td>
 					</tr>
 				</c:forEach>
 			</tbody>
