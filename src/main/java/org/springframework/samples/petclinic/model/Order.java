@@ -30,10 +30,6 @@ public class Order extends BaseEntity {
 	@NotNull
 	private Boolean		isAccepted;
 
-	//	@ManyToMany(fetch = FetchType.LAZY)
-	//	@NotEmpty
-	//	private Set<Product>	product;
-
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "manager_id", nullable = false)
 	private Manager		manager;

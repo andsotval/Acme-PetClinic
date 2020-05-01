@@ -36,11 +36,6 @@
 									<c:out value="ACCEPTED" />
 								</c:otherwise>
 							</c:choose></td>
-						<!-- <td>
-							 <c:forEach var="product" items="${productOrder}">
-								<c:out value="[${product.name}]"/>
-							</c:forEach> 
-						</td> -->
 					</tr>
 				</c:forEach>
 			</tbody>

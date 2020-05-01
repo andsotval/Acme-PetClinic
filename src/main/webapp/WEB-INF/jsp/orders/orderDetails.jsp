@@ -56,7 +56,8 @@
 			<tr>
 				<td><strong><c:out value="TOTAL" /></strong></td>
 				<td colspan="2"></td>
-				<td><strong><c:out value="${total}" /> &#8364</strong></td>
+				<td><strong><fmt:formatNumber type = "number" maxFractionDigits = "2" 
+						value = "${total}" /> &#8364</strong></td>
 			</tr>
 		</tfoot>
 	</table>

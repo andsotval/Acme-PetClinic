@@ -1,6 +1,8 @@
 
 package org.springframework.samples.petclinic.repository;
 
+import java.util.Collection;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.samples.petclinic.model.ProductOrder;
 import org.springframework.stereotype.Repository;
@@ -9,6 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface ProductOrderRepository extends BaseRepository<ProductOrder> {
 
 	@Query("SELECT po FROM ProductOrder po WHERE po.order.id=?1 ORDER BY product.name")
-	Iterable<ProductOrder> findProductOrderByOrder(int orderId);
+	Collection<ProductOrder> findProductOrderByOrder(int orderId);
 
 }
