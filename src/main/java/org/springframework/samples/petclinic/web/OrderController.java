@@ -4,8 +4,8 @@ package org.springframework.samples.petclinic.web;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +54,10 @@ public class OrderController {
 	// inicio de creacion de Order
 	@GetMapping(path = "/new/{providerId}")
 	public String initCreationForm(@PathVariable("providerId") int providerId, ModelMap model) {
-		Iterable<Product> products = productService.findProductsAvailableByProviderId(providerId);
+		Collection<Product> products = productService.findProductsAvailableByProviderId(providerId);
 		model.addAttribute("products", products);
 
-		model.addAttribute("hasCart", false);
+		model.addAttribute("notProductsOrder", "");
 
 		return VIEWS_ORDERS_CREATE_OR_UPDATE_FORM;
 	}
@@ -68,14 +68,22 @@ public class OrderController {
 		@RequestParam(name = "productIds", required = false) String[] productIds,
 		@RequestParam(name = "amountNumber", required = false) String[] amountNumber) {
 
-		Iterable<Product> productsSelected = productService.findProductsByIds(
+		Collection<Product> productsSelected = productService.findProductsByIds(
 			Arrays.stream(productIds).mapToInt(Integer::valueOf).boxed().collect(Collectors.toList()));
 
-		Iterable<Integer> amountNumberSelected = Arrays.stream(amountNumber).mapToInt(Integer::valueOf).boxed()
+		Collection<Integer> amountNumberSelected = Arrays.stream(amountNumber).mapToInt(Integer::valueOf).boxed()
 			.collect(Collectors.toList());
 
-		Iterable<ProductOrder> productsOrderList = createProductsOrderByProducts(productsSelected,
+		Collection<ProductOrder> productsOrderList = createProductsOrderByProducts(productsSelected,
 			amountNumberSelected);
+
+		if (!productsOrderList.iterator().hasNext()) {
+			Collection<Product> products = productService.findProductsAvailableByProviderId(providerId);
+			model.addAttribute("products", products);
+			model.addAttribute("notProductsOrder", "You have not added any quantity for the products");
+
+			return VIEWS_ORDERS_CREATE_OR_UPDATE_FORM;
+		}
 
 		Order order = new Order();
 		order.setDate(LocalDate.now());
@@ -104,9 +112,8 @@ public class OrderController {
 		String returnView = "orders/orderDetails";
 
 		if (order.getManager().getId() == managerLogged.getId()) {
-			Provider provider = productOrderService.findProductOrderByOrder(orderId).iterator().next().getProduct()
-				.getProvider();
-			Iterable<ProductOrder> productsOrder = productOrderService.findProductOrderByOrder(orderId);
+			Provider provider = productOrderService.findProviderByOrder(orderId);
+			Collection<ProductOrder> productsOrder = productOrderService.findProductOrderByOrder(orderId);
 
 			modelMap.addAttribute("order", order);
 			modelMap.addAttribute("productsOrder", productsOrder);
@@ -125,7 +132,7 @@ public class OrderController {
 	public String listAvailableProviders(ModelMap modelMap) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Iterable<Provider> providerList = providerService.findProvidersByManagerId(manager.getId());
+		Collection<Provider> providerList = providerService.findProvidersByManagerId(manager.getId());
 		modelMap.addAttribute("providers", providerList);
 
 		return "/orders/providers/providerList";
@@ -136,21 +143,17 @@ public class OrderController {
 	public String listOrders(ModelMap modelMap) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Iterable<Order> orderList = orderService.findAllOrdersByManagerId(manager.getId());
-		Iterable<ProductOrder> productOrder = productOrderService
-			.findProductOrderByOrder(orderList.iterator().next().getId());
-		modelMap.addAttribute("productOrder", productOrder);
-		// }
+		Collection<Order> orderList = orderService.findAllOrdersByManagerId(manager.getId());
 		modelMap.addAttribute("orders", orderList);
 
 		return "/orders/orderList";
 	}
 
-	private Iterable<ProductOrder> createProductsOrderByProducts(Iterable<Product> products,
-		Iterable<Integer> amounts) {
+	private Collection<ProductOrder> createProductsOrderByProducts(Collection<Product> products,
+		Collection<Integer> amounts) {
 		Iterator<Product> productsSelected = products.iterator();
 		Iterator<Integer> amountsSelected = amounts.iterator();
-		List<ProductOrder> productsOrderList = new ArrayList<ProductOrder>();
+		Collection<ProductOrder> productsOrderList = new ArrayList<ProductOrder>();
 		while (productsSelected.hasNext()) {
 			Product product = productsSelected.next();
 			ProductOrder pOrder = new ProductOrder();

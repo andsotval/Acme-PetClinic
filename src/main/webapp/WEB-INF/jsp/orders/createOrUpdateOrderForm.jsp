@@ -34,6 +34,10 @@
 				</c:forEach>
 			</tbody>
 		</table>
+		
+		<div class="form-group" style="color: red;">
+			<c:out value="${notProductsOrder}" />
+		</div>
 
 		<div class="form-group">
 			<a class="btn btn-default"
