@@ -17,43 +17,52 @@
 		</tr>
 		<tr>
 			<th>Status</th>
-			<td>
-				<c:choose>
+			<td><c:choose>
 					<c:when test="${order.isAccepted eq false}">
 						<c:out value="PENDING" />
 					</c:when>
 					<c:otherwise>
 						<c:out value="ACCEPTED" />
 					</c:otherwise>
-				</c:choose>
-			</td>
+				</c:choose></td>
 		</tr>
 	</table>
-	
+
 	<h2>Products</h2>
 	<table class="table table-striped">
 		<tr>
 			<th>Products</th>
-			<c:forEach var="product" items="${order.product}">
+			<th>Unit price</th>
+			<th>Amount</th>
+			<th>Total price</th>
+			<c:forEach var="product" items="${productsOrder}">
 				<tr>
 					<td><c:out value="${product.name}" /></td>
-					<td><c:out value="${product.price}" /></td>
+					<td><c:out value="${product.price + product.tax}" /></td>
+					<td><c:out value="${product.amount}" /></td>
+					<td><c:out
+							value="${(product.price + product.tax) * product.amount}" /></td>
 				</tr>
 			</c:forEach>
 		</tr>
 	</table>
-	
+
 	<h2>Provider</h2>
 	<table class="table table-striped">
 		<tr>
-			<th>Provider</th>
-			<td><c:out value="${orderProvider.firstName} ${orderProvider.lastName}"/></td>
-			<td><c:out value="${orderProvider.telephone}" /></td>
-			<td><c:out value="${orderProvider.mail}" /></td>
-			
+			<th>Name</th>
+			<th>Telephone</th>
+			<th>Mail</th>
+			<tr>
+				<td><c:out value="${provider.firstName} ${provider.lastName}" /></td>
+				<td><c:out value="${provider.telephone}" /></td>
+				<td><c:out value="${provider.mail}" /></td>
+			</tr>
 		</tr>
 	</table>
-	
-	<a class="btn btn-default" href='<spring:url value="/orders/list" htmlEscape="true"/>'>Back to Order list</a>
+
+	<a class="btn btn-default"
+		href='<spring:url value="/orders/list" htmlEscape="true"/>'>Back
+		to Order list</a>
 
 </petclinic:layout>

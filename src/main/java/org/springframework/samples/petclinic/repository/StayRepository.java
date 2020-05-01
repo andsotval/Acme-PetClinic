@@ -6,7 +6,6 @@ import java.util.Collection;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.samples.petclinic.model.Stay;
-import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -20,7 +19,7 @@ public interface StayRepository extends BaseRepository<Stay> {
 
 	@Query("SELECT s FROM Stay s WHERE s.pet.id = ?1 ")
 	Collection<Stay> findByPetId(Integer id);
-	
+
 	@Query("SELECT s FROM Stay s WHERE s.isAccepted IS NULL AND s.pet.owner.id=?1")
 	Iterable<Stay> findAllPendingByOwner(Integer id);
 

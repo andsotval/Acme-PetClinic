@@ -72,22 +72,57 @@ INSERT INTO provider(id, user_id, first_name, last_name, address, city, telephon
 
 -- PRODUCTS
 
-INSERT INTO product(id, name, price, is_available, provider_id) VALUES (1, 'Comida para perros castrados', 15.95, true, 3);
-INSERT INTO product(id, name, price, is_available, provider_id) VALUES (2, 'Comida para gatos castrados', 17.95, true, 3);
-INSERT INTO product(id, name, price, is_available, provider_id) VALUES (3, 'Hueso para perros', 8.95, true, 3);
-INSERT INTO product(id, name, price, is_available, provider_id) VALUES (4, 'Bisturí', 50.99, true, 1);
-INSERT INTO product(id, name, price, is_available, provider_id) VALUES (5, 'Guante', 5.95, true, 1);
-INSERT INTO product(id, name, price, is_available, provider_id) VALUES (6, 'Mascarilla', 7.50, true, 1);
-INSERT INTO product(id, name, price, is_available, provider_id) VALUES (7, 'Jeringuilla', 9.90, false, 1);
-INSERT INTO product(id, name, price, is_available, provider_id) VALUES (8, 'Jeringuilla', 12.90, false, 2);
-INSERT INTO product(id, name, price, is_available, provider_id) VALUES (9, 'Bisturís', 44.95, true, 2);
-INSERT INTO product(id, name, price, is_available, provider_id) VALUES (10, 'Juguete para gato', 2.95, true, 4);
-INSERT INTO product(id, name, price, is_available, provider_id) VALUES (11, 'Arenero para gato', 5.80, true, 4);
-INSERT INTO product(id, name, price, is_available, provider_id) VALUES (12, 'Correa para perro', 4.95, true, 5);
-INSERT INTO product(id, name, price, is_available, provider_id) VALUES (13, 'Champú para perro', 5.95, false, 5);
-INSERT INTO product(id, name, price, is_available, provider_id) VALUES (14, 'Pipeta para gato', 19.99, true, 5);
-INSERT INTO product(id, name, price, is_available, provider_id) VALUES (15, 'Jaula para pajaro', 33.35, false, 6);
-INSERT INTO product(id, name, price, is_available, provider_id) VALUES (16, 'Pecera', 81.60, true, 6);
+INSERT INTO product(id, name, price, tax, is_available, provider_id) VALUES (1, 'Comida para perros castrados', 15.95, 3.07, true, 3);
+INSERT INTO product(id, name, price, tax, is_available, provider_id) VALUES (2, 'Comida para gatos castrados', 17.95, 3.48, true, 3);
+INSERT INTO product(id, name, price, tax, is_available, provider_id) VALUES (3, 'Hueso para perros', 8.95, 1.56, true, 3);
+INSERT INTO product(id, name, price, tax, is_available, provider_id) VALUES (4, 'Bisturí', 50.99, 9.79, true, 1);
+INSERT INTO product(id, name, price, tax, is_available, provider_id) VALUES (5, 'Guante', 5.95, 0.97, true, 1);
+INSERT INTO product(id, name, price, tax, is_available, provider_id) VALUES (6, 'Mascarilla', 7.50, 1.45, false, 1);
+INSERT INTO product(id, name, price, tax, is_available, provider_id) VALUES (7, 'Jeringuilla', 9.90, 1.93, true, 1);
+INSERT INTO product(id, name, price, tax, is_available, provider_id) VALUES (8, 'Jeringuilla', 12.90, 2.68, false, 2);
+INSERT INTO product(id, name, price, tax, is_available, provider_id) VALUES (9, 'Bisturís', 44.95, 9.32, true, 2);
+INSERT INTO product(id, name, price, tax, is_available, provider_id) VALUES (10, 'Juguete para gato', 2.95, 0.77, true, 4);
+INSERT INTO product(id, name, price, tax, is_available, provider_id) VALUES (11, 'Arenero para gato', 5.80, 1.63, true, 4);
+INSERT INTO product(id, name, price, tax, is_available, provider_id) VALUES (12, 'Correa para perro', 4.95, 1.26, true, 5);
+INSERT INTO product(id, name, price, tax, is_available, provider_id) VALUES (13, 'Champú para perro', 5.95, 1.69, false, 5);
+INSERT INTO product(id, name, price, tax, is_available, provider_id) VALUES (14, 'Pipeta para gato', 19.99, 3.87, true, 5);
+INSERT INTO product(id, name, price, tax, is_available, provider_id) VALUES (15, 'Jaula para pajaro', 33.35, 6.62, false, 6);
+INSERT INTO product(id, name, price, tax, is_available, provider_id) VALUES (16, 'Pecera', 81.60, 16.24, true, 6);
+
+-- ORDER
+
+INSERT INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (1, '2020-04-18', true, 1);
+INSERT INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (2, '2020-04-19', false, 1);
+INSERT INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (3, '2020-04-20', false, 1);
+INSERT INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (4, '2020-04-18', false, 1);
+INSERT INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (5, '2020-04-08', true, 2);
+INSERT INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (6, '2020-03-11', false, 2);
+--INSERT INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (7, '2020/01/28', true, 3)
+--INSERT INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (8, '2020/04/13', false, 3)
+--INSERT INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (9, '2020/02/29', true, 4)
+--INSERT INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (10, '2019/09/30', false, 4)
+--INSERT INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (11, '2019/06/07', true, 5)
+--INSERT INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (12, '2020/02/23', false, 5)
+
+-- PRODUCTS_ORDER
+
+INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (1, 'Bisturí', 50.99, 9.79, 2, 4, 1);
+INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (2, 'Guante', 5.95, 0.97, 17, 5, 1);
+INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (3, 'Jeringuilla', 9.90, 1.93, 9, 7, 1);
+
+INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (4, 'Bisturí', 50.99, 9.79, 5, 4, 2);
+INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (5, 'Guante', 5.95, 0.97, 40, 5, 2);
+
+INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (6, 'Jeringuilla', 9.90, 1.93, 25, 7, 3);
+INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (7, 'Bisturí', 50.99, 9.79, 10, 4, 3);
+INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (8, 'Guante', 5.95, 0.97, 80, 5, 3);
+
+INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (9, 'Jeringuilla', 9.90, 1.93, 15, 7, 4);
+
+INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (10, 'Jeringuilla', 12.90, 2.68, 5, 8, 5);
+INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (11, 'Bisturís', 44.95, 9.32, 15, 9, 5);
+
+INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (12, 'Bisturís', 44.95, 9.32, 18, 9, 6);
 
 -- CLINICS
 
