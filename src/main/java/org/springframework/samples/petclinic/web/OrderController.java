@@ -2,6 +2,9 @@
 package org.springframework.samples.petclinic.web;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -9,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Manager;
 import org.springframework.samples.petclinic.model.Order;
 import org.springframework.samples.petclinic.model.Product;
+import org.springframework.samples.petclinic.model.ProductOrder;
 import org.springframework.samples.petclinic.model.Provider;
 import org.springframework.samples.petclinic.service.ManagerService;
 import org.springframework.samples.petclinic.service.OrderService;
+import org.springframework.samples.petclinic.service.ProductOrderService;
 import org.springframework.samples.petclinic.service.ProductService;
 import org.springframework.samples.petclinic.service.ProviderService;
 import org.springframework.samples.petclinic.util.SessionUtils;
@@ -27,21 +32,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/orders")
 public class OrderController {
 
-	private static final String		VIEWS_ORDERS_CREATE_OR_UPDATE_FORM	= "/orders/createOrUpdateOrderForm";
+	private static final String	VIEWS_ORDERS_CREATE_OR_UPDATE_FORM	= "/orders/createOrUpdateOrderForm";
 
-	private final OrderService		orderService;
-	private final ManagerService	managerService;
-	private final ProductService	productService;
-	private final ProviderService	providerService;
+	private OrderService		orderService;
+	private ManagerService		managerService;
+	private ProductService		productService;
+	private ProductOrderService	productOrderService;
+	private ProviderService		providerService;
 
 
 	@Autowired
-	public OrderController(final OrderService orderService, final ManagerService managerService,
-		final ProductService productService, final ProviderService providerService) {
+	public OrderController(OrderService orderService, ManagerService managerService, ProductService productService,
+		ProductOrderService productOrderService, ProviderService providerService) {
 		this.orderService = orderService;
 		this.managerService = managerService;
 		this.productService = productService;
 		this.providerService = providerService;
+		this.productOrderService = productOrderService;
 	}
 
 	//inicio de creacion de Order
@@ -51,10 +58,11 @@ public class OrderController {
 		Order order = new Order();
 		order.setManager(managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername()));
 		order.setDate(LocalDate.now());
+		order.setIsAccepted(false);
 		model.addAttribute("order", order);
 
-		Iterable<Product> product = productService.findProductsAvailableByProviderId(providerId);
-		model.addAttribute("products", product);
+		Iterable<ProductOrder> productsOrder = createProductsOrderByProviderId(providerId, null);
+		model.addAttribute("products", productsOrder);
 
 		return VIEWS_ORDERS_CREATE_OR_UPDATE_FORM;
 	}
@@ -62,14 +70,13 @@ public class OrderController {
 	//confirmacion de la creacion de una Order
 	@PostMapping(path = "/new/{providerId}")
 	public String processCreationForm(@PathVariable("providerId") int providerId, @Valid Order order,
-		BindingResult result, ModelMap model) {
+		@Valid ProductOrder productOrder, BindingResult result, ModelMap model) {
 		String returnView;
 
 		if (result.hasErrors()) {
 			model.addAttribute("order", order);
-
-			Iterable<Product> product = productService.findProductsAvailableByProviderId(providerId);
-			model.addAttribute("products", product);
+			Iterable<ProductOrder> productsOrder = createProductsOrderByProviderId(providerId, productOrder);
+			model.addAttribute("products", productsOrder);
 
 			return VIEWS_ORDERS_CREATE_OR_UPDATE_FORM;
 		} else {
@@ -79,6 +86,7 @@ public class OrderController {
 
 			if (security) {
 				orderService.saveEntity(order);
+				productOrderService.saveEntity(productOrder);
 				returnView = "redirect:/orders/" + order.getId();
 			} else {
 				model.addAttribute("message",
@@ -93,18 +101,22 @@ public class OrderController {
 	//Order Details
 	@GetMapping("/{orderId}")
 	public String showOrder(@PathVariable("orderId") int orderId, ModelMap modelMap) {
+		Manager managerLogged = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		Order order = orderService.findEntityById(orderId).get();
 		String returnView = "orders/orderDetails";
 
-		if (order.getManager().getId() == managerService
-			.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername()).getId()) {
-			Provider orderProvider = order.getProduct().iterator().next().getProvider();
-			modelMap.addAttribute("orderProvider", orderProvider);
+		if (order.getManager().getId() == managerLogged.getId()) {
+			Provider provider = productOrderService.findProductOrderByOrder(orderId).iterator().next().getProduct()
+				.getProvider();
+			Iterable<ProductOrder> productsOrder = productOrderService.findProductOrderByOrder(orderId);
 
 			modelMap.addAttribute("order", order);
+			modelMap.addAttribute("productsOrder", productsOrder);
+			modelMap.addAttribute("provider", provider);
 		} else {
 			modelMap.addAttribute("message",
 				"Se esta intentando acceder a un pedido que no pertenece al manager actual");
+
 			returnView = "redirect:/oups";
 		}
 		return returnView;
@@ -127,9 +139,32 @@ public class OrderController {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
 		Iterable<Order> orderList = orderService.findAllOrdersByManagerId(manager.getId());
+		Iterable<ProductOrder> productOrder = productOrderService
+			.findProductOrderByOrder(orderList.iterator().next().getId());
+		modelMap.addAttribute("productOrder", productOrder);
+		//		}
 		modelMap.addAttribute("orders", orderList);
 
 		return "/orders/orderList";
+	}
+
+	private List<ProductOrder> createProductsOrderByProviderId(int providerId, ProductOrder prodOrder) {
+		Iterator<Product> productsAvailable = productService.findProductsAvailableByProviderId(providerId).iterator();
+		List<ProductOrder> productsOrderList = new ArrayList<ProductOrder>();
+		while (productsAvailable.hasNext()) {
+			Product product = productsAvailable.next();
+			ProductOrder pOrder = new ProductOrder();
+			if (prodOrder != null)
+				pOrder = prodOrder;
+			pOrder.setName(product.getName());
+			pOrder.setPrice(product.getPrice());
+			pOrder.setTax(product.getTax());
+			pOrder.setProduct(product);
+			pOrder.setAmount(1);
+			productOrderService.saveEntity(pOrder);
+			productsOrderList.add(pOrder);
+		}
+		return productsOrderList;
 	}
 
 }
