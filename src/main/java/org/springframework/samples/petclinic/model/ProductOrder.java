@@ -43,7 +43,8 @@ public class ProductOrder extends NamedEntity {
 
 	@Override
 	public String toString() {
-		return getName() + " - " + getPrice() + "€";
+		return "ProductOrder [price=" + price + ", tax=" + tax + ", amount=" + amount + ", product=" + product
+			+ ", order=" + order + "]";
 	}
 
 }
