@@ -1,6 +1,19 @@
 
 package org.springframework.samples.petclinic.service;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -8,7 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.samples.petclinic.model.Provider;
+import org.springframework.samples.petclinic.model.Suggestion;
+import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 public class ProviderServiceTests {
@@ -19,7 +35,12 @@ public class ProviderServiceTests {
 
 	@Autowired
 	private ProviderService		providerService;
-
+	
+	private Validator createValidator() {
+		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
+		localValidatorFactoryBean.afterPropertiesSet();
+		return localValidatorFactoryBean;
+	}
 
 	@Test
 	public void testFindAvailableProvidersPositive() {
@@ -102,4 +123,85 @@ public class ProviderServiceTests {
 		//Assert
 		Assert.assertEquals("James", this.providerService.findEntityById(ProviderServiceTests.TEST_PROVIDER_ID).get().getFirstName());
 	}
+	
+	@Test
+	public void testSaveProviderWithoutFirstName() {
+		//Fixture
+		Provider james = new Provider();
+		james.setId(ProviderServiceTests.TEST_PROVIDER_ID);;
+		james.setLastName("Carter");
+		james.setAddress("110 W. Liberty St.");
+		james.setCity("Madison");
+		james.setTelephone("6085551023");
+		
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Provider>> constraintViolations = validator.validate(james);
+		assertEquals(constraintViolations.size(), 3);
+
+		Iterator<ConstraintViolation<Provider>> it = constraintViolations.iterator();
+		while (it.hasNext()) {
+			ConstraintViolation<Provider> violation = it.next();
+			String message = violation.getMessage();
+			System.out.println(message);
+
+			switch (violation.getPropertyPath().toString()) {
+			case "first name":
+				assertTrue(message.equals("no puede estar vacío"));
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	@Test
+	public void testDeleteProvider() {
+		Optional<Provider> entity = providerService.findEntityById(1);
+		assertTrue(entity.isPresent());
+		providerService.deleteEntity(entity.get());
+		
+		Optional<Provider> deleteEntity = providerService.findEntityById(1);
+		assertTrue(!deleteEntity.isPresent());
+	}
+	
+	@Test
+	public void testDeleteProviderNonExisisting() {
+		Collection<Provider> collection = (Collection<Provider>) providerService.findAllEntities();
+		assertEquals(collection.size(), 10);
+		
+		providerService.deleteEntity(null);
+		
+		Collection<Provider> collectionAfter = (Collection<Provider>) providerService.findAllEntities();
+		assertEquals(collectionAfter.size(), 10);
+	}
+	
+	
+	@Test
+	public void testDeleteProviderById() {
+		Collection<Provider> collection = (Collection<Provider>) providerService.findAllEntities();
+		assertEquals(collection.size(), 10);
+		
+		providerService.deleteEntityById(7);
+		
+		Collection<Provider> collectionAfter = (Collection<Provider>) providerService.findAllEntities();
+		assertEquals(collectionAfter.size(), 10-1);
+	}
+	
+	/*@Test
+	public void testDeleteProviderByIdNonExisting() {
+		Collection<Provider> collection = (Collection<Provider>) providerService.findAllEntities();
+		assertEquals(collection.size(), 10);
+		
+		providerService.deleteEntityById(90000);
+		
+		Collection<Provider> collectionAfter = (Collection<Provider>) providerService.findAllEntities();
+		assertEquals(collectionAfter.size(), 10);
+	}*/
+
+	@Test
+	public void testFindAllProviders() {
+		Collection<Provider> collection = (Collection<Provider>) providerService.findAllEntities();
+		assertEquals(collection.size(), 10);
+	}
+
 }
