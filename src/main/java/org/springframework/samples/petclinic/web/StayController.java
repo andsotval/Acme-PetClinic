@@ -50,11 +50,13 @@ public class StayController {
 		String view = "stays/list";
 
 		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
-
-		Iterable<Stay> stays = stayService.findAllPendingByVet(vet.getId());
-		modelMap.addAttribute("stays", stays);
-		modelMap.addAttribute("accepted", false);
-		return view;
+		if (vet != null) {
+			Iterable<Stay> stays = stayService.findAllPendingByVet(vet.getId());
+			modelMap.addAttribute("stays", stays);
+			modelMap.addAttribute("accepted", false);
+			return view;
+		} else
+			return "redirect:/oups";
 	}
 
 	@GetMapping(path = "/listAllAccepted")
@@ -63,10 +65,13 @@ public class StayController {
 
 		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Iterable<Stay> stays = stayService.findAllAcceptedByVet(vet.getId());
-		modelMap.addAttribute("stays", stays);
-		modelMap.addAttribute("accepted", true);
-		return view;
+		if (vet != null) {
+			Iterable<Stay> stays = stayService.findAllAcceptedByVet(vet.getId());
+			modelMap.addAttribute("stays", stays);
+			modelMap.addAttribute("accepted", true);
+			return view;
+		} else
+			return "redirect:/oups";
 	}
 
 	@GetMapping(path = "/accept/{stayId}")
@@ -170,7 +175,7 @@ public class StayController {
 			}
 			if (entity.getFinishDate().isBefore(entity.getStartDate().plusDays(1L))) {
 				modelMap.addAttribute("stay", entity);
-				result.rejectValue("finishDate", "finishDateAfteStartDate", "The finish date must be after the start date");
+				result.rejectValue("finishDate", "finishDateAfterStartDate", "The finish date must be after the start date");
 				i++;
 			}
 		}
@@ -223,7 +228,7 @@ public class StayController {
 			}
 			if (entity.getFinishDate().isBefore(entity.getStartDate())) {
 				model.addAttribute("stay", entity);
-				result.rejectValue("finishDate", "finishDateAfteStartDate", "The finish date must be after the start date");
+				result.rejectValue("finishDate", "finishDateAfterStartDate", "The finish date must be after the start date");
 				i++;
 			}
 		} else {
