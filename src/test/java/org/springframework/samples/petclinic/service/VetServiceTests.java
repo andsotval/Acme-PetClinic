@@ -107,10 +107,9 @@ class VetServiceTests {
 	}
 
 	@Test
-	public void testFindVetsByManager() {
+	public void testFindVetsByManagerPositive() {
 		int managerId = 2;
-		vetService.findVetsByManager(managerId)
-			.forEach(v -> assertEquals(managerId, v.getClinic().getManager().getId()));
+		vetService.findVetsByManager(managerId).forEach(v -> assertEquals(managerId, v.getClinic().getManager().getId()));
 	}
 
 }

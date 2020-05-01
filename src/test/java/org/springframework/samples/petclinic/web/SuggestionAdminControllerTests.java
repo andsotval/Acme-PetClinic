@@ -40,6 +40,8 @@ public class SuggestionAdminControllerTests {
 
 	private static final int	TEST_SUGGESTION_ID_3	= 3;
 
+	private static final int	TEST_SUGGESTION_ID_99	= 99;
+
 	@Autowired
 	private MockMvc				mockMvc;
 
@@ -130,7 +132,7 @@ public class SuggestionAdminControllerTests {
 
 	@WithMockUser(value = "spring")
 	@Test
-	void testDetail() throws Exception {
+	void testDetailPositive() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/details/{suggestionId}", TEST_SUGGESTION_ID_1))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.model().attributeExists("suggestion"))
@@ -141,7 +143,14 @@ public class SuggestionAdminControllerTests {
 
 	@WithMockUser(value = "spring")
 	@Test
-	void testRead() throws Exception {
+	void testDetailValueNotPresent() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/details/{suggestionId}", TEST_SUGGESTION_ID_99))
+			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("exception"));
+	}
+
+	@WithMockUser(value = "spring")
+	@Test
+	void testReadPositive() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/read/{suggestionId}", TEST_SUGGESTION_ID_1))
 			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/suggestion/admin/list"));
@@ -149,7 +158,14 @@ public class SuggestionAdminControllerTests {
 
 	@WithMockUser(value = "spring")
 	@Test
-	void testNotRead() throws Exception {
+	void testReadValueNotPresent() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/read/{suggestionId}", TEST_SUGGESTION_ID_99))
+			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("exception"));
+	}
+
+	@WithMockUser(value = "spring")
+	@Test
+	void testNotReadPositive() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/notRead/{suggestionId}", TEST_SUGGESTION_ID_1))
 			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/suggestion/admin/list"));
@@ -157,10 +173,24 @@ public class SuggestionAdminControllerTests {
 
 	@WithMockUser(value = "spring")
 	@Test
-	void testMoveTrash() throws Exception {
+	void testNotReadValueNotPresent() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/notRead/{suggestionId}", TEST_SUGGESTION_ID_99))
+			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("exception"));
+	}
+
+	@WithMockUser(value = "spring")
+	@Test
+	void testMoveTrashPositive() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/moveTrash/{suggestionId}", TEST_SUGGESTION_ID_1))
 			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/suggestion/admin/list"));
+	}
+
+	@WithMockUser(value = "spring")
+	@Test
+	void testMoveTrashValueNotPresent() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/moveTrash/{suggestionId}", TEST_SUGGESTION_ID_99))
+			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("exception"));
 	}
 
 	@WithMockUser(value = "spring")

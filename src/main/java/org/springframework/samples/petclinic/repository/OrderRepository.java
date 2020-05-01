@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderRepository extends BaseRepository<Order> {
 
-	@Query("SELECT order FROM Order order WHERE order.manager.id=?1")
+	@Query("SELECT order FROM Order order WHERE order.manager.id=?1 ORDER BY order.isAccepted desc, order.date desc")
 	Iterable<Order> findAllOrdersByManagerId(int managerId);
 
 }

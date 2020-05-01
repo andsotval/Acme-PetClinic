@@ -48,7 +48,8 @@ public class VetService extends PersonService<Vet> {
 
 	@Transactional(readOnly = true)
 	public Iterable<Vet> findVetsByManager(int managerId) {
-		return vetRepository.findVetsByManager(managerId);
+		Iterable<Vet> res = vetRepository.findVetsByManager(managerId);
+		return res;
 	}
 
 	public Iterable<Vet> findVetsByClinicId(Integer clinicId) {

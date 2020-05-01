@@ -6,15 +6,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.samples.petclinic.model.Suggestion;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 public class SuggestionServiceTests {
@@ -22,6 +30,12 @@ public class SuggestionServiceTests {
 	@Autowired
 	private SuggestionService service;
 
+
+	private Validator createValidator() {
+		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
+		localValidatorFactoryBean.afterPropertiesSet();
+		return localValidatorFactoryBean;
+	}
 
 	@Test
 	public void testFindAllEntitiesNotTrashOrderByIsReadAndCreated() {
@@ -78,13 +92,19 @@ public class SuggestionServiceTests {
 	}
 
 	@Test
-	public void testFindEntityById() {
+	public void testFindEntityByIdPositive() {
 		Optional<Suggestion> entity = service.findEntityById(1);
 		assertTrue(entity.isPresent());
 	}
 
 	@Test
-	public void testSaveEntity() {
+	public void testFindEntityByIdNegative() {
+		Optional<Suggestion> entity = service.findEntityById(99);
+		assertTrue(!entity.isPresent());
+	}
+
+	@Test
+	public void testSaveEntityPositive() {
 		Collection<Suggestion> collection = (Collection<Suggestion>) service.findAllEntities();
 		assertEquals(collection.size(), 4);
 
@@ -112,6 +132,53 @@ public class SuggestionServiceTests {
 		assertEquals(newEntity.get().getIsAvailable(), true);
 		assertEquals(newEntity.get().getIsRead(), false);
 		assertEquals(newEntity.get().getIsTrash(), false);
+	}
+
+	@Test
+	public void testSaveEntityNegative() {
+		LocaleContextHolder.setLocale(Locale.ENGLISH);
+		Suggestion entity = new Suggestion();
+		entity.setName("Name 1");
+		entity.setDescription("");
+		entity.setCreated(null);
+		entity.setIsAvailable(null);
+		entity.setIsRead(null);
+		entity.setIsTrash(null);
+		entity.setUser(null);
+
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Suggestion>> constraintViolations = validator.validate(entity);
+		assertEquals(constraintViolations.size(), 6);
+
+		Iterator<ConstraintViolation<Suggestion>> it = constraintViolations.iterator();
+		while (it.hasNext()) {
+			ConstraintViolation<Suggestion> violation = it.next();
+			String message = violation.getMessage();
+
+			switch (violation.getPropertyPath().toString()) {
+			case "description":
+				assertTrue(message.equals("must not be empty") || message.equals("length must be between 3 and 250"));
+				break;
+			case "created":
+				assertEquals(message, "must not be null");
+				break;
+			case "isRead":
+				assertEquals(message, "must not be null");
+				break;
+			case "isTrash":
+				assertEquals(message, "must not be null");
+				break;
+			case "isAvailable":
+				assertEquals(message, "must not be null");
+				break;
+			case "user":
+				assertEquals(message, "must not be null");
+				break;
+			default:
+				break;
+			}
+		}
+
 	}
 
 	@Test

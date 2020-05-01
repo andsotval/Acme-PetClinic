@@ -23,6 +23,11 @@ public class Product extends NamedEntity {
 	@Min(value = 0)
 	private Double		price;
 
+	@Column(name = "tax")
+	@NotNull
+	@Min(value = 0)
+	private Double		tax;
+
 	@Column(name = "is_available")
 	@NotNull
 	private Boolean		available;

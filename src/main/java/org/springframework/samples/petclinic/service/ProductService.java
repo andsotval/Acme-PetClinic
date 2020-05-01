@@ -25,4 +25,9 @@ public class ProductService extends BaseService<Product> {
 		return productRepository.findProductsAvailableByProviderId(providerId);
 	}
 
+	@Transactional(readOnly = true)
+	public Iterable<Product> findProductsByIds(Iterable<Integer> ids) {
+		return productRepository.findAllById(ids);
+	}
+
 }

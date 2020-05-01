@@ -162,7 +162,7 @@ public class OrderControllerTests {
 		order.setDate(LocalDate.now());
 		order.setIsAccepted(false);
 		order.setManager(manager);
-		order.setProduct(setProducts);
+//		order.setProduct(setProducts);
 
 		OrderControllerTests.order = order;
 

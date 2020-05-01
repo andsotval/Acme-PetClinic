@@ -18,25 +18,25 @@ public class ManagerServiceTest {
 	protected ManagerRepository managerRepository;
 
 
-	@Test
-	public void TestFindManagerByUsernamePositive() {
-		String user = "manager1";
-		String usernameDB = managerRepository.findManagerByUsername(user).getUser().getUsername();
-		assertEquals(user, usernameDB);
-	}
-
-	@Test
-	public void TestFindManagerByUsernameNegativeNotPresent() {
-		String user = "manager_de_prueba";
-		assertEquals(null, managerRepository.findManagerByUsername(user));
-	}
-
-	@Test
-	public void TestFindManagerByUsernameNegative() {
-		String user = "manager1";
-		String userWrong = "manager2";
-		String usernameDB = managerRepository.findManagerByUsername(user).getUser().getUsername();
-		assertNotEquals(userWrong, usernameDB);
-	}
+//	@Test
+//	public void TestFindManagerByUsernamePositive() {
+//		String user = "manager1";
+//		String usernameDB = managerRepository.findManagerByUsername(user).getUser().getUsername();
+//		assertEquals(user, usernameDB);
+//	}
+//
+//	@Test
+//	public void TestFindManagerByUsernameNegativeNotPresent() {
+//		String user = "manager_de_prueba";
+//		assertEquals(null, managerRepository.findManagerByUsername(user));
+//	}
+//
+//	@Test
+//	public void TestFindManagerByUsernameNegative() {
+//		String user = "manager1";
+//		String userWrong = "manager2";
+//		String usernameDB = managerRepository.findManagerByUsername(user).getUser().getUsername();
+//		assertNotEquals(userWrong, usernameDB);
+//	}
 
 }

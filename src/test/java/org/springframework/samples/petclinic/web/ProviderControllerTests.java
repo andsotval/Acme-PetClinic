@@ -18,6 +18,7 @@ import org.springframework.samples.petclinic.model.Manager;
 import org.springframework.samples.petclinic.model.Provider;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.service.ManagerService;
+import org.springframework.samples.petclinic.service.ProductService;
 import org.springframework.samples.petclinic.service.ProviderService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -43,6 +44,9 @@ class ProviderControllerTests {
 
 	@MockBean
 	private ManagerService		managerService;
+	
+	@MockBean
+	private ProductService	    productService;
 
 	@Autowired
 	private MockMvc				mockMvc;
@@ -96,10 +100,10 @@ class ProviderControllerTests {
 
 	}
 
-	@WithMockUser(value = "spring")
+	@WithMockUser(value = "pepito")
 	@Test
 	void testShowProvidersAvailable() throws Exception {
-		this.mockMvc.perform(MockMvcRequestBuilders.get("/providers/listAvailable")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("providers"))
+		this.mockMvc.perform(MockMvcRequestBuilders.get("/providers/listAvailable")).andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.view().name("providers/providersList"));
 	}
 
@@ -119,6 +123,22 @@ class ProviderControllerTests {
 	void testAcceptVet() throws Exception {
 		this.mockMvc.perform(MockMvcRequestBuilders.get("/providers/addProvider/{providerId}", ProviderControllerTests.TEST_PROVIDER1_ID)).andExpect(MockMvcResultMatchers.status().isFound())
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/providers/listAvailable"));
+	}
+	
+	@WithMockUser(value = "pepito", authorities = {
+			"manager"
+		})
+	@Test
+	void testInitAddProviderToManager() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/providers/addProvider/{providerId}",TEST_PROVIDER1_ID))
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/providers/listAvailable"));
+	}
+	
+	@WithMockUser(value = "pepito")
+	@Test
+	void testListProductsByProvider() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/providers/listProductsByProvider/{providerId}",TEST_PROVIDER1_ID))
+			.andExpect(MockMvcResultMatchers.view().name("providers/providerProductsList"));
 	}
 
 }
