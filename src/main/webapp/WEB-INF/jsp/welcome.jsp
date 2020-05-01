@@ -15,7 +15,7 @@
     </div>
     
     <div class="container">
-  <div style="border-radius: 10px;margin-top:50px" id="myCarousel" class="carousel slide" data-ride="carousel">
+  <div style="border-radius: 10px;margin-top:25px" id="myCarousel" class="carousel slide" data-ride="carousel">
     <!-- Indicators -->
     <ol class="carousel-indicators">
       <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
