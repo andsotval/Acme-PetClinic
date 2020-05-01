@@ -37,9 +37,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 public class ClinicControllerTests {
 
 	private static final int	TEST_VET_ID		= 1;
-	
+
 	private static final int	TEST_OWNER_ID_1	= 1;
-	
+
 	private static final int	TEST_OWNER_ID_2	= 2;
 
 	private static final int	TEST_CLINIC_ID	= 1;
@@ -92,7 +92,7 @@ public class ClinicControllerTests {
 		userOwner.setEnabled(true);
 		userOwner.setUsername("joselito");
 		userOwner.setPassword("joselito");
-		
+
 		Authorities authorityOwner = new Authorities();
 		authorityOwner.setAuthority("Owner");
 		authorityOwner.setUsername("joselito");
@@ -105,12 +105,12 @@ public class ClinicControllerTests {
 		joselito.setCity("Madison");
 		joselito.setTelephone("6085551023");
 		joselito.setClinic(clinic);
-		
+
 		User userOwner2 = new User();
 		userOwner2.setEnabled(true);
 		userOwner2.setUsername("manolito");
 		userOwner2.setPassword("manolito");
-		
+
 		Authorities authorityOwner2 = new Authorities();
 		authorityOwner2.setAuthority("Owner");
 		authorityOwner2.setUsername("manolito");
@@ -123,25 +123,24 @@ public class ClinicControllerTests {
 		manolito.setCity("Madison");
 		manolito.setTelephone("6085551023");
 		manolito.setClinic(null);
-		
+
 		List<Visit> visitVacia = new ArrayList<Visit>();
 		List<Stay> stayVacia = new ArrayList<Stay>();
 
-		
 		BDDMockito.given(vetService.findPersonByUsername("pepito")).willReturn(pepe);
-		
+
 		BDDMockito.given(ownerService.findPersonByUsername("joselito")).willReturn(joselito);
-		
+
 		BDDMockito.given(ownerService.findPersonByUsername("manolito")).willReturn(manolito);
-		
-		BDDMockito.given(visitService.findAllAcceptedByOwner(joselito)).willReturn(visitVacia);
-		
-		BDDMockito.given(visitService.findAllPendingByOwner(joselito)).willReturn(visitVacia);
+
+		BDDMockito.given(visitService.findAllAcceptedByOwnerId(joselito.getId())).willReturn(visitVacia);
+
+		BDDMockito.given(visitService.findAllPendingByOwnerId(joselito.getId())).willReturn(visitVacia);
 
 		BDDMockito.given(stayService.findAllAcceptedByOwner(joselito)).willReturn(stayVacia);
-		
+
 		BDDMockito.given(stayService.findAllPendingByOwner(joselito)).willReturn(stayVacia);
-		
+
 		Optional<Vet> optVet = Optional.of(pepe);
 		BDDMockito.given(vetService.findEntityById(TEST_VET_ID)).willReturn(optVet);
 		Optional<Owner> optOwner = Optional.of(joselito);
@@ -155,28 +154,25 @@ public class ClinicControllerTests {
 	@WithMockUser(value = "pepito")
 	@Test
 	void testShowClinicVet() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/getDetail"))
-			.andExpect(MockMvcResultMatchers.status().isOk())
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/getDetail")).andExpect(MockMvcResultMatchers.status().isOk())
 			//.andExpect(MockMvcResultMatchers.model().attributeExists("clinic"))
 			.andExpect(MockMvcResultMatchers.view().name("/clinics/clinicDetails"));
 	}
-	
+
 	//Show Clinic from a Owner
 	@WithMockUser(value = "joselito")
 	@Test
 	void testShowClinicOwner() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner"))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner")).andExpect(MockMvcResultMatchers.status().is3xxRedirection())
 			//.andExpect(MockMvcResultMatchers.model().attributeExists("clinic"))
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/clinics/getDetail"));
 	}
-	
+
 	//Show Clinic from a Owner
 	@WithMockUser(value = "manolito")
 	@Test
 	void testShowListClinicOwner() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner"))
-			.andExpect(MockMvcResultMatchers.status().isOk())
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner")).andExpect(MockMvcResultMatchers.status().isOk())
 			//.andExpect(MockMvcResultMatchers.model().attributeExists("clinic"))
 			.andExpect(MockMvcResultMatchers.view().name("/clinics/owner/clinicsList"));
 	}
