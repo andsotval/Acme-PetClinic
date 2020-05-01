@@ -38,10 +38,10 @@ public class ListSuggestionsTrashAsAdminUITest {
 	    driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a/span[2]")).click();
 	    driver.findElement(By.xpath("//h2")).click();
 	    assertEquals("Suggestions Received", driver.findElement(By.xpath("//h2")).getText());
-	    assertEquals("Mas clínicas", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[3]/td/a/strong")).getText());
+	    String s = driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[3]/td/a/strong")).getText();
 	    driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[3]/td[3]/a[2]/span")).click();
 	    driver.findElement(By.linkText("List Trash")).click();
-	    assertEquals("Mas clínicas", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td/a/strong")).getText());
+	    assertEquals(s, driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td/a/strong")).getText());
 	    driver.findElement(By.xpath("//h2")).click();
 	    assertEquals("Suggestions Trash", driver.findElement(By.xpath("//h2")).getText());
 	    
