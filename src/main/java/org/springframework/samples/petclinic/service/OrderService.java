@@ -1,6 +1,8 @@
 
 package org.springframework.samples.petclinic.service;
 
+import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Order;
 import org.springframework.samples.petclinic.repository.BaseRepository;
@@ -21,7 +23,7 @@ public class OrderService extends BaseService<Order> {
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Order> findAllOrdersByManagerId(final int managerId) {
+	public Collection<Order> findAllOrdersByManagerId(final int managerId) {
 		return orderRepository.findAllOrdersByManagerId(managerId);
 	}
 

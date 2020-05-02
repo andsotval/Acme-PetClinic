@@ -41,22 +41,23 @@
 			</tr>
 		</thead>
 		<tbody>
-			<c:forEach var="product" items="${productsOrder}">
+			<c:forEach var="productsOrder" items="${productsOrder}">
 				<tr>
-					<td><c:out value="${product.name}" /></td>
-					<td><c:out value="${product.price}" /> &#8364</td>
-					<td><c:out value="${product.amount}" /></td>
+					<td><c:out value="${productsOrder.product.name}" /></td>
+					<td><c:out value="${productsOrder.price}" /> &#8364</td>
+					<td><c:out value="${productsOrder.amount}" /></td>
 					<td><fmt:formatNumber type = "number" maxFractionDigits = "2" 
-						value = "${product.price * product.amount}" /> &#8364</td>
+						value = "${productsOrder.price * productsOrder.amount}" /> &#8364</td>
 				</tr>
-				<c:set var = "total" value = "${total + (product.price * product.amount)}"/>
+				<c:set var = "total" value = "${total + (productsOrder.price * productsOrder.amount)}"/>
 			</c:forEach>
 		</tbody>
 		<tfoot>
 			<tr>
 				<td><strong><c:out value="TOTAL" /></strong></td>
 				<td colspan="2"></td>
-				<td><strong><c:out value="${total}" /> &#8364</strong></td>
+				<td><strong><fmt:formatNumber type = "number" maxFractionDigits = "2" 
+						value = "${total}" /> &#8364</strong></td>
 			</tr>
 		</tfoot>
 	</table>
