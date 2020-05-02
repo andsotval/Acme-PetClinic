@@ -19,7 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AddNewPetAsOwnerUINegativeTest {
+public class AddNewPetAsOwnerNegativeToOtherOwnerUITest {
 
 	@LocalServerPort
 	private int				port;
