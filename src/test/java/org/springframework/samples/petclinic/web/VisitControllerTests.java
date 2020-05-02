@@ -263,7 +263,7 @@ class VisitControllerTests {
 
 	@WithMockUser(value = "Owner")
 	@Test
-	void testListAllPendingWithOwner() throws Exception {
+	void testListAllPendingNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listAllPending")).andExpect(status().is3xxRedirection())
 				.andExpect(view().name("redirect:/oups"));
 	}
@@ -280,7 +280,7 @@ class VisitControllerTests {
 
 	@WithMockUser(value = "Owner")
 	@Test
-	void testListAllAcceptedWithOwner() throws Exception {
+	void testListAllAcceptedNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listAllAccepted")).andExpect(status().is3xxRedirection())
 				.andExpect(view().name("redirect:/oups"));
 	}
