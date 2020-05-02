@@ -202,7 +202,6 @@ public class OrderControllerTests {
 		ProductOrder productOrder1 = new ProductOrder();
 		productOrder1.setId(1);
 		productOrder1.setProduct(product1);
-		productOrder1.setName(product1.getName());
 		productOrder1.setPrice(product1.getPrice());
 		productOrder1.setTax(product1.getTax());
 		productOrder1.setAmount(4);

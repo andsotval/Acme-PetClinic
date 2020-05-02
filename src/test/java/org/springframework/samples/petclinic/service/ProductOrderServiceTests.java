@@ -75,7 +75,6 @@ public class ProductOrderServiceTests {
 		assertEquals(collection.size(), 12);
 
 		ProductOrder productOrder = new ProductOrder();
-		productOrder.setName("name1");
 		productOrder.setAmount(3);
 		productOrder.setPrice(10.0);
 		productOrder.setTax(12.0);
@@ -95,7 +94,6 @@ public class ProductOrderServiceTests {
 
 		Optional<ProductOrder> newEntity = service.findEntityById(13);
 		assertTrue(newEntity.isPresent());
-		assertEquals(newEntity.get().getName(), "name1");
 		assertEquals(newEntity.get().getAmount(), 3);
 		assertEquals(newEntity.get().getPrice(), 10.0);
 		assertEquals(newEntity.get().getTax(), 12.0);
@@ -107,7 +105,6 @@ public class ProductOrderServiceTests {
 	public void testSaveEntityNegative() {
 		LocaleContextHolder.setLocale(Locale.ENGLISH);
 		ProductOrder productOrder = new ProductOrder();
-		productOrder.setName("name1");
 		productOrder.setAmount(null);
 		productOrder.setPrice(null);
 		productOrder.setTax(null);

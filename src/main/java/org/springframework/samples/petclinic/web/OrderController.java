@@ -157,7 +157,6 @@ public class OrderController {
 		while (productsSelected.hasNext()) {
 			Product product = productsSelected.next();
 			ProductOrder pOrder = new ProductOrder();
-			pOrder.setName(product.getName());
 			pOrder.setPrice(product.getPrice());
 			pOrder.setTax(product.getTax());
 			pOrder.setProduct(product);
