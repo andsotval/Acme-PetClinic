@@ -4,6 +4,8 @@ package org.springframework.samples.petclinic.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -17,7 +19,11 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "product_order")
-public class ProductOrder extends NamedEntity {
+@NamedQueries({
+	@NamedQuery(name = "ProductOrder.findProvider",
+		query = "SELECT po.product.provider FROM ProductOrder po WHERE po.order.id=?1")
+})
+public class ProductOrder extends BaseEntity {
 
 	@Column(name = "price")
 	@NotNull
@@ -37,13 +43,14 @@ public class ProductOrder extends NamedEntity {
 	@ManyToOne(optional = false)
 	private Product	product;
 
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = false)
 	private Order	order;
 
 
 	@Override
 	public String toString() {
-		return getName() + " - " + getPrice() + "€";
+		return "ProductOrder [price=" + price + ", tax=" + tax + ", amount=" + amount + ", product=" + product
+			+ ", order=" + order + "]";
 	}
 
 }

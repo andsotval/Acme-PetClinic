@@ -8,62 +8,43 @@
 
 <petclinic:layout pageName="orders">
 	<h2>New Order</h2>
-	<form:form modelAttribute="products" class="form-horizontal"
+	<form:form class="form-horizontal"
 		id="create-order-form" action="/orders/save/${providerId}">
-
-		<input type="hidden" name="id" value="${order.id}" />
-		<input type="hidden" name="manager.id" value="${order.manager.id}" />
-		<input type="hidden" name="isAccepted" value="false" />
-		<input type="hidden" name="date"
-			value="<petclinic:localDate date="${order.date}" pattern="yyyy/MM/dd" />" />
 
 		<table id="productsTable" class="table table-striped">
 			<thead>
 				<tr>
-					<th>Name</th>
+					<th width="70%">Name</th>
 					<th>Price</th>
-					<th>Tax %</th>
+					<th>Tax % Include</th>
 					<th>Amount</th>
 				</tr>
 			</thead>
 			<tbody>
 				<c:forEach items="${products}" var="product">
-					<%--  <input type="hidden" name="name" value="${product.name}" />
-					<input type="hidden" name="price" value="${product.price}" />
-					<input type="hidden" name="tax" value="${product.tax}" /> --%>
+					<input type="hidden" name="productIds" value="${product.id}"/>
 					<tr>
 						<td><c:out value="${product.name}" /></td>
-						<td><c:out value="${product.price}" /></td>
-						<td><c:out value="${product.tax}" /></td>
-						<td width="25%"><input type="number" name="amountNumber_${product.id}"
-							value="${product.amount}"></td>
+						<td align="center"><c:out value="${product.price}" /></td>
+						<td align="center"><c:out value="${product.tax}" /></td>
+						<td>
+							<input id="input"  type="number" min="0" name="amountNumber" value="0">
+						</td>
 					</tr>
 				</c:forEach>
 			</tbody>
 		</table>
-
-		<%--  <input type="hidden" name="id" value="${order.id}" />
-		<input type="hidden" name="manager.id" value="${order.manager.id}" />
-		<input type="hidden" name="date"
-			value="<petclinic:localDate date="${order.date}" pattern="yyyy/MM/dd" />" />
-		<input type="hidden" name="isAccepted" value="false" /> -->	
-		<!-- <div class="form-group has-feedback"> 
-            <petclinic:selectField label="Product" name="productOrder" size="5" itemLabel="name" names="${products}"></petclinic:selectField> -->
-		<!-- <form:select multiple="true" path="product" items="${products}" itemLabel="name" itemValue="id" /> -->
-		<!-- </div> --%>
-
-		<%-- <form:input path="product[${status.index}].amount" name="Amount" value="amount"/> --%>
-
-
+		
+		<div class="form-group" style="color: red;">
+			<c:out value="${notProductsOrder}" />
+		</div>
 
 		<div class="form-group">
-			<div class="col-sm-offset-2 col-sm-10">
-				<a class="btn btn-default"
-					href='<spring:url value="/orders/providers/listAvailable" htmlEscape="true"/>'>Back
-					to Providers List</a>
-				<button class="btn btn-default" type="submit">Create Order</button>
-			</div>
+			<a class="btn btn-default"
+				href='<spring:url value="/orders/providers/listAvailable" htmlEscape="true"/>'>Back
+				to Providers List</a>
+			<button class="btn btn-default" type="submit">Create Order</button>
 		</div>
 	</form:form>
-
+	
 </petclinic:layout>

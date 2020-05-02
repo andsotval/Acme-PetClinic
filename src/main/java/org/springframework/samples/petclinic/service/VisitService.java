@@ -35,9 +35,10 @@ public class VisitService extends BaseService<Visit> {
 
 	@Transactional
 	public void deleteByPetId(Integer id) {
-		Iterable<Visit> visit = visitRepository.findAllByPetId(id);
-		visitRepository.deleteAll(visit);
-
+		if (id != null) {
+			Iterable<Visit> visit = visitRepository.findAllByPetId(id);
+			visitRepository.deleteAll(visit);
+		}
 	}
 
 	@Transactional(readOnly = true)
@@ -52,24 +53,23 @@ public class VisitService extends BaseService<Visit> {
 
 	@Transactional(readOnly = true)
 	public Iterable<Visit> findAllByPetId(Integer petId) {
-		return visitRepository.findAllByPetId(petId);
+		if(petId != null) {
+			return visitRepository.findAllByPetId(petId);
+		}else {
+			return null;
+		}
+		
 	}
 
 	public Iterable<Visit> findAllByDateTime(LocalDateTime dateTime) {
 		return visitRepository.findVisitsByDateTime(dateTime);
 	}
-	
-	
-	/* MÉTODO PARA LA SIGUIENTE FASE
-	public boolean isInInterval(LocalDateTime dateTime) {
-		LocalTime opening = LocalTime.of(8, 0);
-		LocalTime closing = LocalTime.of(20, 0);
-		LocalTime visitTime = LocalTime.of(dateTime.getHour(), dateTime.getMinute());
-		if(visitTime.isAfter(opening) && visitTime.isBefore(closing)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+
+	/*
+	 * MÉTODO PARA LA SIGUIENTE FASE public boolean isInInterval(LocalDateTime
+	 * dateTime) { LocalTime opening = LocalTime.of(8, 0); LocalTime closing =
+	 * LocalTime.of(20, 0); LocalTime visitTime = LocalTime.of(dateTime.getHour(),
+	 * dateTime.getMinute()); if(visitTime.isAfter(opening) &&
+	 * visitTime.isBefore(closing)) { return true; } else { return false; } }
 	 */
 }

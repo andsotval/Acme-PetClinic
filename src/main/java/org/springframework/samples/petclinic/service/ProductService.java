@@ -1,6 +1,8 @@
 
 package org.springframework.samples.petclinic.service;
 
+import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Product;
 import org.springframework.samples.petclinic.repository.BaseRepository;
@@ -21,8 +23,13 @@ public class ProductService extends BaseService<Product> {
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Product> findProductsAvailableByProviderId(int providerId) {
+	public Collection<Product> findProductsAvailableByProviderId(int providerId) {
 		return productRepository.findProductsAvailableByProviderId(providerId);
+	}
+
+	@Transactional(readOnly = true)
+	public Collection<Product> findProductsByIds(Collection<Integer> ids) {
+		return (Collection<Product>) productRepository.findAllById(ids);
 	}
 
 }

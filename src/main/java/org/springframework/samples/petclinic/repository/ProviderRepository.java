@@ -14,6 +14,6 @@ public interface ProviderRepository extends BaseRepository<Provider> {
 	Collection<Provider> findAvailableProviders();
 
 	@Query("SELECT provider FROM Provider provider WHERE provider.manager.id=?1")
-	Iterable<Provider> findProvidersByManagerId(int managerId);
+	Collection<Provider> findProvidersByManagerId(int managerId);
 
 }

@@ -57,9 +57,16 @@ public class PetTypeServiceTest {
 	}
 
 	@Test
-	public void testFindEntityById() {
+	public void testFindEntityByIdPositive() {
 		Optional<PetType> entity = service.findEntityById(1);
 		assertTrue(entity.isPresent());
+		assertTrue(entity.get().getId().equals(1));
+	}
+
+	@Test
+	public void testFindEntityByIdNegative() {
+		Optional<PetType> entity = service.findEntityById(99);
+		assertTrue(!entity.isPresent());
 	}
 
 	@Test

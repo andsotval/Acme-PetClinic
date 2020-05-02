@@ -41,27 +41,46 @@ public class SuggestionServiceTests {
 	public void testFindAllEntitiesNotTrashOrderByIsReadAndCreated() {
 		Collection<Suggestion> collection = service.findAllEntitiesNotTrashOrderByIsReadAndCreated();
 		assertEquals(collection.size(), 3);
+
+		collection.forEach(s -> {
+			assertEquals(s.getIsTrash(), false);
+		});
 	}
 
 	@Test
 	public void testFindAllEntitiesTrashOrderByIsReadAndCreated() {
 		Collection<Suggestion> collection = service.findAllEntitiesTrashOrderByIsReadAndCreated();
 		assertEquals(collection.size(), 1);
+
+		collection.forEach(s -> {
+			assertEquals(s.getIsTrash(), true);
+		});
 	}
 
 	@Test
 	public void testMoveAllTrash() {
-		service.moveAllTrash();
 		Collection<Suggestion> collection = service.findAllEntitiesNotTrashOrderByIsReadAndCreated();
+		assertEquals(collection.size(), 3);
+		collection.forEach(s -> {
+			assertEquals(s.getIsTrash(), false);
+		});
+
+		service.moveAllTrash();
+		collection = service.findAllEntitiesNotTrashOrderByIsReadAndCreated();
 		assertEquals(collection.size(), 0);
-		collection = service.findAllEntitiesTrashOrderByIsReadAndCreated();
-		assertEquals(collection.size(), 4);
+
 	}
 
 	@Test
 	public void testDeleteAllTrash() {
+		Collection<Suggestion> collection = service.findAllEntitiesNotTrashOrderByIsReadAndCreated();
+		assertEquals(collection.size(), 3);
+		collection.forEach(s -> {
+			assertEquals(s.getIsTrash(), false);
+		});
+
 		service.moveAllTrash();
-		Collection<Suggestion> collection = service.findAllEntitiesTrashOrderByIsReadAndCreated();
+		collection = service.findAllEntitiesTrashOrderByIsReadAndCreated();
 		assertEquals(collection.size(), 4);
 
 		service.deleteAllTrash(collection);
@@ -73,12 +92,20 @@ public class SuggestionServiceTests {
 	public void testFindAllEntitiesByUsername() {
 		Collection<Suggestion> collection = service.findAllEntitiesAvailableByUsername("owner1");
 		assertEquals(collection.size(), 2);
+		collection.forEach(s -> {
+			assertEquals(s.getUser().getUsername(), "owner1");
+			assertEquals(s.getIsAvailable(), true);
+		});
 	}
 
 	@Test
 	public void testUpdateAllIsAvailableFalse() {
 		Collection<Suggestion> collection = service.findAllEntitiesAvailableByUsername("owner1");
 		assertEquals(collection.size(), 2);
+		collection.forEach(s -> {
+			assertEquals(s.getUser().getUsername(), "owner1");
+			assertEquals(s.getIsAvailable(), true);
+		});
 
 		service.updateAllIsAvailableFalse("owner1");
 		collection = service.findAllEntitiesAvailableByUsername("owner1");
@@ -92,9 +119,16 @@ public class SuggestionServiceTests {
 	}
 
 	@Test
-	public void testFindEntityById() {
+	public void testFindEntityByIdPositive() {
 		Optional<Suggestion> entity = service.findEntityById(1);
 		assertTrue(entity.isPresent());
+		assertTrue(entity.get().getId().equals(1));
+	}
+
+	@Test
+	public void testFindEntityByIdNegative() {
+		Optional<Suggestion> entity = service.findEntityById(99);
+		assertTrue(!entity.isPresent());
 	}
 
 	@Test
@@ -172,7 +206,6 @@ public class SuggestionServiceTests {
 				break;
 			}
 		}
-
 	}
 
 	@Test
