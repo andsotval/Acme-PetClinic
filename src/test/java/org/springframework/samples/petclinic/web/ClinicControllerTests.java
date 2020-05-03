@@ -1,7 +1,6 @@
 
 package org.springframework.samples.petclinic.web;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -65,8 +64,6 @@ public class ClinicControllerTests {
 
 	@BeforeEach
 	void setup() {
-		LocalDate actualDate = LocalDate.now();
-
 		Clinic clinic = new Clinic();
 		clinic.setId(TEST_CLINIC_ID);
 
@@ -137,9 +134,9 @@ public class ClinicControllerTests {
 
 		BDDMockito.given(visitService.findAllPendingByOwnerId(joselito.getId())).willReturn(visitVacia);
 
-		BDDMockito.given(stayService.findAllAcceptedByOwner(joselito)).willReturn(stayVacia);
+		BDDMockito.given(stayService.findAllAcceptedByOwner(joselito.getId())).willReturn(stayVacia);
 
-		BDDMockito.given(stayService.findAllPendingByOwner(joselito)).willReturn(stayVacia);
+		BDDMockito.given(stayService.findAllPendingByOwner(joselito.getId())).willReturn(stayVacia);
 
 		Optional<Vet> optVet = Optional.of(pepe);
 		BDDMockito.given(vetService.findEntityById(TEST_VET_ID)).willReturn(optVet);
