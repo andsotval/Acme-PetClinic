@@ -146,7 +146,7 @@ class VisitServiceTests {
 	@Test
 	public void testSaveVisit() {
 		Collection<Visit> collection = (Collection<Visit>) service.findAllEntities();
-		assertEquals(collection.size(), 11);
+		int size = collection.size();
 
 		LocalDateTime now = LocalDateTime.now();
 		Visit entity = new Visit();
@@ -155,7 +155,7 @@ class VisitServiceTests {
 		service.saveEntity(entity);
 
 		collection = (Collection<Visit>) service.findAllEntities();
-		assertEquals(collection.size(), 12);
+		assertEquals(collection.size(), size+1);
 
 		Optional<Visit> newEntity = service.findEntityById(12);
 		assertTrue(newEntity.isPresent());
@@ -165,9 +165,6 @@ class VisitServiceTests {
 
 	@Test
 	public void testSaveVisitWithoutDescription() {
-		Collection<Visit> collection = (Collection<Visit>) service.findAllEntities();
-		assertEquals(collection.size(), 11);
-
 		LocalDateTime now = LocalDateTime.now();
 		Visit entity = new Visit();
 		entity.setDateTime(now);
