@@ -19,7 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AddVetsToClinicAsManagerSuccesfullUITest {
+public class AddVetsToClinicAsManagerUITests {
 
 	@LocalServerPort
 	private int				port;
@@ -31,15 +31,15 @@ public class AddVetsToClinicAsManagerSuccesfullUITest {
 	@BeforeEach
 	public void setUp() throws Exception {
 
-		//		String pathToGeckoDriver = "C:\\Users\\migue\\Desktop";
-		//		System.setProperty("webdriver.gecko.driver", pathToGeckoDriver + "\\geckodriver.exe");
+		String pathToGeckoDriver = "C:\\Users\\migue\\Desktop\\Universidad\\DP";
+		System.setProperty("webdriver.gecko.driver", pathToGeckoDriver + "\\geckodriver.exe");
 
 		driver = new FirefoxDriver();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 	}
 
 	@Test
-	public void testUntitledTestCase() throws Exception {
+	public void testUIAddVetsToClinicAsManagerSuccesfull() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsManager();
@@ -79,6 +79,69 @@ public class AddVetsToClinicAsManagerSuccesfullUITest {
 
 		//volvemos a la lista y desconectamos
 		driver.findElement(By.linkText("Back to list of veterinarian")).click();
+		LogOut();
+
+	}
+
+	@Test
+	public void testUIAddVetsToClinicAsManagerWithVetAlreadyLinkedToAClinic() throws Exception {
+		driver.get("http://localhost:" + port);
+
+		LogInAsManager();
+
+		//selecciona el boton veterinarians
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[2]/a/span[2]")).click();
+
+		//revisa que el encabezado sea Veterinarians y el de las tablas sea correcto
+		driver.findElement(By.xpath("//h1")).click();
+		assertEquals("Veterinarians", driver.findElement(By.xpath("//h1")).getText());
+		driver.findElement(By.xpath("/html/body/div/div/h2[1]")).click();
+		assertEquals("Available veterinarians for hire",
+			driver.findElement(By.xpath("/html/body/div/div/h2[1]")).getText());
+		driver.findElement(By.xpath("/html/body/div/div/h2[2]")).click();
+		assertEquals("Veterinarians hired by your clinic",
+			driver.findElement(By.xpath("/html/body/div/div/h2[2]")).getText());
+		//Intenta añadir un veterinario con una clinica ya asignada
+		driver.get("http://localhost:" + port + "/vets/accept/1");
+
+		//Comprueba que ha llegado a la pagina de error
+		driver.findElement(By.xpath("//h2")).click();
+		assertEquals("Something happened...", driver.findElement(By.xpath("//h2")).getText());
+		driver.findElement(By.xpath("//body/div/div/p")).click();
+		assertEquals("Expected: controller used to showcase what happens when an exception is thrown",
+			driver.findElement(By.xpath("//body/div/div/p")).getText());
+
+		LogOut();
+
+	}
+
+	@Test
+	public void testUIAddVetsToClinicAsManagerNotPresentVet() throws Exception {
+		driver.get("http://localhost:" + port);
+
+		LogInAsManager();
+
+		//selecciona el boton veterinarians
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[2]/a/span[2]")).click();
+
+		//revisa que el encabezado sea Veterinarians y el de las tablas sea correcto
+		driver.findElement(By.xpath("//h1")).click();
+		assertEquals("Veterinarians", driver.findElement(By.xpath("//h1")).getText());
+		driver.findElement(By.xpath("/html/body/div/div/h2[1]")).click();
+		assertEquals("Available veterinarians for hire",
+			driver.findElement(By.xpath("/html/body/div/div/h2[1]")).getText());
+		driver.findElement(By.xpath("/html/body/div/div/h2[2]")).click();
+		assertEquals("Veterinarians hired by your clinic",
+			driver.findElement(By.xpath("/html/body/div/div/h2[2]")).getText());
+		//Intenta añadir un veterinario no existente
+		driver.get("http://localhost:" + port + "/vets/accept/321");
+
+		//Comprueba que ha llegado a la pagina de error
+		driver.findElement(By.xpath("//h2")).click();
+		assertEquals("Something happened...", driver.findElement(By.xpath("//h2")).getText());
+		driver.findElement(By.xpath("//body/div/div/p")).click();
+		assertEquals("No value present", driver.findElement(By.xpath("//body/div/div/p")).getText());
+
 		LogOut();
 
 	}
