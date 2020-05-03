@@ -14,7 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class NewSuggestionsAsUserUITest {
+public class NewSuggestionsAsUserUITests {
 	
 
 	@LocalServerPort
@@ -52,6 +52,33 @@ public class NewSuggestionsAsUserUITest {
 	    assertEquals("SUGGESTION", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[3]/td/a/strong")).getText());
 	    
 		LogOut();
+
+	}
+	
+	@Test
+	public void testNewSuggestionWrongParameters() throws Exception {
+		driver.get("http://localhost:" + port);
+		
+		LogInAsOwner();
+	    
+		driver.get("http://localhost:" + port + "/suggestion/user/list");
+		driver.findElement(By.xpath("//h2")).click();
+	    assertEquals("Suggestions send", driver.findElement(By.xpath("//h2")).getText());
+	    driver.findElement(By.linkText("New Suggestion")).click();
+	    driver.findElement(By.xpath("//h2")).click();
+	    assertEquals("New Suggestion", driver.findElement(By.xpath("//h2")).getText());
+	    driver.findElement(By.id("name")).click();
+	    driver.findElement(By.id("name")).clear();
+	    driver.findElement(By.id("name")).sendKeys("");
+	    driver.findElement(By.id("description")).click();
+	    driver.findElement(By.id("description")).clear();
+	    driver.findElement(By.id("description")).sendKeys("TEST WITH NULL TITLE MUST SHOW AN ERROR");
+	    driver.findElement(By.xpath("//button[@type='submit']")).click();
+	    driver.findElement(By.xpath("//h2")).click();
+	    assertEquals("New Suggestion", driver.findElement(By.xpath("//h2")).getText());
+	    assertEquals("el tamaño tiene que estar entre 3 y 50", driver.findElement(By.xpath("//form[@id='create-suggestion-form']/div/div/span[2]")).getText());
+		
+	    LogOut();
 
 	}
 
