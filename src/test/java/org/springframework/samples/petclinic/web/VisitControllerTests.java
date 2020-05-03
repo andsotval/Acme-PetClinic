@@ -52,7 +52,7 @@ class VisitControllerTests {
 	private static final int TEST_PENDING_VISIT_ID = 1;
 
 	private static final int TEST_PENDING_VISIT_ID_NOT_AUTHORIZED = 3;
-	
+
 	private static final int TEST_VISIT_ID_NOT_FOUND = 4;
 
 	private static final int TEST_ACCEPTED_VISIT_ID = 2;
@@ -220,7 +220,7 @@ class VisitControllerTests {
 
 		Optional<Visit> optionalAcceptedVisit = Optional.of(acceptedVisit);
 		BDDMockito.given(visitService.findEntityById(TEST_ACCEPTED_VISIT_ID)).willReturn(optionalAcceptedVisit);
-		
+
 		Optional<Visit> optionalNotFoundVisit = Optional.empty();
 		BDDMockito.given(visitService.findEntityById(TEST_VISIT_ID_NOT_FOUND)).willReturn(optionalNotFoundVisit);
 
@@ -285,7 +285,6 @@ class VisitControllerTests {
 				.andExpect(view().name("redirect:/oups"));
 	}
 
-	// TODO:
 	@WithMockUser(value = "Vet")
 	@Test
 	void testAcceptVisit() throws Exception {
@@ -293,16 +292,13 @@ class VisitControllerTests {
 				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listAllAccepted"));
 	}
 
-	// TODO:
 	@WithMockUser(value = "Vet")
 	@Test
 	void testAcceptVisitNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED))
-				.andExpect(status().is3xxRedirection())
-				.andExpect(view().name("redirect:/visits/listAllAccepted"));
+				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listAllAccepted"));
 	}
 
-	// TODO:
 	@WithMockUser(value = "Vet")
 	@Test
 	void testCancelVisitAsVet() throws Exception {
@@ -310,7 +306,6 @@ class VisitControllerTests {
 				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listAllAccepted"));
 	}
 
-	// TODO:
 	@WithMockUser(value = "Vet")
 	@Test
 	void testCancelVisitAsVetNotAuthorized() throws Exception {
@@ -318,7 +313,6 @@ class VisitControllerTests {
 				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listAllAccepted"));
 	}
 
-	// TODO:
 	@WithMockUser(value = "Owner")
 	@Test
 	void testCancelVisitAsOwner() throws Exception {
@@ -326,7 +320,6 @@ class VisitControllerTests {
 				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listByOwner"));
 	}
 
-	// TODO:
 	@WithMockUser(value = "Owner")
 	@Test
 	void testCancelVisitAsOwnerNotAuthorized() throws Exception {
@@ -342,13 +335,12 @@ class VisitControllerTests {
 				.andExpect(MockMvcResultMatchers.model().attributeExists("visit"))
 				.andExpect(MockMvcResultMatchers.view().name("/visits/createOrUpdateVisitForm"));
 	}
-	
+
 	@WithMockUser(value = "Vet")
 	@Test
 	void testInitUpdateVisitNotFound() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/changeDate/{visitId}", TEST_VISIT_ID_NOT_FOUND))
-		.andExpect(status().is3xxRedirection())
-		.andExpect(view().name("redirect:/oups"));
+				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "Vet")
@@ -371,7 +363,7 @@ class VisitControllerTests {
 				.andExpect(MockMvcResultMatchers.view().name("/visits/createOrUpdateVisitForm"));
 	}
 
-	@WithMockUser(value = "Vet")
+	@WithMockUser(value = "Owner")
 	@Test
 	void testCreateVisit() throws Exception {
 		mockMvc.perform(post("/visits/save").with(csrf()).param("description", "description of the visit")
@@ -381,7 +373,7 @@ class VisitControllerTests {
 	}
 
 	// TODO: PREGUNTA DE CARLOS
-	@WithMockUser(value = "Vet")
+	@WithMockUser(value = "Owner")
 	@Test
 	void testCreateVisitWrongDate() throws Exception {
 		mockMvc.perform(post("/visits/save").with(csrf()).param("description", "description of the visit")
