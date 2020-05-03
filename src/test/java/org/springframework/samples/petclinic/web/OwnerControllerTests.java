@@ -29,9 +29,6 @@ class OwnerControllerTests {
 
 	private static final int	TEST_OWNER_ID	= 1;
 
-	@Autowired
-	private OwnerController		ownerController;
-
 	@MockBean
 	private OwnerService		ownerService;
 

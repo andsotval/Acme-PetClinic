@@ -4,6 +4,7 @@ package org.springframework.samples.petclinic.service;
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +20,15 @@ public class ProductOrderService extends BaseService<ProductOrder> {
 
 	private ProductOrderRepository	productOrderRepository;
 
-	private EntityManager			entityManager;
+	private EntityManagerFactory	emf;
 
 
 	@Autowired
 	public ProductOrderService(BaseRepository<ProductOrder> repository, ProductOrderRepository productOrderRepository,
-		EntityManager entityManager) {
+		EntityManagerFactory emf) {
 		super(repository);
 		this.productOrderRepository = productOrderRepository;
-		this.entityManager = entityManager;
+		this.emf = emf;
 	}
 
 	@Transactional(readOnly = true)
@@ -37,10 +38,13 @@ public class ProductOrderService extends BaseService<ProductOrder> {
 
 	@Transactional(readOnly = true)
 	public Provider findProviderByOrder(int orderId) {
-		Query query = entityManager.createNamedQuery("ProductOrder.findProvider");
+		EntityManager em = emf.createEntityManager();
+		Query query = em.createNamedQuery("ProductOrder.findProvider");
 		query.setMaxResults(1);
 		query.setParameter(1, orderId);
-		return (Provider) query.getSingleResult();
+		Provider provider = (Provider) query.getSingleResult();
+		em.close();
+		return provider;
 	}
 
 }
