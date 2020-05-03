@@ -16,14 +16,30 @@
 
 package org.springframework.samples.petclinic.service;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.samples.petclinic.model.Owner;
+import org.springframework.samples.petclinic.model.Pet;
+import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /**
  * Integration test of the Service and the Repository layer.
@@ -65,23 +81,158 @@ class PetServiceTests {
 	protected OwnerService	ownerService;
 
 
+	private Validator createValidator() {
+		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
+		localValidatorFactoryBean.afterPropertiesSet();
+		return localValidatorFactoryBean;
+	}
+
 	@Test
-	void TestFindPetsByOwnerIdPositive() {
+	public void TestFindPetsByOwnerIdPositive() {
 		int ownerId = 2;
 		petService.findPetsByOwnerId(ownerId).forEach(p -> assertEquals(ownerId, p.getOwner().getId()));
 	}
 
 	@Test
-	void TestFindPetsByOwnerIdNegative() {
+	public void TestFindPetsByOwnerIdNegative() {
 		int ownerId = 2;
 		int notOwnerId = 4;
 		petService.findPetsByOwnerId(notOwnerId).forEach(p -> assertNotEquals(ownerId, p.getOwner().getId()));
 	}
 
 	@Test
-	void TestFindPetsByOwnerIdNotPresent() {
+	public void TestFindPetsByOwnerIdNotPresent() {
 		int ownerId = 20;
 		petService.findPetsByOwnerId(ownerId).forEach(p -> assertEquals(null, p.getOwner()));
+	}
+
+	@Test
+	public void testFindAllEntities() {
+		Collection<Pet> collection = (Collection<Pet>) petService.findAllEntities();
+		assertEquals(collection.size(), 13);
+	}
+
+	@Test
+	public void testFindEntityByIdPositive() {
+		Optional<Pet> entity = petService.findEntityById(1);
+		assertTrue(entity.isPresent());
+		assertTrue(entity.get().getId().equals(1));
+	}
+
+	@Test
+	public void testFindEntityByIdNegative() {
+		Optional<Pet> entity = petService.findEntityById(99);
+		assertTrue(!entity.isPresent());
+	}
+
+	@Test
+	public void testSaveEntityPositive() {
+		Collection<Pet> collection = (Collection<Pet>) petService.findAllEntities();
+		assertEquals(collection.size(), 13);
+
+		LocalDate birthDate = LocalDate.now();
+		String name = "PET14";
+		Pet pet = new Pet();
+		pet.setBirthDate(birthDate);
+		pet.setName(name);
+
+		Owner owner = new Owner();
+		owner.setId(1);
+
+		PetType type = new PetType();
+		type.setId(1);
+
+		pet.setOwner(owner);
+		pet.setType(type);
+		petService.saveEntity(pet);
+
+		collection = (Collection<Pet>) petService.findAllEntities();
+		assertEquals(collection.size(), 14);
+
+		Optional<Pet> newEntity = petService.findEntityById(14);
+		assertTrue(newEntity.isPresent());
+		assertEquals(newEntity.get().getBirthDate(), birthDate);
+		assertEquals(newEntity.get().getName(), name);
+		assertEquals(newEntity.get().getOwner(), owner);
+		assertEquals(newEntity.get().getType(), type);
+	}
+
+	@Test
+	public void testSaveEntityNegativeDateNullAndNameShort() {
+		LocaleContextHolder.setLocale(Locale.ENGLISH);
+		Pet pet = new Pet();
+		pet.setBirthDate(null);
+		pet.setName("AA");
+
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Pet>> constraintViolations = validator.validate(pet);
+		assertEquals(2, constraintViolations.size());
+
+		Iterator<ConstraintViolation<Pet>> it = constraintViolations.iterator();
+		while (it.hasNext()) {
+			ConstraintViolation<Pet> violation = it.next();
+			String message = violation.getMessage();
+
+			switch (violation.getPropertyPath().toString()) {
+			case "name":
+				assertEquals(message, "size must be between 3 and 50");
+				break;
+			case "birthDate":
+				assertEquals(message, "must not be null");
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	@Test
+	public void testSaveEntityNegativeNameTooLong() {
+		LocaleContextHolder.setLocale(Locale.ENGLISH);
+		Pet pet = new Pet();
+		String name = "";
+		for (int i = 0; i <= 50; i++)
+			name += "A";
+		pet.setName(name);
+
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Pet>> constraintViolations = validator.validate(pet);
+		assertEquals(2, constraintViolations.size());
+
+		Iterator<ConstraintViolation<Pet>> it = constraintViolations.iterator();
+		while (it.hasNext()) {
+			ConstraintViolation<Pet> violation = it.next();
+			String message = violation.getMessage();
+
+			switch (violation.getPropertyPath().toString()) {
+			case "name":
+				assertEquals(message, "size must be between 3 and 50");
+				break;
+			case "birthDate":
+				assertEquals(message, "must not be null");
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	@Test
+	public void testDeleteEntity() {
+		Optional<Pet> entity = petService.findEntityById(1);
+		assertTrue(entity.isPresent());
+		petService.deleteEntity(entity.get());
+
+		Optional<Pet> deleteEntity = petService.findEntityById(1);
+		assertTrue(!deleteEntity.isPresent());
+	}
+
+	@Test
+	public void testDeleteEntityById() {
+		petService.deleteEntityById(1);
+
+		Optional<Pet> entity = petService.findEntityById(1);
+		assertTrue(!entity.isPresent());
 	}
 
 	//	@Test
