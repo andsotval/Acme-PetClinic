@@ -177,11 +177,10 @@ class VisitServiceTests {
 		while (it.hasNext()) {
 			ConstraintViolation<Visit> violation = it.next();
 			String message = violation.getMessage();
-			System.out.println(message);
 
 			switch (violation.getPropertyPath().toString()) {
 			case "description":
-				assertTrue(message.equals("no puede estar vacío"));
+				assertTrue(message.equals("must not be empty") || message.equals("no puede estar vacío") );
 				break;
 			default:
 				break;
