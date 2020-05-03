@@ -253,7 +253,7 @@ public class VisitController {
 
 		if (i == 0) {
 			visitService.saveEntity(entity);
-			model.addAttribute("message", "Visit succesfully updated");
+			model.addAttribute("message", "Visit succesfully created");
 			return "redirect:/visits/listByOwner";
 		} else {
 			Iterable<Visit> visits = visitService.findAllByPetId(entity.getPet().getId());

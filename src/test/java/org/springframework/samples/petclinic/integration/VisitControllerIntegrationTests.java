@@ -1,19 +1,20 @@
 package org.springframework.samples.petclinic.integration;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.HashMap;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.samples.petclinic.model.Clinic;
+import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.Visit;
+import org.springframework.samples.petclinic.service.ClinicService;
+import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.VisitService;
 import org.springframework.samples.petclinic.web.VisitController;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -31,12 +32,22 @@ public class VisitControllerIntegrationTests {
 	private int TEST_ACCEPTED_VISIT_ID = 1;
 	
 	private int TEST_NOTFOUND_VISIT_ID = 100;
+	
+	private int TEST_CLINIC_ID = 1;
+	
+	private int TEST_PET_ID = 1;
 
 	@Autowired
 	private VisitController		visitController;
 	
 	@Autowired
 	private VisitService		visitService;
+	
+	@Autowired
+	private ClinicService		clinicService;
+	
+	@Autowired
+	private PetService		petService;
 	
 	@WithMockUser(username="vet1",authorities= {"veterinarian"})
 	@Test
@@ -183,24 +194,59 @@ public class VisitControllerIntegrationTests {
 	@WithMockUser(username="owner1",authorities= {"owner"})
 	@Test
 	public void testCreateVisit() {
+		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
+		ModelMap modelMap = new ModelMap();
+		Clinic clinic = this.clinicService.findEntityById(TEST_CLINIC_ID).get();
+		Pet pet = this.petService.findEntityById(TEST_PET_ID).get();
+		Visit entity = new Visit();
+		entity.setDescription("Description Integration Test");
+		entity.setDateTime(LocalDateTime.now().plusMonths(4L));
+		entity.setClinic(clinic);
+		entity.setPet(pet);
+		String view = this.visitController.createVisit(entity, result, modelMap);
 		
+		assertEquals("Visit succesfully created", modelMap.getAttribute("message"));
+		assertEquals(view, "redirect:/visits/listByOwner");
 	}
 	
 	@WithMockUser(username="owner1",authorities= {"owner"})
 	@Test
 	public void testCreateVisitWrongDate() {
+		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
+		ModelMap modelMap = new ModelMap();
+		Clinic clinic = this.clinicService.findEntityById(TEST_CLINIC_ID).get();
+		Pet pet = this.petService.findEntityById(TEST_PET_ID).get();
+		Visit entity = new Visit();
+		entity.setDescription("Description Integration Test");
+		entity.setDateTime(LocalDateTime.now().minusMonths(4L));
+		entity.setClinic(clinic);
+		entity.setPet(pet);
+		String view = this.visitController.createVisit(entity, result, modelMap);
+		
+		//assertEquals("Minimum 2 days after today", result.getFieldError("dateInFuture"));
+		assertEquals(entity, modelMap.getAttribute("visit"));
+		assertEquals(view, "/visits/createOrUpdateVisitForm");
 		
 	}
 	
 	@WithMockUser(username="owner1",authorities= {"owner"})
 	@Test
 	public void testListAllPendingAndAcceptedByOwner() {
+		ModelMap modelMap = new ModelMap();
+		String view = this.visitController.listAllPendingAndAcceptedByOwner(modelMap);
 		
+		assertNotNull(modelMap.getAttribute("visitsPending"));
+		assertNotNull(modelMap.getAttribute("visitsAccepted"));
+		assertEquals(view, "visits/listByOwner");
 	}
 	
-	@WithMockUser(username="owner1",authorities= {"owner"})
+	@WithMockUser(username="vet1",authorities= {"veterinarian"})
 	@Test
 	public void testListAllPendingAndAcceptedByOwnerNotAuthorized() {
+		ModelMap modelMap = new ModelMap();
+		String view = this.visitController.listAllPendingAndAcceptedByOwner(modelMap);
+		
+		assertEquals(view, "redirect:/oups");
 		
 	}
 	
