@@ -17,7 +17,9 @@
 package org.springframework.samples.petclinic.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.stream.StreamSupport;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +64,6 @@ class VetServiceTests {
 	@Autowired
 	protected VetService vetService;
 
-
 	//Ya estaba implementado, solamente modificado los datos
 	//	@Test
 	//	void shouldFindVets() {
@@ -86,6 +87,9 @@ class VetServiceTests {
 	 * assertThat(vet.getSpecialties().get(1).getName()).isEqualTo("surgery");
 	 * }
 	 */
+
+
+	//TODO: que prueba negativa meter?
 	@Test
 	public void testFindAvailableVetsPositive() {
 		vetService.findAvailableVets().forEach(v -> assertEquals(null, v.getClinic()));
@@ -100,9 +104,10 @@ class VetServiceTests {
 	}
 
 	@Test
-	public void testFindPersonUsernameNegative() {
-		Vet vet = vetService.findPersonByUsername("vet5");
-		assertNotEquals("vet7@gmail.com", vet.getMail());
+	public void testFindPersonUsernameNegative() throws Exception {
+		assertThrows(Exception.class, () -> {
+			vetService.findPersonByUsername(null);
+		});
 
 	}
 
@@ -110,6 +115,27 @@ class VetServiceTests {
 	public void testFindVetsByManagerPositive() {
 		int managerId = 2;
 		vetService.findVetsByManager(managerId).forEach(v -> assertEquals(managerId, v.getClinic().getManager().getId()));
+	}
+
+	@Test
+	public void testFindVetsByManagerNegative() {
+		Iterable<Vet> vets = vetService.findVetsByManager(-1);
+		int numStays = (int) StreamSupport.stream(vets.spliterator(), false).count();
+		assertEquals(numStays, 0);
+	}
+
+	@Test
+	public void testFindVetsByClinicId() {
+		Integer clinicId = 2;
+		vetService.findVetsByClinicId(clinicId).forEach(vet -> assertEquals(clinicId, vet.getClinic().getId()));
+	}
+
+	@Test
+	public void testFindVetsByClinicIdNegative() {
+		Iterable<Vet> vets = vetService.findVetsByClinicId(null);
+		int numVets = (int) StreamSupport.stream(vets.spliterator(), false).count();
+
+		assertEquals(numVets, 0);
 	}
 
 }

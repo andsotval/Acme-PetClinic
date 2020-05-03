@@ -23,7 +23,7 @@ import lombok.EqualsAndHashCode;
 	@NamedQuery(name = "ProductOrder.findProvider",
 		query = "SELECT po.product.provider FROM ProductOrder po WHERE po.order.id=?1")
 })
-public class ProductOrder extends NamedEntity {
+public class ProductOrder extends BaseEntity {
 
 	@Column(name = "price")
 	@NotNull

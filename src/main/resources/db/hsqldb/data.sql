@@ -106,23 +106,23 @@ INSERT INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (6, '
 
 -- PRODUCTS_ORDER
 
-INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (1, 'Bisturí', 50.99, 9.79, 2, 4, 1);
-INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (2, 'Guante', 5.95, 0.97, 17, 5, 1);
-INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (3, 'Jeringuilla', 9.90, 1.93, 9, 7, 1);
+INSERT INTO product_order(id, price, tax, amount, product_id, order_id) VALUES (1, 50.99, 9.79, 2, 4, 1);
+INSERT INTO product_order(id, price, tax, amount, product_id, order_id) VALUES (2, 5.95, 0.97, 17, 5, 1);
+INSERT INTO product_order(id, price, tax, amount, product_id, order_id) VALUES (3, 9.90, 1.93, 9, 7, 1);
 
-INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (4, 'Bisturí', 50.99, 9.79, 5, 4, 2);
-INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (5, 'Guante', 5.95, 0.97, 40, 5, 2);
+INSERT INTO product_order(id, price, tax, amount, product_id, order_id) VALUES (4, 50.99, 9.79, 5, 4, 2);
+INSERT INTO product_order(id, price, tax, amount, product_id, order_id) VALUES (5, 5.95, 0.97, 40, 5, 2);
 
-INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (6, 'Jeringuilla', 9.90, 1.93, 25, 7, 3);
-INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (7, 'Bisturí', 50.99, 9.79, 10, 4, 3);
-INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (8, 'Guante', 5.95, 0.97, 80, 5, 3);
+INSERT INTO product_order(id, price, tax, amount, product_id, order_id) VALUES (6, 9.90, 1.93, 25, 7, 3);
+INSERT INTO product_order(id, price, tax, amount, product_id, order_id) VALUES (7, 50.99, 9.79, 10, 4, 3);
+INSERT INTO product_order(id, price, tax, amount, product_id, order_id) VALUES (8, 5.95, 0.97, 80, 5, 3);
 
-INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (9, 'Jeringuilla', 9.90, 1.93, 15, 7, 4);
+INSERT INTO product_order(id, price, tax, amount, product_id, order_id) VALUES (9, 9.90, 1.93, 15, 7, 4);
 
-INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (10, 'Jeringuilla', 12.90, 2.68, 5, 8, 5);
-INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (11, 'Bisturís', 44.95, 9.32, 15, 9, 5);
+INSERT INTO product_order(id, price, tax, amount, product_id, order_id) VALUES (10, 12.90, 2.68, 5, 8, 5);
+INSERT INTO product_order(id, price, tax, amount, product_id, order_id) VALUES (11, 44.95, 9.32, 15, 9, 5);
 
-INSERT INTO product_order(id, name, price, tax, amount, product_id, order_id) VALUES (12, 'Bisturís', 44.95, 9.32, 18, 9, 6);
+INSERT INTO product_order(id, price, tax, amount, product_id, order_id) VALUES (12, 44.95, 9.32, 18, 9, 6);
 
 -- CLINICS
 

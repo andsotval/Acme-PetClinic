@@ -1,7 +1,10 @@
 
 package org.springframework.samples.petclinic.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.samples.petclinic.model.BaseEntity;
@@ -26,12 +29,20 @@ public abstract class PersonService<T extends BaseEntity> extends BaseService<T>
 	public T findPersonByUsername(String username) {
 		String sql = "SELECT * FROM " + clazz.getSimpleName()
 			+ " WHERE USER_ID = (SELECT ID FROM USER WHERE USERNAME = ?)";
-
-		T entity = jdbcTemplate.queryForObject(sql, new Object[] {
-			username
-		}, BeanPropertyRowMapper.newInstance(clazz));
 		
-		return findEntityById(entity.getId()).get();
+		T entity = null;
+		
+		try {
+			entity = jdbcTemplate.queryForObject(sql, new Object[] {
+					username
+				}, BeanPropertyRowMapper.newInstance(clazz));	
+		} catch(DataAccessException e){
+			return null;
+		}
+		
+		Optional<T> person = findEntityById(entity.getId());
+		
+		return person.isPresent() ? person.get():null;
 	}
 
 }
