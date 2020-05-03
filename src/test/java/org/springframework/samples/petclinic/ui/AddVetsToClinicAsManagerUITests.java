@@ -31,8 +31,8 @@ public class AddVetsToClinicAsManagerUITests {
 	@BeforeEach
 	public void setUp() throws Exception {
 
-		String pathToGeckoDriver = "C:\\Users\\migue\\Desktop\\Universidad\\DP";
-		System.setProperty("webdriver.gecko.driver", pathToGeckoDriver + "\\geckodriver.exe");
+		//		String pathToGeckoDriver = "C:\\Users\\migue\\Desktop\\Universidad\\DP";
+		//		System.setProperty("webdriver.gecko.driver", pathToGeckoDriver + "\\geckodriver.exe");
 
 		driver = new FirefoxDriver();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
