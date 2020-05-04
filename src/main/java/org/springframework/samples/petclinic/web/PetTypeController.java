@@ -1,6 +1,8 @@
 
 package org.springframework.samples.petclinic.web;
 
+import java.util.Collection;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,7 @@ public class PetTypeController {
 
 	@GetMapping(path = "/listAvailable")
 	public String listAvailable(ModelMap model) {
-		Iterable<PetType> petTypeList = petTypeService.findAvailable();
+		Collection<PetType> petTypeList = petTypeService.findAvailable();
 		model.addAttribute("pettypes", petTypeList);
 		model.addAttribute("available", true);
 
@@ -37,7 +39,7 @@ public class PetTypeController {
 
 	@GetMapping(path = "/listNotAvailable")
 	public String listNotAvailable(ModelMap model) {
-		Iterable<PetType> petTypeList = petTypeService.findNotAvailable();
+		Collection<PetType> petTypeList = petTypeService.findNotAvailable();
 		model.addAttribute("pettypes", petTypeList);
 		model.addAttribute("available", false);
 

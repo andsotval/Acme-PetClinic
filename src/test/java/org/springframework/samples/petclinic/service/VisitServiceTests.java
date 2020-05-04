@@ -146,7 +146,7 @@ class VisitServiceTests {
 	@Test
 	public void testSaveVisit() {
 		Collection<Visit> collection = (Collection<Visit>) service.findAllEntities();
-		assertEquals(collection.size(), 11);
+		int size = collection.size();
 
 		LocalDateTime now = LocalDateTime.now();
 		Visit entity = new Visit();
@@ -155,7 +155,7 @@ class VisitServiceTests {
 		service.saveEntity(entity);
 
 		collection = (Collection<Visit>) service.findAllEntities();
-		assertEquals(collection.size(), 12);
+		assertEquals(collection.size(), size+1);
 
 		Optional<Visit> newEntity = service.findEntityById(12);
 		assertTrue(newEntity.isPresent());
@@ -165,9 +165,6 @@ class VisitServiceTests {
 
 	@Test
 	public void testSaveVisitWithoutDescription() {
-		Collection<Visit> collection = (Collection<Visit>) service.findAllEntities();
-		assertEquals(collection.size(), 11);
-
 		LocalDateTime now = LocalDateTime.now();
 		Visit entity = new Visit();
 		entity.setDateTime(now);
@@ -180,11 +177,10 @@ class VisitServiceTests {
 		while (it.hasNext()) {
 			ConstraintViolation<Visit> violation = it.next();
 			String message = violation.getMessage();
-			System.out.println(message);
 
 			switch (violation.getPropertyPath().toString()) {
 			case "description":
-				assertTrue(message.equals("no puede estar vacío"));
+				assertTrue(message.equals("must not be empty") || message.equals("no puede estar vacío") );
 				break;
 			default:
 				break;
