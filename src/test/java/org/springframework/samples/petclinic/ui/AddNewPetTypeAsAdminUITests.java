@@ -19,7 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AddNewPetAsOwnerNegativeUITest {
+public class AddNewPetTypeAsAdminUITests {
 
 	@LocalServerPort
 	private int				port;
@@ -32,43 +32,57 @@ public class AddNewPetAsOwnerNegativeUITest {
 	public void setUp() throws Exception {
 		String pathToGeckoDriver = "C:\\Users\\96jos\\Documents";
 		System.setProperty("webdriver.gecko.driver", pathToGeckoDriver + "\\geckodriver.exe");
+
 		driver = new FirefoxDriver();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 	}
 
 	@Test
-	public void testUntitledTestCase() throws Exception {
+	public void testAddNewPeyTypePositiveTestCase() throws Exception {
+		driver.get("http://localhost:" + port);
+
+		LogInAsAdmin();
+
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul[2]/li/a/strong")).click();
+		assertEquals("admin", driver.findElement(By.xpath("//div[@id='main-navbar']/ul[2]/li/ul/li/div/div/div[2]/p/strong")).getText());
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[2]/a/span[2]")).click();
+		assertEquals("Pet Type", driver.findElement(By.xpath("//h2")).getText());
+		driver.findElement(By.linkText("Create a new Pet type")).click();
+		driver.findElement(By.id("name")).click();
+		driver.findElement(By.id("name")).clear();
+		driver.findElement(By.id("name")).sendKeys("conejo");
+		driver.findElement(By.xpath("//button[@type='submit']")).click();
+		assertEquals("conejo", driver.findElement(By.xpath("//table[@id='pettypeTable']/tbody/tr[7]/td")).getText());
+
+		LogOut();
+
+	}
+
+	@Test
+	public void testAddNewPetTypeFormErrorsNegativeTestCase() throws Exception {
+		driver.get("http://localhost:" + port);
+
+		LogInAsAdmin();
+
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li/a/span[2]")).click();
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[2]/a/span[2]")).click();
+		driver.findElement(By.linkText("Create a new Pet type")).click();
+		driver.findElement(By.xpath("//button[@type='submit']")).click();
+		assertEquals("el tamaño tiene que estar entre 3 y 50", driver.findElement(By.xpath("//form[@id='create-pettype-form']/div/div/span[2]")).getText());
+
+		LogOut();
+
+	}
+
+	@Test
+	public void testAddNeePetTypeAsOwnerNegativeTestCase() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsOwner();
 
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li/a/span[2]")).click();
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[2]/a/span[2]")).click();
-		driver.findElement(By.xpath("//body/div")).click();
-		driver.findElement(By.linkText("Add new Pet")).click();
-		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		assertEquals("el tamaño tiene que estar entre 3 y 50", driver.findElement(By.xpath("//form[@id='pet']/div/div[2]/div/span[2]")).getText());
-		driver.findElement(By.id("birthDate")).click();
-		driver.findElement(By.id("birthDate")).click();
-		driver.findElement(By.id("birthDate")).clear();
-		driver.findElement(By.id("birthDate")).sendKeys("2100/04/04");
-		driver.findElement(By.xpath("//body/div")).click();
-		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		assertEquals("the birth date cannot be in future", driver.findElement(By.xpath("//form[@id='pet']/div/div[3]/div/span[2]")).getText());
-		driver.findElement(By.id("birthDate")).click();
-		driver.findElement(By.id("birthDate")).clear();
-		driver.findElement(By.id("birthDate")).sendKeys("2020/04/04");
-		driver.findElement(By.id("name")).click();
-		driver.findElement(By.id("name")).clear();
-		driver.findElement(By.id("name")).sendKeys("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		assertEquals("el tamaño tiene que estar entre 3 y 50", driver.findElement(By.xpath("//form[@id='pet']/div/div[2]/div/span[2]")).getText());
-		driver.findElement(By.id("name")).clear();
-		driver.findElement(By.id("name")).sendKeys("");
-		driver.findElement(By.id("name")).clear();
-		driver.findElement(By.id("name")).sendKeys("Wiskers");
-		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		assertEquals("Wiskers", driver.findElement(By.linkText("Wiskers")).getText());
+		driver.get("http://localhost:" + port + "/pettype/new");
+		assertEquals("Whitelabel Error Page", driver.findElement(By.xpath("//h1")).getText());
+		driver.get("http://localhost:" + port);
 
 		LogOut();
 
@@ -82,6 +96,18 @@ public class AddNewPetAsOwnerNegativeUITest {
 			fail(verificationErrorString);
 	}
 
+	private WebDriver LogInAsAdmin() {
+		driver.findElement(By.xpath("//a[contains(text(),'Login')]")).click();
+		driver.findElement(By.id("username")).click();
+		driver.findElement(By.id("username")).clear();
+		driver.findElement(By.id("username")).sendKeys("admin");
+		driver.findElement(By.id("password")).click();
+		driver.findElement(By.id("password")).clear();
+		driver.findElement(By.id("password")).sendKeys("admin");
+		driver.findElement(By.xpath("//button[@type='submit']")).click();
+		return driver;
+	}
+
 	private WebDriver LogInAsOwner() {
 		driver.findElement(By.xpath("//a[contains(text(),'Login')]")).click();
 		driver.findElement(By.id("username")).click();
@@ -92,7 +118,6 @@ public class AddNewPetAsOwnerNegativeUITest {
 		driver.findElement(By.id("password")).sendKeys("owner2");
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
 		return driver;
-
 	}
 
 	private WebDriver LogOut() {

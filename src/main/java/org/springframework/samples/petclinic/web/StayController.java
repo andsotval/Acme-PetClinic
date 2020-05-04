@@ -167,7 +167,7 @@ public class StayController {
 			modelMap.addAttribute("stay", entity);
 			result.rejectValue("finishDate", "finishDateNotNull", "is required");
 			i++;
-		} else {
+		} else if (entity.getStartDate() != null) {
 			if (entity.getFinishDate().isAfter(entity.getStartDate().plusDays(7L))) {
 				modelMap.addAttribute("stay", entity);
 				result.rejectValue("finishDate", "finishDateMinimumOneWeek", "Stays cannot last longer than one week");
