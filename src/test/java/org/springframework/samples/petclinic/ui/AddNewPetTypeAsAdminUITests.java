@@ -4,38 +4,12 @@ package org.springframework.samples.petclinic.ui;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.util.concurrent.TimeUnit;
-
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AddNewPetTypeAsAdminUITests {
-
-	@LocalServerPort
-	private int				port;
-
-	private WebDriver		driver;
-	private StringBuffer	verificationErrors	= new StringBuffer();
-
-
-	@BeforeEach
-	public void setUp() throws Exception {
-		String pathToGeckoDriver = "C:\\Users\\96jos\\Documents";
-		System.setProperty("webdriver.gecko.driver", pathToGeckoDriver + "\\geckodriver.exe");
-
-		driver = new FirefoxDriver();
-		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-	}
+public class AddNewPetTypeAsAdminUITests extends AbstractUITests {
 
 	@Test
 	public void testAddNewPeyTypePositiveTestCase() throws Exception {
@@ -44,7 +18,8 @@ public class AddNewPetTypeAsAdminUITests {
 		LogInAsAdmin();
 
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul[2]/li/a/strong")).click();
-		assertEquals("admin", driver.findElement(By.xpath("//div[@id='main-navbar']/ul[2]/li/ul/li/div/div/div[2]/p/strong")).getText());
+		assertEquals("admin",
+			driver.findElement(By.xpath("//div[@id='main-navbar']/ul[2]/li/ul/li/div/div/div[2]/p/strong")).getText());
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[2]/a/span[2]")).click();
 		assertEquals("Pet Type", driver.findElement(By.xpath("//h2")).getText());
 		driver.findElement(By.linkText("Create a new Pet type")).click();
@@ -68,7 +43,8 @@ public class AddNewPetTypeAsAdminUITests {
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[2]/a/span[2]")).click();
 		driver.findElement(By.linkText("Create a new Pet type")).click();
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		assertEquals("el tamaño tiene que estar entre 3 y 50", driver.findElement(By.xpath("//form[@id='create-pettype-form']/div/div/span[2]")).getText());
+		assertEquals("el tamaño tiene que estar entre 3 y 50",
+			driver.findElement(By.xpath("//form[@id='create-pettype-form']/div/div/span[2]")).getText());
 
 		LogOut();
 

@@ -34,53 +34,50 @@ class ProviderControllerE2ETests {
 	private MockMvc				mockMvc;
 
 
-	
-
-	@WithMockUser(value = "pepito",authorities = {
-			"manager"
-		})
+	@WithMockUser(value = "manager1", authorities = {
+		"manager"
+	})
 	@Test
 	void testListAvailable() throws Exception {
-		this.mockMvc.perform(MockMvcRequestBuilders.get("/providers/listAvailable")).andExpect(MockMvcResultMatchers.status().isOk())
+		mockMvc.perform(MockMvcRequestBuilders.get("/providers/listAvailable"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.view().name("providers/providersList"));
 	}
-	
-	@WithMockUser(value = "James",authorities = {
-			"manager"
-		})
-	@Test
-	void testListAvailableNegative() throws Exception {
-		mockMvc.perform(get("/providers/listAvailable")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
-	}
-	
-	@WithMockUser(value = "pepito", authorities = {
-			"manager"
-		})
+
+	@WithMockUser(value = "manager1", authorities = {
+		"manager"
+	})
 	@Test
 	void testInitAddProviderToManager() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/providers/addProvider/{providerId}",TEST_PROVIDER1_ID)).andExpect(status().isFound()).
-			andExpect(MockMvcResultMatchers.view().name("redirect:/providers/listAvailable"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/providers/addProvider/{providerId}", TEST_PROVIDER1_ID))
+			.andExpect(status().isFound())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/providers/listAvailable"));
 	}
-	
-	@WithMockUser(value = "James", authorities = {
-			"manager"
-		})
+
+	@WithMockUser(value = "manager1", authorities = {
+		"manager"
+	})
 	@Test
 	void testInitAddProviderToManagerNegative() throws Exception {
-		mockMvc.perform(get("/providers/addProvider/{providerId}",TEST_PROVIDER1_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(get("/providers/addProvider/{providerId}", TEST_PROVIDER1_ID))
+			.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/providers/listAvailable"));
 	}
-	
-	@WithMockUser(value = "pepito",authorities = {
-			"manager"
-		})
+
+	@WithMockUser(value = "manager1", authorities = {
+		"manager"
+	})
 	@Test
 	void testListProductsByProvider() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/providers/listProductsByProvider/{providerId}",TEST_PROVIDER1_ID)).andExpect(status().isOk())
-			.andExpect(MockMvcResultMatchers.view().name("providers/providerProductsList"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/providers/listProductsByProvider/{providerId}", TEST_PROVIDER1_ID))
+			.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.view().name("providers/providerProductsList"));
 	}
-	@WithMockUser(value = "James")
+
+	@WithMockUser(value = "manager1", authorities = {
+		"manager"
+	})
 	@Test
 	void testListProductsByProviderNegative() throws Exception {
-		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}",TEST_PROVIDER1_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}", 99)).andExpect(status().isOk())
+			.andExpect(view().name("exception"));
 	}
 }
