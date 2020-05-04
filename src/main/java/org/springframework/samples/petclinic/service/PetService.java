@@ -16,8 +16,6 @@
 
 package org.springframework.samples.petclinic.service;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.repository.BaseRepository;
@@ -44,10 +42,6 @@ public class PetService extends BaseService<Pet> {
 
 	public Iterable<Pet> findPetsByOwnerId(Integer id) {
 		return petRepository.findPetsByOwnerId(id);
-	}
-
-	public Optional<Pet> findPetById(Integer id) {
-		return petRepository.findById(id);
 	}
 
 }

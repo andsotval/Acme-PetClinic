@@ -316,7 +316,7 @@
 						<artifactId>maven-surefire-plugin</artifactId>
 						<configuration>
 							<excludes>
-								<exclude>**/*UITest.java</exclude>
+								<exclude>**/*UITests.java</exclude>
 							</excludes>
 						</configuration>
 					</plugin>
@@ -339,7 +339,7 @@
 						<artifactId>maven-surefire-plugin</artifactId>
 						<configuration>
 							<excludes>
-								<exclude>**/*UITest.java</exclude>
+								<exclude>**/*UITests.java</exclude>
 							</excludes>
 						</configuration>
 					</plugin>

@@ -19,15 +19,15 @@ public class ProductOrderService extends BaseService<ProductOrder> {
 
 	private ProductOrderRepository	productOrderRepository;
 
-	private EntityManager			entityManager;
+	private EntityManager			em;
 
 
 	@Autowired
 	public ProductOrderService(BaseRepository<ProductOrder> repository, ProductOrderRepository productOrderRepository,
-		EntityManager entityManager) {
+		EntityManager em) {
 		super(repository);
 		this.productOrderRepository = productOrderRepository;
-		this.entityManager = entityManager;
+		this.em = em;
 	}
 
 	@Transactional(readOnly = true)
@@ -37,10 +37,11 @@ public class ProductOrderService extends BaseService<ProductOrder> {
 
 	@Transactional(readOnly = true)
 	public Provider findProviderByOrder(int orderId) {
-		Query query = entityManager.createNamedQuery("ProductOrder.findProvider");
+		Query query = em.createNamedQuery("ProductOrder.findProvider");
 		query.setMaxResults(1);
 		query.setParameter(1, orderId);
-		return (Provider) query.getSingleResult();
+		Provider provider = (Provider) query.getSingleResult();
+		return provider;
 	}
 
 }

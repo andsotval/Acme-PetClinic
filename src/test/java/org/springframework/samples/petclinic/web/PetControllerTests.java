@@ -262,9 +262,16 @@ public class PetControllerTests {
 
 	@WithMockUser(value = "George")
 	@Test
-	void testCancelVisit() throws Exception {
+	void testDeleteVisit() throws Exception {
 		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID)).andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/pets/listMyPets"));
+	}
+
+	@WithMockUser(value = "George")
+	@Test
+	void testDeletePetNotPresent() throws Exception {
+		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID_WRONG)).andExpect(status().isOk())
+			.andExpect(view().name("exception"));
 	}
 
 	@WithMockUser(value = "George")
@@ -277,10 +284,26 @@ public class PetControllerTests {
 
 	@WithMockUser(value = "George")
 	@Test
+	void testNewVisitWrongPetId() throws Exception {
+		mockMvc.perform(get("/pets/newVisit/{petId}", TEST_PET_ID_WRONG)).andExpect(status().isOk())
+			.andExpect(model().attributeDoesNotExist("clinicId")).andExpect(model().attributeDoesNotExist("visit"))
+			.andExpect(model().attributeDoesNotExist("visits")).andExpect(view().name("exception"));
+	}
+
+	@WithMockUser(value = "George")
+	@Test
 	void testNewStay() throws Exception {
 		mockMvc.perform(get("/pets/newStay/{petId}", TEST_PET_ID)).andExpect(status().isOk())
 			.andExpect(model().attributeExists("clinicId")).andExpect(model().attributeExists("stay"))
 			.andExpect(model().attributeExists("stays")).andExpect(view().name("stays/createOrUpdateStayForm"));
+	}
+
+	@WithMockUser(value = "George")
+	@Test
+	void testNewStayWrongPetId() throws Exception {
+		mockMvc.perform(get("/pets/newStay/{petId}", TEST_PET_ID_WRONG)).andExpect(status().isOk())
+			.andExpect(model().attributeDoesNotExist("clinicId")).andExpect(model().attributeDoesNotExist("stay"))
+			.andExpect(model().attributeDoesNotExist("stays")).andExpect(view().name("exception"));
 	}
 
 	@WithMockUser(value = "George")

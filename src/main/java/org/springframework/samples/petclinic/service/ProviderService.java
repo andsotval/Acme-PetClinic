@@ -28,7 +28,7 @@ public class ProviderService extends PersonService<Provider> {
 	}
 
 	@Transactional(readOnly = true)
-	public Collection<Provider> findProvidersByManagerId(final int managerId) {
+	public Collection<Provider> findProvidersByManagerId(int managerId) {
 		return providerRepository.findProvidersByManagerId(managerId);
 	}
 
