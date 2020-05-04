@@ -50,11 +50,6 @@ public class OrderControllerTests {
 
 	private static final int	TEST_PRODUCT_ID_2	= 2;
 
-	private static Product		product1;
-	private static Product		product2;
-
-	private static Order		order;
-
 	@Autowired
 	private MockMvc				mockMvc;
 
@@ -165,8 +160,6 @@ public class OrderControllerTests {
 		product1.setTax(21.0);
 		product1.setProvider(provider1);
 
-		OrderControllerTests.product1 = product1;
-
 		Product product2 = new Product();
 		product2.setId(TEST_PRODUCT_ID_2);
 		product2.setAvailable(true);
@@ -174,8 +167,6 @@ public class OrderControllerTests {
 		product2.setPrice(5.5);
 		product1.setTax(21.0);
 		product2.setProvider(provider1);
-
-		OrderControllerTests.product2 = product2;
 
 		BDDMockito.given(productService.findProductsAvailableByProviderId(TEST_PROVIDER_ID))
 			.willReturn(Lists.newArrayList(product1, product2));
@@ -190,8 +181,6 @@ public class OrderControllerTests {
 		order.setIsAccepted(false);
 		order.setManager(manager1);
 		//		order.setProduct(setProducts);
-
-		OrderControllerTests.order = order;
 
 		Optional<Order> optionalOrder = Optional.of(order);
 

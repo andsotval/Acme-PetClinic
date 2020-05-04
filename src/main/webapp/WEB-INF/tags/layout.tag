@@ -8,7 +8,7 @@
 <html style="height: 100%;">
 <petclinic:htmlHeader/>
 
-<body style="height: 84%;">
+<body style="height: 100%;">
 <petclinic:bodyHeader menuName="${pageName}"/>
 
 <div style="height: 100%;" class="container-fluid">
