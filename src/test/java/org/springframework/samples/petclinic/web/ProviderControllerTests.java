@@ -1,6 +1,10 @@
 
 package org.springframework.samples.petclinic.web;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
 import java.util.Optional;
 
 import org.assertj.core.util.Lists;
@@ -54,31 +58,7 @@ class ProviderControllerTests {
 
 	@BeforeEach
 	void setup() {
-
-		Provider james = new Provider();
-		james.setId(ProviderControllerTests.TEST_PROVIDER1_ID);
-		james.setFirstName("James");
-		james.setLastName("Carter");
-		james.setAddress("110 W. Liberty St.");
-		james.setCity("Madison");
-		james.setTelephone("6085551023");
-
-		Optional<Provider> opt = Optional.of(james);
-		BDDMockito.given(this.providerService.findEntityById(ProviderControllerTests.TEST_PROVIDER1_ID)).willReturn(opt);
-
-		Provider helen = new Provider();
-		helen.setFirstName("Helen");
-		helen.setLastName("Leary");
-		helen.setAddress("110 W. Liberty St.");
-		helen.setCity("Madison");
-		helen.setTelephone("6085551023");
-		helen.setId(ProviderControllerTests.TEST_PROVIDER2_ID);
-
-		Optional<Provider> opt2 = Optional.of(helen);
-		BDDMockito.given(this.providerService.findEntityById(ProviderControllerTests.TEST_PROVIDER2_ID)).willReturn(opt2);
-
-		BDDMockito.given(this.providerService.findAvailableProviders()).willReturn(Lists.newArrayList(james, helen));
-
+		
 		User user = new User();
 		user.setEnabled(true);
 		user.setUsername("pepito");
@@ -98,47 +78,84 @@ class ProviderControllerTests {
 
 		BDDMockito.given(this.managerService.findPersonByUsername("pepito")).willReturn(pepe);
 
+		Provider james = new Provider();
+		james.setId(ProviderControllerTests.TEST_PROVIDER1_ID);
+		james.setFirstName("James");
+		james.setLastName("Carter");
+		james.setAddress("110 W. Liberty St.");
+		james.setCity("Madison");
+		james.setTelephone("6085551023");
+		james.setManager(pepe);
+		Optional<Provider> opt = Optional.of(james);
+		BDDMockito.given(this.providerService.findEntityById(ProviderControllerTests.TEST_PROVIDER1_ID)).willReturn(opt);
+
+		Provider helen = new Provider();
+		helen.setFirstName("Helen");
+		helen.setLastName("Leary");
+		helen.setAddress("110 W. Liberty St.");
+		helen.setCity("Madison");
+		helen.setTelephone("6085551023");
+		helen.setId(ProviderControllerTests.TEST_PROVIDER2_ID);
+		
+
+		Optional<Provider> opt2 = Optional.of(helen);
+		BDDMockito.given(this.providerService.findEntityById(ProviderControllerTests.TEST_PROVIDER2_ID)).willReturn(opt2);
+
+		BDDMockito.given(this.providerService.findAvailableProviders()).willReturn(Lists.newArrayList(james, helen));
+
+		
+
 	}
 
-	@WithMockUser(value = "pepito")
-	@Test
-	void testShowProvidersAvailable() throws Exception {
-		this.mockMvc.perform(MockMvcRequestBuilders.get("/providers/listAvailable")).andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.view().name("providers/providersList"));
-	}
-
-	@WithMockUser(value = "pepito", authorities = {
-		"manager"
-	})
-	@Test
-	void testDoNotAcceptRepeatedProvider() throws Exception {
-		this.mockMvc.perform(MockMvcRequestBuilders.get("/providers/addProvider/{providerId}", ProviderControllerTests.TEST_PROVIDER2_ID))/* .andExpect(MockMvcResultMatchers.model().attributeExists("message")) */
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/providers/listAvailable"));
-	}
-
-	@WithMockUser(value = "pepito", authorities = {
-		"manager"
-	})
-	@Test
-	void testAcceptVet() throws Exception {
-		this.mockMvc.perform(MockMvcRequestBuilders.get("/providers/addProvider/{providerId}", ProviderControllerTests.TEST_PROVIDER1_ID)).andExpect(MockMvcResultMatchers.status().isFound())
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/providers/listAvailable"));
-	}
-	
-	@WithMockUser(value = "pepito", authorities = {
+	@WithMockUser(value = "pepito",authorities = {
 			"manager"
 		})
 	@Test
-	void testInitAddProviderToManager() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/providers/addProvider/{providerId}",TEST_PROVIDER1_ID))
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/providers/listAvailable"));
+	void testListAvailable() throws Exception {
+		this.mockMvc.perform(MockMvcRequestBuilders.get("/providers/listAvailable"))
+		.andExpect(MockMvcResultMatchers.status().isOk())
+		.andExpect(MockMvcResultMatchers.view().name("providers/providersList"));
+	}
+	
+	@WithMockUser(value = "provider")
+	@Test
+	void testListAvailableNegative() throws Exception {
+		mockMvc.perform(get("/providers/listAvailable"))
+		.andExpect(status().is3xxRedirection())
+		.andExpect(view().name("redirect:/oups"));
 	}
 	
 	@WithMockUser(value = "pepito")
 	@Test
+	void testInitAddProviderToManager() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/providers/addProvider/{providerId}",TEST_PROVIDER1_ID))
+		.andExpect(status().isFound())
+		.andExpect(MockMvcResultMatchers.view().name("redirect:/providers/listAvailable"));
+	}
+	
+	@WithMockUser(value = "provider")
+	@Test
+	void testInitAddProviderToManagerNegative() throws Exception {
+		mockMvc.perform(get("/providers/addProvider/{providerId}",TEST_PROVIDER1_ID))
+		.andExpect(status().is3xxRedirection())
+		.andExpect(view().name("redirect:/oups"));
+	}
+	
+	@WithMockUser(value = "pepito",authorities = {
+			"manager"
+		})
+	@Test
 	void testListProductsByProvider() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/providers/listProductsByProvider/{providerId}",TEST_PROVIDER1_ID))
-			.andExpect(MockMvcResultMatchers.view().name("providers/providerProductsList"));
+		.andExpect(status().isOk())
+		.andExpect(MockMvcResultMatchers.model().attributeExists("products"))
+        .andExpect(MockMvcResultMatchers.view().name("providers/providerProductsList"));
 	}
-
+	@WithMockUser(value = "provider")
+	@Test
+	void testListProductsByProviderNegative() throws Exception {
+		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}",TEST_PROVIDER2_ID))
+		.andExpect(status().is3xxRedirection())
+		.andExpect(view().name("redirect:/oups"));
+	}
 }
