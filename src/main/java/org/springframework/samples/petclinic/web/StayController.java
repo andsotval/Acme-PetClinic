@@ -121,11 +121,24 @@ public class StayController {
 		return "";
 	}
 
+	//TODO: Hay que preguntar primero si puede acceder a esta vista algun usuario que no sea Owner (Vet por ejemplo)
 	@GetMapping(path = "/changeDate/{stayId}")
 	public String changeDateStay(@PathVariable("stayId") final int stayId, final ModelMap modelMap) {
 		Stay stay = stayService.findEntityById(stayId).get();
+
+		modelMap.addAttribute("stay", stay);
+
 		modelMap.addAttribute("stay", stay);
 		return StayController.VIEWS_STAY_CREATE_OR_UPDATE_FORM;
+
+		//		Owner ownerInSession = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		//		Stay stay = stayService.findEntityById(stayId).get();
+		//		if(stay.getPet().getOwner().getId() == ownerInSession.getId()) {
+		//			modelMap.addAttribute("stay", stay);
+		//			return StayController.VIEWS_STAY_CREATE_OR_UPDATE_FORM;
+		//		}else {
+		//			return "redirect:/oups";
+		//		}
 	}
 
 	@PostMapping(path = "/save/{stayId}")
