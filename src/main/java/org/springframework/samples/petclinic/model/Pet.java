@@ -1,8 +1,7 @@
 /**
  * DP2 - Grupo 8
  * LAB F1.33
- * Date: 03-mar-2020
- * User: carlo
+ * Date: 05-may-2020
  */
 
 package org.springframework.samples.petclinic.model;
@@ -22,13 +21,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * Simple business object representing a pet.
- *
- * @author Ken Krebs
- * @author Juergen Hoeller
- * @author Sam Brannen
- */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -47,34 +39,5 @@ public class Pet extends NamedEntity {
 	@ManyToOne
 	@JoinColumn(name = "owner_id", nullable = false)
 	private Owner		owner;
-
-	//@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.LAZY)
-	//private Set<Stay>	stay;
-
-	//@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.LAZY)
-	//private Set<Visit>	visits;
-	//
-	//
-	//	protected Set<Visit> getVisitsInternal() {
-	//		if (this.visits == null) {
-	//			this.visits = new HashSet<>();
-	//		}
-	//		return this.visits;
-	//	}
-	//
-	//	protected void setVisitsInternal(final Set<Visit> visits) {
-	//		this.visits = visits;
-	//	}
-	//
-	//	public List<Visit> getVisits() {
-	//		List<Visit> sortedVisits = new ArrayList<>(this.getVisitsInternal());
-	//		PropertyComparator.sort(sortedVisits, new MutableSortDefinition("date", false, false));
-	//		return Collections.unmodifiableList(sortedVisits);
-	//	}
-	//
-	//	public void addVisit(final Visit visit) {
-	//		this.getVisitsInternal().add(visit);
-	//		visit.setPet(this);
-	//	}
 
 }

@@ -1,8 +1,7 @@
 /**
  * DP2 - Grupo 8
  * LAB F1.33
- * Date: 03-mar-2020
- * User: carlo
+ * Date: 05-may-2020
  */
 
 package org.springframework.samples.petclinic.model;

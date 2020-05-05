@@ -1,8 +1,7 @@
 /**
  * DP2 - Grupo 8
  * LAB F1.33
- * Date: 03-mar-2020
- * User: carlo
+ * Date: 05-may-2020
  */
 
 package org.springframework.samples.petclinic.model;
@@ -20,11 +19,6 @@ import org.springframework.core.style.ToStringCreator;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * Simple JavaBean domain object representing an person.
- *
- * @author Ken Krebs
- */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @MappedSuperclass
@@ -37,10 +31,6 @@ public class Person extends BaseEntity {
 	@Column(name = "last_name")
 	@NotEmpty
 	protected String	lastName;
-
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "user_id", referencedColumnName = "id")
-	private User		user;
 
 	@Column(name = "address")
 	@NotEmpty
@@ -60,30 +50,10 @@ public class Person extends BaseEntity {
 	@NotEmpty
 	private String		mail;
 
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "user_id", referencedColumnName = "id")
+	private User		user;
 
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(final String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(final String lastName) {
-		this.lastName = lastName;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(final User user) {
-		this.user = user;
-	}
 
 	@Override
 	public String toString() {

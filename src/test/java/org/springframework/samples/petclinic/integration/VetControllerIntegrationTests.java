@@ -3,13 +3,11 @@ package org.springframework.samples.petclinic.integration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.samples.petclinic.model.Vets;
 import org.springframework.samples.petclinic.service.AuthoritiesService;
 import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.samples.petclinic.service.ManagerService;
@@ -39,21 +37,6 @@ public class VetControllerIntegrationTests {
 	private AuthoritiesService	authoritiesService;
 
 
-	//--------------------------------------------------
-	//-------------Métodos ya implementados-------------
-	//--------------------------------------------------
-	@WithMockUser(username = "manager1", authorities = {
-		"manager"
-	})
-	@Test
-	public void testShowVetList() {
-		ModelMap modelMap = new ModelMap();
-		String view = vetController.showVetList(modelMap);
-
-		assertNotNull(modelMap.get("vets"));
-		assertEquals("vets/vetList", view);
-	}
-
 	//	@WithMockUser(username = "provider1", authorities = {
 	//		"provider"
 	//	})
@@ -63,20 +46,6 @@ public class VetControllerIntegrationTests {
 	//		String view = vetController.showVetList(modelMap);
 	//
 	//	}
-
-	@WithMockUser(username = "manager1", authorities = {
-		"manager"
-	})
-	@Test
-	public void testResourcesVetList() {
-		Vets vets = vetController.showResourcesVetList();
-
-		assertNotNull(vets);
-		assertTrue(vets.getVetList().size() != 0);
-	}
-	//--------------------------------------------------
-	//--------------------------------------------------
-	//--------------------------------------------------
 
 	@WithMockUser(username = "manager1", authorities = {
 		"manager"

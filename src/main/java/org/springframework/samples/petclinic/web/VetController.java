@@ -33,7 +33,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @author Juergen Hoeller
@@ -68,18 +67,6 @@ public class VetController {
 		vets.getVetList().addAll((Collection<Vet>) vetService.findAllEntities());
 		model.put("vets", vets);
 		return "vets/vetList";
-	}
-
-	@GetMapping(value = {
-		"/vets.xml"
-	})
-	public @ResponseBody Vets showResourcesVetList() {
-		// Here we are returning an object of type 'Vets' rather than a collection of Vet
-		// objects
-		// so it is simpler for JSon/Object mapping
-		Vets vets = new Vets();
-		vets.getVetList().addAll((Collection<Vet>) vetService.findAllEntities());
-		return vets;
 	}
 
 	//este metodo devuelve la lista de vets disponibles y la de los ya registrados de la clinica
