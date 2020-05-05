@@ -4,40 +4,39 @@ package org.springframework.samples.petclinic.ui;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.util.concurrent.TimeUnit;
-
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.openqa.selenium.support.ui.Select;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AddNewPetAsOwnerNegativeUITest {
+public class AddNewPetAsOwnerUITests extends AbstractUITests {
 
-	@LocalServerPort
-	private int				port;
+	@Test
+	public void testAddNewPetPositiveTestCase() throws Exception {
+		driver.get("http://localhost:" + port);
 
-	private WebDriver		driver;
-	private StringBuffer	verificationErrors	= new StringBuffer();
+		LogInAsOwner();
 
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[2]/a/span[2]")).click();
+		driver.findElement(By.linkText("Add new Pet")).click();
+		driver.findElement(By.id("name")).click();
+		driver.findElement(By.id("name")).clear();
+		driver.findElement(By.id("name")).sendKeys("Wiskers");
+		driver.findElement(By.id("birthDate")).clear();
+		driver.findElement(By.id("birthDate")).sendKeys("2020/04/04");
+		driver.findElement(By.id("pet")).click();
+		new Select(driver.findElement(By.id("type"))).selectByVisibleText("cat");
+		driver.findElement(By.xpath("//option[@value='cat']")).click();
+		driver.findElement(By.xpath("//button[@type='submit']")).click();
+		assertEquals("Wiskers", driver.findElement(By.linkText("Wiskers")).getText());
 
-	@BeforeEach
-	public void setUp() throws Exception {
-		String pathToGeckoDriver = "C:\\Users\\96jos\\Documents";
-		System.setProperty("webdriver.gecko.driver", pathToGeckoDriver + "\\geckodriver.exe");
-		driver = new FirefoxDriver();
-		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		LogOut();
+
 	}
 
 	@Test
-	public void testUntitledTestCase() throws Exception {
+	public void testAddNewPetFormErrorsNegativeTestCase() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsOwner();
@@ -47,28 +46,54 @@ public class AddNewPetAsOwnerNegativeUITest {
 		driver.findElement(By.xpath("//body/div")).click();
 		driver.findElement(By.linkText("Add new Pet")).click();
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		assertEquals("el tamaño tiene que estar entre 3 y 50", driver.findElement(By.xpath("//form[@id='pet']/div/div[2]/div/span[2]")).getText());
+		assertEquals("el tamaño tiene que estar entre 3 y 50",
+			driver.findElement(By.xpath("//form[@id='pet']/div/div[2]/div/span[2]")).getText());
 		driver.findElement(By.id("birthDate")).click();
 		driver.findElement(By.id("birthDate")).click();
 		driver.findElement(By.id("birthDate")).clear();
 		driver.findElement(By.id("birthDate")).sendKeys("2100/04/04");
 		driver.findElement(By.xpath("//body/div")).click();
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		assertEquals("the birth date cannot be in future", driver.findElement(By.xpath("//form[@id='pet']/div/div[3]/div/span[2]")).getText());
+		assertEquals("the birth date cannot be in future",
+			driver.findElement(By.xpath("//form[@id='pet']/div/div[3]/div/span[2]")).getText());
 		driver.findElement(By.id("birthDate")).click();
 		driver.findElement(By.id("birthDate")).clear();
 		driver.findElement(By.id("birthDate")).sendKeys("2020/04/04");
 		driver.findElement(By.id("name")).click();
 		driver.findElement(By.id("name")).clear();
-		driver.findElement(By.id("name")).sendKeys("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+		driver.findElement(By.id("name")).sendKeys(
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		assertEquals("el tamaño tiene que estar entre 3 y 50", driver.findElement(By.xpath("//form[@id='pet']/div/div[2]/div/span[2]")).getText());
+		assertEquals("el tamaño tiene que estar entre 3 y 50",
+			driver.findElement(By.xpath("//form[@id='pet']/div/div[2]/div/span[2]")).getText());
 		driver.findElement(By.id("name")).clear();
 		driver.findElement(By.id("name")).sendKeys("");
 		driver.findElement(By.id("name")).clear();
 		driver.findElement(By.id("name")).sendKeys("Wiskers");
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
 		assertEquals("Wiskers", driver.findElement(By.linkText("Wiskers")).getText());
+
+		LogOut();
+
+	}
+
+	@Test
+	public void testAddNewPetToOtherUserErrorNegativeCaseTestCase() throws Exception {
+		driver.get("http://localhost:" + port);
+
+		LogInAsOwner();
+
+		driver.get("http://localhost:" + port + "/pets/new/3");
+		driver.findElement(By.id("name")).click();
+		driver.findElement(By.id("name")).clear();
+		driver.findElement(By.id("name")).sendKeys("bety");
+		driver.findElement(By.id("birthDate")).clear();
+		driver.findElement(By.id("birthDate")).sendKeys("2020/1/1");
+		driver.findElement(By.xpath("//form[@id='pet']/div[2]")).click();
+		new Select(driver.findElement(By.id("type"))).selectByVisibleText("lizard");
+		driver.findElement(By.xpath("//option[@value='lizard']")).click();
+		driver.findElement(By.xpath("//button[@type='submit']")).click();
+		assertEquals("Something happened...", driver.findElement(By.xpath("//h2")).getText());
 
 		LogOut();
 
