@@ -1,6 +1,7 @@
 
 package org.springframework.samples.petclinic.web;
 
+import java.util.Collection;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,30 +38,23 @@ public class ProviderController {
 
 	@GetMapping(value = "/listAvailable")
 	public String listAvailable(final ModelMap model) {
-		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
-		Integer managerId = manager.getId();
-
-		Iterable<Provider> availableProviderList = providerService.findAvailableProviders();
-		Iterable<Provider> addedProviderList = providerService.findProvidersByManagerId(managerId);
-		model.addAttribute("availableProviders", availableProviderList);
-		model.addAttribute("addedProviders", addedProviderList);
+		createModelListAvailable(model, "");
 		return "providers/providersList";
 	}
 
-	/* @ModelAttribute */
 	@GetMapping(value = "/addProvider/{providerId}")
 	public String initAddProviderToManager(@PathVariable("providerId") final Integer providerId, final ModelMap model) {
-
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Provider provider = providerService.findEntityById(providerId).get();
-		if (provider.getManager() == null) {
-			provider.setManager(manager);
-			providerService.saveEntity(provider);
-		} else {
-			model.addAttribute("message", "No es posible añadir un Provider que ya esta asignado a otro Manager");
-			return "redirect:/providers/listAvailable";
-		}
+		Optional<Provider> provider = providerService.findEntityById(providerId);
+		if (!provider.isPresent())
+			return createModelListAvailable(model, "We are very sorry, but the selected provider does not exist");
+		else if (provider.get().getManager() == null) {
+			provider.get().setManager(manager);
+			providerService.saveEntity(provider.get());
+		} else
+			return createModelListAvailable(model,
+				"We are very sorry, it is not possible to add a Provider that is already assigned to another Manager");
 
 		return "redirect:/providers/listAvailable";
 	}
@@ -70,11 +64,26 @@ public class ProviderController {
 		Optional<Provider> provider = providerService.findEntityById(providerId);
 
 		if (!provider.isPresent())
-			return "redirect:/providers/listAvailable";
+			return createModelListAvailable(model, "We are very sorry, but the selected provider does not exist");
+
+		else if (!providerService.findAvailableProviders().contains(provider.get()))
+			return createModelListAvailable(model,
+				"We are very sorry, but you cannot see the products of a supplier assigned to another manager");
 
 		Iterable<Product> availableProducts = productService.findProductsAvailableByProviderId(providerId);
-		model.addAttribute("provider", provider);
+		model.addAttribute("provider", provider.get());
 		model.addAttribute("products", availableProducts);
 		return "providers/providerProductsList";
+	}
+
+	private String createModelListAvailable(ModelMap model, String message) {
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+
+		Collection<Provider> availableProviderList = providerService.findAvailableProviders();
+		Collection<Provider> addedProviderList = providerService.findProvidersByManagerId(manager.getId());
+		model.addAttribute("availableProviders", availableProviderList);
+		model.addAttribute("addedProviders", addedProviderList);
+		model.addAttribute("message", message);
+		return "providers/providersList";
 	}
 }
