@@ -1,3 +1,4 @@
+
 package org.springframework.samples.petclinic.integration;
 
 import static org.junit.Assert.assertEquals;
@@ -36,8 +37,13 @@ public class ProviderControllerIntegrationTests {
 	@Autowired
 	private ProductService		productService;
 
-	@WithMockUser(username="manager1",authorities= {"manager"})
-	@SuppressWarnings({ "unchecked"})
+
+	@WithMockUser(username = "manager1", authorities = {
+		"manager"
+	})
+	@SuppressWarnings({
+		"unchecked"
+	})
 	@Test
 	public void TestListAvailable() {
 		ModelMap model = new ModelMap();
@@ -47,21 +53,16 @@ public class ProviderControllerIntegrationTests {
 
 		Collection<Provider> list = providerService.findAvailableProviders();
 
-		assertNotNull(model.get("providers"));
-		assertEquals(((Collection<Provider>) model.get("providers")).size(), list.size());
-		((Collection<Provider>) model.get("providers")).forEach(provider -> {
+		assertNotNull(model.get("availableProviders"));
+		assertEquals(((Collection<Provider>) model.get("availableProviders")).size(), list.size());
+		((Collection<Provider>) model.get("availableProviders")).forEach(provider -> {
 			list.contains(provider);
 		});
 	}
-	@WithMockUser(username="provider1",authorities= {"provider"})
-	@Test
-	public void TestListAvailableNegative() {
-		ModelMap model = new ModelMap();
-		String view = providerController.listAvailable(model);
 
-		assertEquals(view, "exception");
-	}
-	@WithMockUser(username="manager1",authorities= {"manager"})
+	@WithMockUser(username = "manager1", authorities = {
+		"manager"
+	})
 	@Test
 	public void testInitAddProviderToManager() {
 		ModelMap model = new ModelMap();
@@ -69,24 +70,31 @@ public class ProviderControllerIntegrationTests {
 
 		assertEquals(view, "redirect:/providers/listAvailable");
 
-		assertNotNull(model.get("provider"));
-		assertEquals(((Provider) model.get("provider")).getManager(), false);
+		//		assertNotNull(model.get("provider"));
+		//		assertEquals(((Provider) model.get("provider")).getManager(), false);
 	}
 
-	@WithMockUser(username="provider1",authorities= {"provider"})
+	@WithMockUser(username = "provider1", authorities = {
+		"provider"
+	})
 	@Test
 	public void testInitAddProviderToManagerNegative() {
 		ModelMap model = new ModelMap();
 		String view = providerController.initAddProviderToManager(TEST_PROVIDER_ID_1, model);
 
-		assertEquals(view, "exception");
+		assertEquals(view, "redirect:/providers/listAvailable");
+
+		assertNotNull(model.get("message"));
+		assertEquals(model.get("message"), "No es posible añadir un Provider que ya esta asignado a otro Manager");
 	}
-	@WithMockUser(username="manager1",authorities= {"manager"})
+	@WithMockUser(username = "manager1", authorities = {
+		"manager"
+	})
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testListProductsByProvider() {
 		ModelMap model = new ModelMap();
-		String view = providerController.listProductsByProvider(TEST_PROVIDER_ID_1,model);
+		String view = providerController.listProductsByProvider(TEST_PROVIDER_ID_1, model);
 
 		assertEquals(view, "providers/providerProductsList");
 
@@ -99,13 +107,15 @@ public class ProviderControllerIntegrationTests {
 		});
 
 	}
-	@WithMockUser(username="provider1",authorities= {"provider"})
+	@WithMockUser(username = "provider1", authorities = {
+		"provider"
+	})
 	@Test
 	public void testListProductsByProviderNegative() {
 		ModelMap model = new ModelMap();
 		String view = providerController.listProductsByProvider(99, model);
 
-		assertEquals(view, "exception");
+		assertEquals(view, "redirect:/providers/listAvailable");
 	}
 
 }

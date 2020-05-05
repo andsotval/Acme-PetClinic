@@ -1,6 +1,8 @@
 
 package org.springframework.samples.petclinic.web;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Manager;
 import org.springframework.samples.petclinic.model.Product;
@@ -10,7 +12,6 @@ import org.springframework.samples.petclinic.service.ProductService;
 import org.springframework.samples.petclinic.service.ProviderService;
 import org.springframework.samples.petclinic.util.SessionUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +27,8 @@ public class ProviderController {
 
 
 	@Autowired
-	public ProviderController(final ManagerService managerService, final ProviderService providerService, final ProductService productService) {
+	public ProviderController(final ManagerService managerService, final ProviderService providerService,
+		final ProductService productService) {
 		this.managerService = managerService;
 		this.providerService = providerService;
 		this.productService = productService;
@@ -47,7 +49,7 @@ public class ProviderController {
 
 	/* @ModelAttribute */
 	@GetMapping(value = "/addProvider/{providerId}")
-	public String initAddProviderToManager(@PathVariable("providerId") final Integer providerId, final Model model) {
+	public String initAddProviderToManager(@PathVariable("providerId") final Integer providerId, final ModelMap model) {
 
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 
@@ -65,7 +67,11 @@ public class ProviderController {
 
 	@GetMapping(value = "/listProductsByProvider/{providerId}")
 	public String listProductsByProvider(@PathVariable("providerId") final Integer providerId, final ModelMap model) {
-		Provider provider = providerService.findEntityById(providerId).get();
+		Optional<Provider> provider = providerService.findEntityById(providerId);
+
+		if (!provider.isPresent())
+			return "redirect:/providers/listAvailable";
+
 		Iterable<Product> availableProducts = productService.findProductsAvailableByProviderId(providerId);
 		model.addAttribute("provider", provider);
 		model.addAttribute("products", availableProducts);
