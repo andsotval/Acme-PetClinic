@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.StreamSupport;
@@ -36,6 +37,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.samples.petclinic.model.Authorities;
 import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.Owner;
@@ -193,7 +195,8 @@ class StayServiceTests {
 	@Test
 	public void testFindAllPendingByOwner() {
 		//Act & assert-------------------------------
-		stayService.findAllPendingByOwner(TEST_OWNER_ID).forEach((x) -> assertTrue(!x.getIsAccepted() && x.getPet().getOwner().getId() == TEST_OWNER_ID));
+		stayService.findAllPendingByOwner(TEST_OWNER_ID)
+			.forEach((x) -> assertTrue(!x.getIsAccepted() && x.getPet().getOwner().getId() == TEST_OWNER_ID));
 		//-------------------------------------------
 	}
 
@@ -211,7 +214,8 @@ class StayServiceTests {
 	@Test
 	public void testFindAllAcceptedByOwner() {
 		//Act & assert-------------------------------
-		stayService.findAllAcceptedByOwner(TEST_OWNER_ID).forEach((x) -> assertTrue(x.getIsAccepted() && x.getPet().getOwner().getId() == TEST_OWNER_ID));
+		stayService.findAllAcceptedByOwner(TEST_OWNER_ID)
+			.forEach((x) -> assertTrue(x.getIsAccepted() && x.getPet().getOwner().getId() == TEST_OWNER_ID));
 		//-------------------------------------------
 	}
 
@@ -288,6 +292,7 @@ class StayServiceTests {
 	}
 	@Test
 	public void saveStayNegative() {
+		LocaleContextHolder.setLocale(Locale.ENGLISH);
 		Clinic clinic = new Clinic();
 		clinic.setId(2);
 
@@ -307,7 +312,7 @@ class StayServiceTests {
 
 			switch (violation.getPropertyPath().toString()) {
 			case "description":
-				assertTrue(message.equals("no puede estar vacío"));
+				assertTrue(message.equals("must not be blank"));
 				break;
 			default:
 				break;
