@@ -208,14 +208,18 @@ public class StayControllerIntegrationTests {
 		assertEquals(view, "/stays/createOrUpdateStayForm");
 	}
 
-	//TODO: No hay restricciones en cuanto al usuario que accede a cambiar la fecha.
-	@WithMockUser(username = "owner3", authorities = {
-		"owner"
-	})
-	@Test
-	public void testShowChangeDateStayNegative() {
-		assert 1 == 1;
-	}
+	//	//TODO: No hay restricciones en cuanto al usuario que accede a cambiar la fecha.
+	//	@WithMockUser(username = "owner1", authorities = {
+	//		"owner"
+	//	})
+	//	@Test
+	//	public void testShowChangeDateStayNegative() {
+	//		ModelMap modelMap = new ModelMap();
+	//		int stayId = 1;
+	//		String view = stayController.changeDateStay(stayId, modelMap);
+	//		assertNotNull(modelMap.get("stay"));
+	//		assertEquals(view, "/stays/createOrUpdateStayForm");
+	//	}
 
 	@WithMockUser(username = "vet1", authorities = {
 		"vet"
@@ -248,6 +252,387 @@ public class StayControllerIntegrationTests {
 		assertEquals("Stay succesfully updated", modelMap.get("message"));
 	}
 
-	//TODO: Acabar los últimos tests
+	@WithMockUser(username = "vet1", authorities = {
+		"vet"
+	})
+	@Test
+	public void testNegativeUpdateStayWithNullStartDate() {
+		ModelMap modelMap = new ModelMap();
+		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
+
+		int stayId = 1;
+
+		Clinic clinic = new Clinic();
+		clinic.setId(30);
+
+		Pet pet = new Pet();
+		pet.setId(30);
+		pet.setName("PetName");
+
+		Stay stay = new Stay();
+		stay.setId(stayId);
+		stay.setDescription("Description of the stay");
+		stay.setClinic(clinic);
+		stay.setIsAccepted(true);
+		stay.setPet(pet);
+		stay.setStartDate(null);
+		stay.setFinishDate(LocalDate.now().plusMonths(5L).plusDays(5L));
+
+		stayController.updateStay(stayId, stay, result, modelMap);
+
+		assertEquals("startDateNotNull", result.getFieldError("startDate").getCode());
+		assertNotNull(modelMap.get("stay"));
+	}
+
+	@WithMockUser(username = "vet1", authorities = {
+		"vet"
+	})
+	@Test
+	public void testNegativeUpdateStayWithNullFinishDate() {
+		ModelMap modelMap = new ModelMap();
+		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
+
+		int stayId = 1;
+
+		Clinic clinic = new Clinic();
+		clinic.setId(30);
+
+		Pet pet = new Pet();
+		pet.setId(30);
+		pet.setName("PetName");
+
+		Stay stay = new Stay();
+		stay.setId(stayId);
+		stay.setDescription("Description of the stay");
+		stay.setClinic(clinic);
+		stay.setIsAccepted(true);
+		stay.setPet(pet);
+		stay.setStartDate(LocalDate.now().plusMonths(5L));
+		stay.setFinishDate(null);
+
+		stayController.updateStay(stayId, stay, result, modelMap);
+
+		assertEquals("finishDateNotNull", result.getFieldError("finishDate").getCode());
+		assertNotNull(modelMap.get("stay"));
+	}
+
+	@WithMockUser(username = "vet5", authorities = {
+		"veterinarian"
+	})
+	@Test
+	public void testNegativeUpdateStayUnauthorized() {
+		ModelMap modelMap = new ModelMap();
+		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
+
+		int stayId = 1;
+
+		Clinic clinic = new Clinic();
+		clinic.setId(30);
+
+		Pet pet = new Pet();
+		pet.setId(30);
+		pet.setName("PetName");
+
+		Stay stay = new Stay();
+		stay.setId(stayId);
+		stay.setDescription("Description of the stay");
+		stay.setClinic(clinic);
+		stay.setIsAccepted(true);
+		stay.setPet(pet);
+		stay.setStartDate(LocalDate.now().plusMonths(5L));
+		stay.setFinishDate(null);
+
+		stayController.updateStay(stayId, stay, result, modelMap);
+
+		assertEquals("notAuthorized", result.getFieldError("authorized").getCode());
+		assertNotNull(modelMap.get("stay"));
+	}
+
+	@WithMockUser(username = "vet1", authorities = {
+		"veterinarian"
+	})
+	@Test
+	public void testNegativeUpdateStay2DaysFromToday() {
+		ModelMap modelMap = new ModelMap();
+		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
+
+		int stayId = 1;
+
+		Clinic clinic = new Clinic();
+		clinic.setId(30);
+
+		Pet pet = new Pet();
+		pet.setId(30);
+		pet.setName("PetName");
+
+		Stay stay = new Stay();
+		stay.setId(stayId);
+		stay.setDescription("Description of the stay");
+		stay.setClinic(clinic);
+		stay.setIsAccepted(true);
+		stay.setPet(pet);
+		stay.setStartDate(LocalDate.now());
+		stay.setFinishDate(LocalDate.now().plusDays(1L));
+
+		stayController.updateStay(stayId, stay, result, modelMap);
+
+		assertEquals("startFuturePlus2Days", result.getFieldError("startDate").getCode());
+		assertNotNull(modelMap.get("stay"));
+	}
+
+	@WithMockUser(username = "vet5", authorities = {
+		"veterinarian"
+	})
+	@Test
+	public void testNegativeUpdateCheckMoreThanOneWeek() {
+		ModelMap modelMap = new ModelMap();
+		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
+
+		int stayId = 1;
+
+		Clinic clinic = new Clinic();
+		clinic.setId(30);
+
+		Pet pet = new Pet();
+		pet.setId(30);
+		pet.setName("PetName");
+
+		Stay stay = new Stay();
+		stay.setId(stayId);
+		stay.setDescription("Description of the stay");
+		stay.setClinic(clinic);
+		stay.setIsAccepted(true);
+		stay.setPet(pet);
+		stay.setStartDate(LocalDate.now().plusMonths(5L));
+		stay.setFinishDate(LocalDate.now().plusMonths(5L).plusDays(9L));
+
+		stayController.updateStay(stayId, stay, result, modelMap);
+
+		assertEquals("finishDateMinimumOneWeek", result.getFieldError("finishDate").getCode());
+		assertNotNull(modelMap.get("stay"));
+	}
+
+	@WithMockUser(username = "vet5", authorities = {
+		"veterinarian"
+	})
+	@Test
+	public void testNegativeUpdateCheckFinishBeforeStart() {
+		ModelMap modelMap = new ModelMap();
+		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
+
+		int stayId = 1;
+
+		Clinic clinic = new Clinic();
+		clinic.setId(30);
+
+		Pet pet = new Pet();
+		pet.setId(30);
+		pet.setName("PetName");
+
+		Stay stay = new Stay();
+		stay.setId(stayId);
+		stay.setDescription("Description of the stay");
+		stay.setClinic(clinic);
+		stay.setIsAccepted(true);
+		stay.setPet(pet);
+		stay.setStartDate(LocalDate.now().plusMonths(5L).plusDays(9L));
+		stay.setFinishDate(LocalDate.now().plusMonths(5L));
+
+		stayController.updateStay(stayId, stay, result, modelMap);
+
+		assertEquals("finishDateAfterStartDate", result.getFieldError("finishDate").getCode());
+		assertNotNull(modelMap.get("stay"));
+	}
+
+	//----------------------------------------------------------------------------
+	//----------------------------------------------------------------------------
+	//----------------------------------------------------------------------------
+	//----------------------------------------------------------------------------
+
+	@WithMockUser(username = "vet1", authorities = {
+		"vet"
+	})
+	@Test
+	public void testNegativeNewStayWithNullStartDate() {
+		ModelMap modelMap = new ModelMap();
+		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
+
+		int stayId = 1;
+
+		Clinic clinic = new Clinic();
+		clinic.setId(30);
+
+		Pet pet = new Pet();
+		pet.setId(30);
+		pet.setName("PetName");
+
+		Stay stay = new Stay();
+		stay.setId(stayId);
+		stay.setDescription("Description of the stay");
+		stay.setClinic(clinic);
+		stay.setIsAccepted(true);
+		stay.setPet(pet);
+		stay.setStartDate(null);
+		stay.setFinishDate(LocalDate.now().plusMonths(5L).plusDays(5L));
+
+		stayController.newStay(stay, result, modelMap);
+
+		assertEquals("startDateNotNull", result.getFieldError("startDate").getCode());
+		assertNotNull(modelMap.get("stay"));
+	}
+
+	@WithMockUser(username = "vet1", authorities = {
+		"vet"
+	})
+	@Test
+	public void testNegativeStayWithNullFinishDate() {
+		ModelMap modelMap = new ModelMap();
+		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
+
+		int stayId = 1;
+
+		Clinic clinic = new Clinic();
+		clinic.setId(30);
+
+		Pet pet = new Pet();
+		pet.setId(30);
+		pet.setName("PetName");
+
+		Stay stay = new Stay();
+		stay.setId(stayId);
+		stay.setDescription("Description of the stay");
+		stay.setClinic(clinic);
+		stay.setIsAccepted(true);
+		stay.setPet(pet);
+		stay.setStartDate(LocalDate.now().plusMonths(5L));
+		stay.setFinishDate(null);
+
+		stayController.newStay(stay, result, modelMap);
+
+		assertEquals("finishDateNotNull", result.getFieldError("finishDate").getCode());
+		assertNotNull(modelMap.get("stay"));
+	}
+
+	@WithMockUser(username = "vet1", authorities = {
+		"veterinarian"
+	})
+	@Test
+	public void testNegativeStay2DaysFromToday() {
+		ModelMap modelMap = new ModelMap();
+		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
+
+		int stayId = 1;
+
+		Clinic clinic = new Clinic();
+		clinic.setId(30);
+
+		Pet pet = new Pet();
+		pet.setId(30);
+		pet.setName("PetName");
+
+		Stay stay = new Stay();
+		stay.setId(stayId);
+		stay.setDescription("Description of the stay");
+		stay.setClinic(clinic);
+		stay.setIsAccepted(true);
+		stay.setPet(pet);
+		stay.setStartDate(LocalDate.now());
+		stay.setFinishDate(LocalDate.now().plusDays(1L));
+
+		stayController.newStay(stay, result, modelMap);
+
+		assertEquals("startFuturePlus2Days", result.getFieldError("startDate").getCode());
+		assertNotNull(modelMap.get("stay"));
+	}
+
+	@WithMockUser(username = "vet5", authorities = {
+		"veterinarian"
+	})
+	@Test
+	public void testNegativeCheckMoreThanOneWeek() {
+		ModelMap modelMap = new ModelMap();
+		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
+
+		int stayId = 1;
+
+		Clinic clinic = new Clinic();
+		clinic.setId(30);
+
+		Pet pet = new Pet();
+		pet.setId(30);
+		pet.setName("PetName");
+
+		Stay stay = new Stay();
+		stay.setId(stayId);
+		stay.setDescription("Description of the stay");
+		stay.setClinic(clinic);
+		stay.setIsAccepted(true);
+		stay.setPet(pet);
+		stay.setStartDate(LocalDate.now().plusMonths(5L));
+		stay.setFinishDate(LocalDate.now().plusMonths(5L).plusDays(9L));
+
+		stayController.newStay(stay, result, modelMap);
+
+		assertEquals("finishDateMinimumOneWeek", result.getFieldError("finishDate").getCode());
+		assertNotNull(modelMap.get("stay"));
+	}
+
+	@WithMockUser(username = "vet5", authorities = {
+		"veterinarian"
+	})
+	@Test
+	public void testNegativeCheckFinishBeforeStart() {
+		ModelMap modelMap = new ModelMap();
+		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
+
+		int stayId = 1;
+
+		Clinic clinic = new Clinic();
+		clinic.setId(30);
+
+		Pet pet = new Pet();
+		pet.setId(30);
+		pet.setName("PetName");
+
+		Stay stay = new Stay();
+		stay.setId(stayId);
+		stay.setDescription("Description of the stay");
+		stay.setClinic(clinic);
+		stay.setIsAccepted(true);
+		stay.setPet(pet);
+		stay.setStartDate(LocalDate.now().plusMonths(5L).plusDays(9L));
+		stay.setFinishDate(LocalDate.now().plusMonths(5L));
+
+		stayController.newStay(stay, result, modelMap);
+
+		assertEquals("finishDateAfterStartDate", result.getFieldError("finishDate").getCode());
+		assertNotNull(modelMap.get("stay"));
+	}
+
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
+	})
+	@Test
+	public void testListAllPendingByOwner() {
+		ModelMap modelMap = new ModelMap();
+
+		String view = stayController.listAllPendingByOwner(modelMap);
+
+		assertNotNull("staysPending");
+		assertNotNull("staysAccepted");
+		assertEquals("stays/listByOwner", view);
+	}
+
+	@WithMockUser(username = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	public void testNegativeListAllPendingByOtherUser() {
+		ModelMap modelMap = new ModelMap();
+
+		String view = stayController.listAllPendingByOwner(modelMap);
+
+		assertEquals("redirect:/oups", view);
+	}
 
 }

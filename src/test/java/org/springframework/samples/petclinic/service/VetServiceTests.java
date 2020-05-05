@@ -17,7 +17,6 @@
 package org.springframework.samples.petclinic.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.stream.StreamSupport;
 
@@ -103,11 +102,13 @@ class VetServiceTests {
 
 	}
 
+	//TODO: En ningun otro test hay alguna prueba negativa o positiva sobre este método.
 	@Test
 	public void testFindPersonUsernameNegative() throws Exception {
-		assertThrows(Exception.class, () -> {
-			vetService.findPersonByUsername(null);
-		});
+		String vetUsername = "UnexistingVet1928384756";
+		Vet vet = vetService.findPersonByUsername(vetUsername);
+
+		assertEquals(null, vet);
 
 	}
 
