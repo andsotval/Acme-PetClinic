@@ -1,3 +1,8 @@
+/**
+ * DP2 - Grupo 8
+ * LAB F1.33
+ * Date: 05-may-2020
+ */
 
 package org.springframework.samples.petclinic.service;
 
@@ -14,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class VisitService extends BaseService<Visit> {
 
 	private VisitRepository visitRepository;
+
 
 	@Autowired
 	public VisitService(BaseRepository<Visit> repository, VisitRepository visitRepository) {
@@ -53,14 +59,14 @@ public class VisitService extends BaseService<Visit> {
 
 	@Transactional(readOnly = true)
 	public Iterable<Visit> findAllByPetId(Integer petId) {
-		if(petId != null) {
+		if (petId != null)
 			return visitRepository.findAllByPetId(petId);
-		}else {
+		else
 			return null;
-		}
-		
+
 	}
 
+	@Transactional(readOnly = true)
 	public Iterable<Visit> findAllByDateTime(LocalDateTime dateTime) {
 		return visitRepository.findVisitsByDateTime(dateTime);
 	}

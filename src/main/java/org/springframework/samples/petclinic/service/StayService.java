@@ -1,3 +1,8 @@
+/**
+ * DP2 - Grupo 8
+ * LAB F1.33
+ * Date: 05-may-2020
+ */
 
 package org.springframework.samples.petclinic.service;
 
@@ -51,6 +56,7 @@ public class StayService extends BaseService<Stay> {
 		return stayRepository.findAllPendingByOwner(ownerId);
 	}
 
+	@Transactional(readOnly = true)
 	public Iterable<Stay> findAllAcceptedByOwner(final Integer ownerId) {
 		return stayRepository.findAllAcceptedByOwner(ownerId);
 	}

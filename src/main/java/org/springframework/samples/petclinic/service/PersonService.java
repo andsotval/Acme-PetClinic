@@ -1,3 +1,8 @@
+/**
+ * DP2 - Grupo 8
+ * LAB F1.33
+ * Date: 05-may-2020
+ */
 
 package org.springframework.samples.petclinic.service;
 
@@ -29,20 +34,20 @@ public abstract class PersonService<T extends BaseEntity> extends BaseService<T>
 	public T findPersonByUsername(String username) {
 		String sql = "SELECT * FROM " + clazz.getSimpleName()
 			+ " WHERE USER_ID = (SELECT ID FROM USER WHERE USERNAME = ?)";
-		
+
 		T entity = null;
-		
+
 		try {
 			entity = jdbcTemplate.queryForObject(sql, new Object[] {
-					username
-				}, BeanPropertyRowMapper.newInstance(clazz));	
-		} catch(DataAccessException e){
+				username
+			}, BeanPropertyRowMapper.newInstance(clazz));
+		} catch (DataAccessException e) {
 			return null;
 		}
-		
+
 		Optional<T> person = findEntityById(entity.getId());
-		
-		return person.isPresent() ? person.get():null;
+
+		return person.isPresent() ? person.get() : null;
 	}
 
 }
