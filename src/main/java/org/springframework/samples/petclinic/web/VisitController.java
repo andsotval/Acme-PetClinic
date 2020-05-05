@@ -29,19 +29,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/visits")
 public class VisitController {
 
-	private VisitService visitService;
+	private VisitService		visitService;
 
-	private VetService vetService;
+	private VetService			vetService;
 
-	private OwnerService ownerService;
+	private OwnerService		ownerService;
 
-	private AuthoritiesService authoritiesService;
+	private AuthoritiesService	authoritiesService;
 
-	private static final String VIEWS_VISIT_CREATE_OR_UPDATE_FORM = "/visits/createOrUpdateVisitForm";
+	private static final String	VIEWS_VISIT_CREATE_OR_UPDATE_FORM	= "/visits/createOrUpdateVisitForm";
+
 
 	@Autowired
 	public VisitController(final VisitService visitService, final VetService vetService,
-			final OwnerService ownerService, final AuthoritiesService authoritiesService) {
+		final OwnerService ownerService, final AuthoritiesService authoritiesService) {
 		this.visitService = visitService;
 		this.vetService = vetService;
 		this.ownerService = ownerService;
@@ -65,9 +66,8 @@ public class VisitController {
 			modelMap.addAttribute("visits", visits);
 			modelMap.addAttribute("accepted", false);
 			return view;
-		} else {
+		} else
 			return "redirect:/oups";
-		}
 	}
 
 	@GetMapping(value = "/listAllAccepted")
@@ -81,9 +81,8 @@ public class VisitController {
 			modelMap.addAttribute("visits", visits);
 			modelMap.addAttribute("accepted", true);
 			return view;
-		} else {
+		} else
 			return "redirect:/oups";
-		}
 	}
 
 	@GetMapping(path = "/accept/{visitId}")
@@ -95,9 +94,8 @@ public class VisitController {
 		if (visit.getClinic().getId() == vet.getClinic().getId()) {
 			visit.setIsAccepted(true);
 			visitService.saveEntity(visit);
-		} else {
+		} else
 			modelMap.addAttribute("nonAuthorized", true);
-		}
 		return "redirect:/visits/listAllAccepted";
 
 	}
@@ -115,9 +113,8 @@ public class VisitController {
 			if (visit.getClinic().getId() == vet.getClinic().getId()) {
 				visit.setIsAccepted(false);
 				visitService.saveEntity(visit);
-			} else {
+			} else
 				modelMap.addAttribute("notAuthorizedVet", true);
-			}
 			return "redirect:/visits/listAllAccepted";
 		}
 
@@ -127,9 +124,8 @@ public class VisitController {
 			if (visit.getPet().getOwner().getId() == owner.getId()) {
 				visit.setIsAccepted(false);
 				visitService.saveEntity(visit);
-			} else {
+			} else
 				modelMap.addAttribute("notAuthorizedOwner", true);
-			}
 			return "redirect:/visits/listByOwner";
 		}
 
@@ -139,9 +135,9 @@ public class VisitController {
 	@GetMapping(path = "/changeDate/{visitId}")
 	public String initUpdateVisit(@PathVariable("visitId") final int visitId, final ModelMap modelMap) {
 
-		if (!visitService.findEntityById(visitId).isPresent()) {
+		if (!visitService.findEntityById(visitId).isPresent())
 			return "redirect:/oups";
-		} else {
+		else {
 			Visit visit = visitService.findEntityById(visitId).get();
 			modelMap.addAttribute(visit);
 			return "/visits/createOrUpdateVisitForm";
@@ -151,7 +147,7 @@ public class VisitController {
 
 	@PostMapping(path = "/save/{visitId}")
 	public String updateVisit(@PathVariable("visitId") final int visitId, @Valid final Visit entity,
-			final BindingResult result, final ModelMap modelMap) {
+		final BindingResult result, final ModelMap modelMap) {
 
 		String view = VisitController.VIEWS_VISIT_CREATE_OR_UPDATE_FORM;
 
@@ -258,7 +254,7 @@ public class VisitController {
 		} else {
 			Iterable<Visit> visits = visitService.findAllByPetId(entity.getPet().getId());
 			model.addAttribute("visits", visits);
-			model.addAttribute("clinicId", entity.getPet().getOwner().getClinic().getId());
+			model.addAttribute("clinicId", entity.getClinic().getId());
 		}
 
 		return view;
@@ -280,9 +276,8 @@ public class VisitController {
 			modelMap.addAttribute("visitsAccepted", visitsAccepted);
 
 			return view;
-		} else {
+		} else
 			return "redirect:/oups";
-		}
 
 	}
 
