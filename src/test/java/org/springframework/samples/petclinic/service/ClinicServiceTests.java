@@ -128,11 +128,12 @@ public class ClinicServiceTests {
 		entity.setAddress("Address 1");
 		entity.setCity("City 1");
 		entity.setTelephone("912654555");
+		clinicService.saveEntity(entity);
 
 		collection = (Collection<Clinic>) clinicService.findAllEntities();
-		assertEquals(collection.size(), 4);
+		assertEquals(collection.size(), 9);
 
-		Optional<Clinic> newEntity = clinicService.findEntityById(5);
+		Optional<Clinic> newEntity = clinicService.findEntityById(9);
 		assertTrue(newEntity.isPresent());
 		assertEquals(newEntity.get().getName(), "Name 1");
 		assertEquals(newEntity.get().getAddress(), "Address 1");

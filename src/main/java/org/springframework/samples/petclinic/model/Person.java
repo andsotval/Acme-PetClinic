@@ -51,7 +51,7 @@ public class Person extends BaseEntity {
 	private String		city;
 
 	@Column(name = "telephone")
-	@Pattern(regexp = "6[0-9]{8}")
+	@Pattern(regexp = "(6|7|9)[0-9]{8}")
 	@NotEmpty
 	private String		telephone;
 
