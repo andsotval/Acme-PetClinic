@@ -114,23 +114,23 @@ public class PetController {
 			modelMap.addAttribute("pet", pet);
 			result.rejectValue("birthDate", "birthDateNotNull", "is required");
 			i++;
-			
+
 		} else if (pet.getBirthDate().isAfter(LocalDate.now())) {
 			modelMap.addAttribute("pet", pet);
 			result.rejectValue("birthDate", "birthDateFuture", "the birth date cannot be in future");
 			i++;
 		}
-		
+
 		if (pet.getType() == null) {
 			modelMap.addAttribute("pet", pet);
 			result.rejectValue("type", "petTypeNotNull", "is required");
 			i++;
-			
+
 		}
-		
+
 		if (i == 0) {
 			petService.saveEntity(pet);
-			modelMap.addAttribute("message", "Stay succesfully updated");
+			modelMap.addAttribute("message", "Pet succesfully saved");
 			return "redirect:/pets/listMyPets";
 		}
 

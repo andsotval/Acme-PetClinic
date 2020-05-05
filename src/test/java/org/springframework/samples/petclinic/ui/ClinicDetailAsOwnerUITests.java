@@ -5,46 +5,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.concurrent.TimeUnit;
-
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ClinicDetailAsVetUITest {
-
-	@LocalServerPort
-	private int				port;
-
-	private WebDriver		driver;
-	private StringBuffer	verificationErrors	= new StringBuffer();
-
-
-	@BeforeEach
-	public void setUp() throws Exception {
-		String classpath = System.getProperty("user.dir");
-		System.setProperty("webdriver.gecko.driver", classpath + "\\webdriver\\geckodriver.exe");
-
-		driver = new FirefoxDriver();
-		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-	}
+public class ClinicDetailAsOwnerUITests extends AbstractUITests {
 
 	@Test
 	public void testCheckDetailClinic() throws Exception {
 		driver.get("http://localhost:" + port);
 
-		LogInAsOwner("vet1", "vet1");
+		LogInAsOwner("owner1", "owner1");
 
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[4]/a/span[2]")).click();
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a/span[2]")).click();
 
 		//CheckName
 		try {
@@ -90,12 +64,41 @@ public class ClinicDetailAsVetUITest {
 		} catch (Error e) {
 			verificationErrors.append(e.toString());
 		}
-		//CheckUser
+
+		LogOut();
+
+	}
+
+	@Test
+	public void testCheckListClinic() throws Exception {
+		driver.get("http://localhost:" + port);
+
+		LogInAsOwner("owner9", "owner9");
+
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a/span[2]")).click();
 		try {
-			assertTrue(driver.findElements(By.xpath("//table[@id='ownersTable']")).size() == 1);
+			assertTrue(driver.findElements(By.xpath("//table[@id='clinicsTable']")).size() == 1);
 		} catch (Error e) {
 			verificationErrors.append(e.toString());
 		}
+
+		LogOut();
+
+	}
+
+	@Test
+	public void testCheckListClinicNegative() throws Exception {
+		driver.get("http://localhost:" + port);
+
+		LogInAsOwner("owner1", "owner1");
+
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a/span[2]")).click();
+		try {
+			assertTrue(driver.findElements(By.xpath("//table[@id='clinicsTable']")).size() == 0);
+		} catch (Error e) {
+			verificationErrors.append(e.toString());
+		}
+
 		LogOut();
 
 	}

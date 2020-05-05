@@ -73,8 +73,9 @@ public class ClinicControllerTests {
 		user.setPassword("pepito");
 
 		Authorities authority = new Authorities();
-		authority.setAuthority("Vet");
+		authority.setAuthority("Veterinarian");
 		authority.setUsername("pepito");
+
 		Vet pepe = new Vet();
 		pepe.setUser(user);
 		pepe.setId(TEST_VET_ID);
@@ -148,16 +149,20 @@ public class ClinicControllerTests {
 	}
 
 	//Show Clinic from a Vet
-	@WithMockUser(value = "pepito")
+	@WithMockUser(value = "pepito", authorities = {
+		"veterinarian"
+	})
 	@Test
 	void testShowClinicVet() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/getDetail")).andExpect(MockMvcResultMatchers.status().isOk())
-			//.andExpect(MockMvcResultMatchers.model().attributeExists("clinic"))
+			.andExpect(MockMvcResultMatchers.model().attributeExists("clinic"))
 			.andExpect(MockMvcResultMatchers.view().name("/clinics/clinicDetails"));
 	}
 
 	//Show Clinic from a Owner
-	@WithMockUser(value = "joselito")
+	@WithMockUser(value = "joselito", authorities = {
+		"owner"
+	})
 	@Test
 	void testShowClinicOwner() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner")).andExpect(MockMvcResultMatchers.status().is3xxRedirection())
@@ -166,11 +171,13 @@ public class ClinicControllerTests {
 	}
 
 	//Show Clinic from a Owner
-	@WithMockUser(value = "manolito")
+	@WithMockUser(value = "manolito", authorities = {
+		"owner"
+	})
 	@Test
 	void testShowListClinicOwner() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner")).andExpect(MockMvcResultMatchers.status().isOk())
-			//.andExpect(MockMvcResultMatchers.model().attributeExists("clinic"))
+			//.andExpect(MockMvcResultMatchers.model().attributeExists("clinics"))
 			.andExpect(MockMvcResultMatchers.view().name("/clinics/owner/clinicsList"));
 	}
 
