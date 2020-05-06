@@ -7,6 +7,10 @@
 
 <petclinic:layout pageName="pettypes">
     <h2>Pet Type</h2>
+    
+    <div class="form-group" style="color: green;">
+		<c:out value="${message}" />
+	</div>
 
     <table id="pettypeTable" class="table table-striped">
         <thead>
