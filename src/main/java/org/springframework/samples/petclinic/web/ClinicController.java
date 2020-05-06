@@ -113,6 +113,9 @@ public class ClinicController {
 		if (!clinic.isPresent())
 			return "redirect:/oups";
 
+		if (!clinic.get().getId().equals(owner.getClinic().getId()))
+			return "redirect:/oups";
+
 		modelMap.addAttribute("clinic", clinic.get());
 		modelMap.addAttribute("owner", owner);
 

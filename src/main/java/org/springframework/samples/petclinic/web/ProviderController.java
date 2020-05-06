@@ -49,6 +49,8 @@ public class ProviderController {
 	@GetMapping(value = "/addProvider/{providerId}")
 	public String initAddProviderToManager(@PathVariable("providerId") final Integer providerId, final ModelMap model) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		if (manager == null)
+			return "redirect:/oups";
 
 		Optional<Provider> provider = providerService.findEntityById(providerId);
 		if (!provider.isPresent())
@@ -65,12 +67,18 @@ public class ProviderController {
 
 	@GetMapping(value = "/listProductsByProvider/{providerId}")
 	public String listProductsByProvider(@PathVariable("providerId") final Integer providerId, final ModelMap model) {
-		Optional<Provider> provider = providerService.findEntityById(providerId);
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		if (manager == null)
+			return "redirect:/oups";
 
+		Optional<Provider> provider = providerService.findEntityById(providerId);
 		if (!provider.isPresent())
 			return createModelListAvailable(model, "We are very sorry, but the selected provider does not exist");
 
-		else if (!providerService.findAvailableProviders().contains(provider.get()))
+		if (!provider.get().getManager().getId().equals(manager.getId()))
+			return "redirect:/oups";
+
+		if (!providerService.findAvailableProviders().contains(provider.get()))
 			return createModelListAvailable(model,
 				"We are very sorry, but you cannot see the products of a supplier assigned to another manager");
 
@@ -82,6 +90,8 @@ public class ProviderController {
 
 	private String createModelListAvailable(ModelMap model, String message) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		if (manager == null)
+			return "redirect:oups";
 
 		Collection<Provider> availableProviderList = providerService.findAvailableProviders();
 		Collection<Provider> addedProviderList = providerService.findProvidersByManagerId(manager.getId());
