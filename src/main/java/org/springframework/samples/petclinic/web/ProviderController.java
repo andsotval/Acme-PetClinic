@@ -75,9 +75,6 @@ public class ProviderController {
 		if (!provider.isPresent())
 			return createModelListAvailable(model, "We are very sorry, but the selected provider does not exist");
 
-		if (!provider.get().getManager().getId().equals(manager.getId()))
-			return "redirect:/oups";
-
 		if (!providerService.findAvailableProviders().contains(provider.get()))
 			return createModelListAvailable(model,
 				"We are very sorry, but you cannot see the products of a supplier assigned to another manager");
