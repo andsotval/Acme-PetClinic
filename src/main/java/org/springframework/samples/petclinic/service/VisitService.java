@@ -7,6 +7,7 @@
 package org.springframework.samples.petclinic.service;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Visit;
@@ -28,47 +29,46 @@ public class VisitService extends BaseService<Visit> {
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Visit> findAllPendingByVetId(Integer vetId) {
+	public Collection<Visit> findAllPendingByVetId(Integer vetId) {
 		LocalDateTime actualDate = LocalDateTime.now();
 		return visitRepository.findAllPendingByVetId(actualDate, vetId);
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Visit> findAllAcceptedByVetId(Integer vetId) {
+	public Collection<Visit> findAllAcceptedByVetId(Integer vetId) {
 		LocalDateTime actualDate = LocalDateTime.now();
 		return visitRepository.findAllAcceptedByVetId(actualDate, vetId);
 	}
 
 	@Transactional
 	public void deleteByPetId(Integer id) {
-		if (id != null) {
-			Iterable<Visit> visit = visitRepository.findAllByPetId(id);
-			visitRepository.deleteAll(visit);
-		}
+		Collection<Visit> visit = visitRepository.findAllByPetId(id);
+		visitRepository.deleteAll(visit);
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Visit> findAllPendingByOwnerId(Integer ownerId) {
+	public Collection<Visit> findAllPendingByOwnerId(Integer ownerId) {
 		return visitRepository.findAllPendingByOwnerId(ownerId);
 	}
 
 	@Transactional
-	public Iterable<Visit> findAllAcceptedByOwnerId(Integer ownerId) {
+	public Collection<Visit> findAllAcceptedByOwnerId(Integer ownerId) {
 		return visitRepository.findAllAcceptedByOwnerId(ownerId);
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Visit> findAllByPetId(Integer petId) {
-		if (petId != null)
-			return visitRepository.findAllByPetId(petId);
-		else
-			return null;
-
+	public Collection<Visit> findAllByPetId(Integer petId) {
+		return visitRepository.findAllByPetId(petId);
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Visit> findAllByDateTime(LocalDateTime dateTime) {
+	public Collection<Visit> findAllByDateTime(LocalDateTime dateTime) {
 		return visitRepository.findVisitsByDateTime(dateTime);
+	}
+
+	@Transactional(readOnly = true)
+	public boolean canUnsubscribe(Integer ownerId) {
+		return visitRepository.findAllAcceptedOrPendingByOwner(ownerId).size() == 0;
 	}
 
 	/*
