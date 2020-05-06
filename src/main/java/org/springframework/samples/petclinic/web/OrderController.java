@@ -129,7 +129,7 @@ public class OrderController {
 			productOrderService.saveEntity(po);
 		}
 
-		return createModelListAvailable(model, "Order succesfully saved");
+		return createModelOrderList(model, "Order succesfully saved");
 
 	}
 
@@ -174,10 +174,10 @@ public class OrderController {
 	// listado de orders
 	@GetMapping(path = "/list")
 	public String listOrders(ModelMap modelMap) {
-		return createModelListAvailable(modelMap, "");
+		return createModelOrderList(modelMap, "");
 	}
 
-	private String createModelListAvailable(ModelMap model, String message) {
+	private String createModelOrderList(ModelMap model, String message) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (manager == null)
 			return REDIRECT_OUPS;

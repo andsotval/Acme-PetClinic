@@ -44,7 +44,7 @@ public class ProviderController {
 
 	@GetMapping(value = "/listAvailable")
 	public String listAvailable(final ModelMap model) {
-		return createModelListAvailable(model, "");
+		return createModelProviderList(model, "");
 	}
 
 	@GetMapping(value = "/addProvider/{providerId}")
@@ -55,12 +55,12 @@ public class ProviderController {
 
 		Optional<Provider> provider = providerService.findEntityById(providerId);
 		if (!provider.isPresent())
-			return createModelListAvailable(model, "We are very sorry, but the selected provider does not exist");
+			return createModelProviderList(model, "We are very sorry, but the selected provider does not exist");
 		else if (provider.get().getManager() == null) {
 			provider.get().setManager(manager);
 			providerService.saveEntity(provider.get());
 		} else
-			return createModelListAvailable(model,
+			return createModelProviderList(model,
 				"We are very sorry, it is not possible to add a Provider that is already assigned to another Manager");
 
 		return "redirect:/providers/listAvailable";
@@ -74,10 +74,10 @@ public class ProviderController {
 
 		Optional<Provider> provider = providerService.findEntityById(providerId);
 		if (!provider.isPresent())
-			return createModelListAvailable(model, "We are very sorry, but the selected provider does not exist");
+			return createModelProviderList(model, "We are very sorry, but the selected provider does not exist");
 
 		if (!providerService.findAvailableProviders().contains(provider.get()))
-			return createModelListAvailable(model,
+			return createModelProviderList(model,
 				"We are very sorry, but you cannot see the products of a supplier assigned to another manager");
 
 		Iterable<Product> availableProducts = productService.findProductsAvailableByProviderId(providerId);
@@ -86,7 +86,7 @@ public class ProviderController {
 		return "providers/providerProductsList";
 	}
 
-	private String createModelListAvailable(ModelMap model, String message) {
+	private String createModelProviderList(ModelMap model, String message) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (manager == null)
 			return "redirect:oups";

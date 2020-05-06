@@ -120,4 +120,13 @@ public class PetTypeController {
 
 		return "redirect:/pettype/listNotAvailable";
 	}
+
+	private String createModelPettypeList(ModelMap model, boolean available, String message) {
+		Collection<PetType> petTypeList = available ? petTypeService.findAvailable()
+			: petTypeService.findNotAvailable();
+		model.addAttribute("pettypes", petTypeList);
+		model.addAttribute("available", false);
+
+		return "/pettype/list";
+	}
 }

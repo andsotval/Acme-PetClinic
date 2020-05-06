@@ -66,7 +66,7 @@ public class PetController {
 
 	@GetMapping(path = "/listMyPets")
 	public String listMyPets(ModelMap modelMap) {
-		return createModelListAvailable(modelMap, "");
+		return createModelPetList(modelMap, "");
 	}
 
 	@GetMapping(value = "/new")
@@ -116,7 +116,7 @@ public class PetController {
 
 		petService.saveEntity(pet);
 
-		return createModelListAvailable(modelMap, "Pet succesfully saved");
+		return createModelPetList(modelMap, "Pet succesfully saved");
 	}
 
 	@GetMapping(path = "/delete/{petId}")
@@ -136,7 +136,7 @@ public class PetController {
 		visitService.deleteByPetId(pet.get().getId());
 		petService.deleteEntityById(pet.get().getId());
 
-		return createModelListAvailable(modelMap, "Pet succesfully deleted");
+		return createModelPetList(modelMap, "Pet succesfully deleted");
 
 	}
 
@@ -202,7 +202,7 @@ public class PetController {
 		return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 	}
 
-	private String createModelListAvailable(ModelMap model, String message) {
+	private String createModelPetList(ModelMap model, String message) {
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (owner == null)
 			return REDIRECT_OUPS;
