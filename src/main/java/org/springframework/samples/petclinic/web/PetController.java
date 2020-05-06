@@ -40,6 +40,8 @@ public class PetController {
 
 	private static final String	VIEWS_PETS_CREATE_OR_UPDATE_FORM	= "pets/createOrUpdatePetForm";
 
+	private static final String	REDIRECT_OUPS						= "redirect:/oups";
+
 	private PetTypeService		petTypeService;
 	private PetService			petService;
 	private VisitService		visitService;
@@ -71,7 +73,7 @@ public class PetController {
 	public String newPet(ModelMap model) {
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (owner == null)
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Pet pet = new Pet();
 		pet.setOwner(owner);
@@ -83,10 +85,10 @@ public class PetController {
 	public String savePet(@Valid Pet pet, BindingResult result, ModelMap modelMap) {
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (owner == null)
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		if (!owner.getId().equals(pet.getOwner().getId()))
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		boolean hasErrors = false;
 
@@ -121,14 +123,14 @@ public class PetController {
 	public String deletePet(@PathVariable("petId") int petId, ModelMap modelMap) {
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (owner == null)
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Optional<Pet> pet = petService.findEntityById(petId);
 		if (!pet.isPresent())
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		if (!owner.getId().equals(pet.get().getOwner().getId()))
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		stayService.deleteByPetId(pet.get().getId());
 		visitService.deleteByPetId(pet.get().getId());
@@ -142,7 +144,7 @@ public class PetController {
 	public String newVisit(@PathVariable("petId") int petId, ModelMap model) {
 		Optional<Pet> pet = petService.findEntityById(petId);
 		if (!pet.isPresent())
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Visit visit = new Visit();
 		Clinic clinic = pet.get().getOwner().getClinic();
@@ -165,7 +167,7 @@ public class PetController {
 	public String newStay(@PathVariable("petId") int petId, ModelMap model) {
 		Optional<Pet> pet = petService.findEntityById(petId);
 		if (!pet.isPresent())
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Stay stay = new Stay();
 		Clinic clinic = pet.get().getOwner().getClinic();
@@ -187,14 +189,14 @@ public class PetController {
 	public String initUpdateForm(@PathVariable("petId") int petId, ModelMap model) {
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (owner == null)
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Optional<Pet> pet = petService.findEntityById(petId);
 		if (!pet.isPresent())
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		if (!owner.getId().equals(pet.get().getOwner().getId()))
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		model.addAttribute("pet", pet.get());
 		return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
@@ -203,7 +205,7 @@ public class PetController {
 	private String createModelListAvailable(ModelMap model, String message) {
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (owner == null)
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Collection<Pet> pets = petService.findPetsByOwnerId(owner.getId());
 		model.addAttribute("pets", pets);

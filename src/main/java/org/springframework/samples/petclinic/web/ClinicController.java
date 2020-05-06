@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/clinics")
 public class ClinicController {
 
+	private static final String	REDIRECT_OUPS	= "redirect:/oups";
+
 	private ClinicService		clinicService;
 	private OwnerService		ownerService;
 	private VetService			vetService;
@@ -51,8 +53,6 @@ public class ClinicController {
 
 	@GetMapping(value = "/getDetail")
 	public String getDetail(final ModelMap modelMap) {
-		String view = "/clinics/clinicDetails";
-
 		String username = SessionUtils.obtainUserInSession().getUsername();
 		String authority = authoritiesService.findAuthorityByUsername(username);
 		Clinic clinic = null;
@@ -60,7 +60,7 @@ public class ClinicController {
 		if (authority.equals("veterinarian")) {
 			Vet vet = vetService.findPersonByUsername(username);
 			if (vet == null)
-				return "redirect:/oups";
+				return REDIRECT_OUPS;
 
 			clinic = vet.getClinic();
 			if (clinic == null) {
@@ -74,7 +74,7 @@ public class ClinicController {
 		} else if (authority.equals("owner")) {
 			Owner owner = ownerService.findPersonByUsername(username);
 			if (owner == null)
-				return "redirect:/oups";
+				return REDIRECT_OUPS;
 
 			modelMap.addAttribute("owner", owner);
 			clinic = owner.getClinic();
@@ -85,7 +85,7 @@ public class ClinicController {
 		}
 
 		modelMap.addAttribute("clinic", clinic);
-		return view;
+		return "/clinics/clinicDetails";
 
 	}
 
@@ -93,7 +93,7 @@ public class ClinicController {
 	public String initClinicView(final ModelMap modelMap) {
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (owner == null)
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		if (owner.getClinic() == null) {
 			Iterable<Clinic> clinicList = clinicService.findAllEntities();
@@ -107,14 +107,14 @@ public class ClinicController {
 	public String showClinic(@PathVariable("clinicId") final Integer clinicId, final ModelMap modelMap) {
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (owner == null)
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Optional<Clinic> clinic = clinicService.findEntityById(clinicId);
 		if (!clinic.isPresent())
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		if (!clinic.get().getId().equals(owner.getClinic().getId()))
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		modelMap.addAttribute("clinic", clinic.get());
 		modelMap.addAttribute("owner", owner);
@@ -126,11 +126,11 @@ public class ClinicController {
 	public String unsubscribeOwnerFromClinic(final ModelMap modelMap) {
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (owner == null)
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Clinic clinic = owner.getClinic();
 		if (clinic == null)
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		clinic = clinicService.findEntityById(clinic.getId()).get();
 
@@ -151,11 +151,11 @@ public class ClinicController {
 	public String subscribeToClinic(@PathVariable("clinicId") final Integer clinicId, final ModelMap modelMap) {
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (owner == null)
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Optional<Clinic> clinic = clinicService.findEntityById(clinicId);
 		if (!clinic.isPresent())
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		if (owner.getClinic() == null) {
 			owner.setClinic(clinic.get());
@@ -163,7 +163,7 @@ public class ClinicController {
 
 			return initClinicView(modelMap);
 		} else
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 	}
 

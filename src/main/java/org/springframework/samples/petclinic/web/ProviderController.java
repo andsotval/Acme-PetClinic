@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/providers")
 public class ProviderController {
 
+	private static final String		REDIRECT_OUPS	= "redirect:/oups";
+
 	private final ManagerService	managerService;
 	private final ProviderService	providerService;
 	private final ProductService	productService;
@@ -49,7 +51,7 @@ public class ProviderController {
 	public String initAddProviderToManager(@PathVariable("providerId") final Integer providerId, final ModelMap model) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (manager == null)
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Optional<Provider> provider = providerService.findEntityById(providerId);
 		if (!provider.isPresent())
@@ -68,7 +70,7 @@ public class ProviderController {
 	public String listProductsByProvider(@PathVariable("providerId") final Integer providerId, final ModelMap model) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (manager == null)
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Optional<Provider> provider = providerService.findEntityById(providerId);
 		if (!provider.isPresent())

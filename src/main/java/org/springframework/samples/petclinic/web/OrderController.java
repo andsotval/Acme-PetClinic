@@ -40,6 +40,8 @@ public class OrderController {
 
 	private static final String	VIEWS_ORDERS_CREATE_OR_UPDATE_FORM	= "/orders/createOrUpdateOrderForm";
 
+	private static final String	REDIRECT_OUPS						= "redirect:/oups";
+
 	private OrderService		orderService;
 	private ManagerService		managerService;
 	private ProductService		productService;
@@ -62,14 +64,14 @@ public class OrderController {
 	public String initCreationForm(@PathVariable("providerId") int providerId, ModelMap model) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (manager == null)
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Optional<Provider> provider = providerService.findEntityById(providerId);
 		if (!provider.isPresent())
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		if (!provider.get().getManager().getId().equals(manager.getId()))
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Collection<Product> products = productService.findProductsAvailableByProviderId(providerId);
 		model.addAttribute("products", products);
@@ -86,14 +88,14 @@ public class OrderController {
 		@RequestParam(name = "amountNumber", required = false) String[] amountNumber) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (manager == null)
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Optional<Provider> provider = providerService.findEntityById(providerId);
 		if (!provider.isPresent())
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		if (!provider.get().getManager().getId().equals(manager.getId()))
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Collection<Product> productsSelected = productService.findProductsByIds(
 			Arrays.stream(productIds).mapToInt(Integer::valueOf).boxed().collect(Collectors.toList()));
@@ -127,7 +129,7 @@ public class OrderController {
 			productOrderService.saveEntity(po);
 		}
 
-		return "redirect:/orders/list";
+		return createModelListAvailable(model, "Order succesfully saved");
 
 	}
 
@@ -136,14 +138,14 @@ public class OrderController {
 	public String showOrder(@PathVariable("orderId") int orderId, ModelMap modelMap) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (manager == null)
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Optional<Order> order = orderService.findEntityById(orderId);
 		if (!order.isPresent())
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		if (!order.get().getManager().getId().equals(manager.getId()))
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Provider provider = productOrderService.findProviderByOrder(orderId);
 		Collection<ProductOrder> productsOrder = productOrderService.findProductOrderByOrder(orderId);
@@ -161,7 +163,7 @@ public class OrderController {
 	public String listAvailableProviders(ModelMap modelMap) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (manager == null)
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Collection<Provider> providerList = providerService.findProvidersByManagerId(manager.getId());
 		modelMap.addAttribute("providers", providerList);
@@ -172,12 +174,17 @@ public class OrderController {
 	// listado de orders
 	@GetMapping(path = "/list")
 	public String listOrders(ModelMap modelMap) {
+		return createModelListAvailable(modelMap, "");
+	}
+
+	private String createModelListAvailable(ModelMap model, String message) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (manager == null)
-			return "redirect:/oups";
+			return REDIRECT_OUPS;
 
 		Collection<Order> orderList = orderService.findAllOrdersByManagerId(manager.getId());
-		modelMap.addAttribute("orders", orderList);
+		model.addAttribute("orders", orderList);
+		model.addAttribute("message", message);
 
 		return "/orders/orderList";
 	}
