@@ -6,12 +6,14 @@
 
 package org.springframework.samples.petclinic.repository;
 
+import java.util.Collection;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.samples.petclinic.model.Pet;
 
 public interface PetRepository extends BaseRepository<Pet> {
 
 	@Query("SELECT p FROM Pet p WHERE p.owner.id = ?1")
-	Iterable<Pet> findPetsByOwnerId(Integer id);
+	Collection<Pet> findPetsByOwnerId(Integer id);
 
 }

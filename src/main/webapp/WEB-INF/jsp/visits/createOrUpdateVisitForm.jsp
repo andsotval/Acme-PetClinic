@@ -35,38 +35,38 @@
             </tr>
         </table>
         
-			<form:form modelAttribute="visit" class="form-horizontal"
-			action="/visits/save/${visit.id}">
-            <div class="form-group has-feedback">
-           		<petclinic:inputField label="Description"
-					name="description" />	
-                <petclinic:inputField label="Date of the Visit"
-					name="dateTime" />
-            </div>
-            
-            <c:if test="${hasClinic == null}">
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <input type="hidden" name="id" value="${visit.id}" />
-                     <c:if test="${visit.id == null}">
-                    	<input type="hidden" name="clinic"
-							value="${clinicId}" />
-                    	<input type="hidden" name="pet"
-							value="${visit.pet.id}" />
-						<button class="btn btn-default" type="submit" name="authorized"
-							formaction="/visits/save">Save Visit</button> 
-                     </c:if>
-                     <c:if test="${visit.id != null}">
-						<button class="btn btn-default" type="submit" name="authorized"
-							formaction="/visits/save/${visit.id}">Save Visit</button> 
-                     </c:if>
-                </div>
-            </div>
+            <c:if test="${hasClinic eq true}">
+				<form:form modelAttribute="visit" class="form-horizontal"
+				action="/visits/save/${visit.id}">
+		            <div class="form-group has-feedback">
+		           		<petclinic:inputField label="Description"
+							name="description" />	
+		                <petclinic:inputField label="Date of the Visit"
+							name="dateTime" />
+		            </div>
+		            
+		            <div class="form-group">
+		                <div class="col-sm-offset-2 col-sm-10">
+		                    <input type="hidden" name="id" value="${visit.id}" />
+		                     <c:if test="${visit.id == null}">
+		                    	<input type="hidden" name="clinic"
+									value="${clinicId}" />
+		                    	<input type="hidden" name="pet"
+									value="${visit.pet.id}" />
+								<button class="btn btn-default" type="submit" name="authorized"
+									formaction="/visits/save">Save Visit</button> 
+		                     </c:if>
+		                     <c:if test="${visit.id != null}">
+								<button class="btn btn-default" type="submit" name="authorized"
+									formaction="/visits/save/${visit.id}">Save Visit</button> 
+		                     </c:if>
+		                </div>
+		            </div>
+		        </form:form>
             </c:if>
              <c:if test="${hasClinic eq false}">
-             	<h3>You cannot request visits if you are not in one Clinic</h3>
+             	<h3 style="color: red;">**You cannot request visits if you are not in one Clinic</h3>
              </c:if>
-        </form:form>
        
        <c:if test="${visit.id == null}">
         	<h2>Historical of Visits</h2>
@@ -77,13 +77,14 @@
             			<th>Date</th>
             			<th>Description</th>
             			<th>Status</th>
+            			<th>Clinic</th>
        				</tr>
        			</thead>
         		<tbody>
 			        <c:forEach items="${visits}" var="visit">
 			            <tr>
 			                <td>
-			                    <c:out value="${visit.dateTime}" />
+			                    <petclinic:localDateTime date="${visit.dateTime}" pattern="yyyy/MM/dd HH:mm:ss" />
 			                </td>
 			                <td>
 			                    <c:out value="${visit.description}" />
@@ -100,6 +101,9 @@
                 				<c:out value="REJECTED"/>
                 			</c:otherwise>
                 		</c:choose>
+			                </td>
+			                <td>
+			                    <c:out value="${visit.clinic.name}" />
 			                </td>
 			            </tr>
 			        </c:forEach>

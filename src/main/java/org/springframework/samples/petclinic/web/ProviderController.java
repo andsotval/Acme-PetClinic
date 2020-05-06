@@ -42,8 +42,7 @@ public class ProviderController {
 
 	@GetMapping(value = "/listAvailable")
 	public String listAvailable(final ModelMap model) {
-		createModelListAvailable(model, "");
-		return "providers/providersList";
+		return createModelListAvailable(model, "");
 	}
 
 	@GetMapping(value = "/addProvider/{providerId}")
