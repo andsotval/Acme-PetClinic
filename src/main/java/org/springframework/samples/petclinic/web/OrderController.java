@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,17 @@ public class OrderController {
 	// inicio de creacion de Order
 	@GetMapping(path = "/new/{providerId}")
 	public String initCreationForm(@PathVariable("providerId") int providerId, ModelMap model) {
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		if (manager == null)
+			return "redirect:/oups";
+
+		Optional<Provider> provider = providerService.findEntityById(providerId);
+		if (!provider.isPresent())
+			return "redirect:/oups";
+
+		if (!provider.get().getManager().getId().equals(manager.getId()))
+			return "redirect:/oups";
+
 		Collection<Product> products = productService.findProductsAvailableByProviderId(providerId);
 		model.addAttribute("products", products);
 
@@ -72,6 +84,16 @@ public class OrderController {
 	public String processCreationForm(@PathVariable("providerId") int providerId, ModelMap model,
 		@RequestParam(name = "productIds", required = false) String[] productIds,
 		@RequestParam(name = "amountNumber", required = false) String[] amountNumber) {
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		if (manager == null)
+			return "redirect:/oups";
+
+		Optional<Provider> provider = providerService.findEntityById(providerId);
+		if (!provider.isPresent())
+			return "redirect:/oups";
+
+		if (!provider.get().getManager().getId().equals(manager.getId()))
+			return "redirect:/oups";
 
 		Collection<Product> productsSelected = productService.findProductsByIds(
 			Arrays.stream(productIds).mapToInt(Integer::valueOf).boxed().collect(Collectors.toList()));
@@ -93,7 +115,7 @@ public class OrderController {
 		Order order = new Order();
 		order.setDate(LocalDate.now());
 		order.setIsAccepted(false);
-		order.setManager(managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername()));
+		order.setManager(manager);
 
 		order = orderService.saveEntity(order);
 
@@ -109,33 +131,37 @@ public class OrderController {
 
 	}
 
-	// Order Details
+	// detalle de una Order
 	@GetMapping("/{orderId}")
 	public String showOrder(@PathVariable("orderId") int orderId, ModelMap modelMap) {
-		Manager managerLogged = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
-		Order order = orderService.findEntityById(orderId).get();
-		String returnView = "orders/orderDetails";
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		if (manager == null)
+			return "redirect:/oups";
 
-		if (order.getManager().getId() == managerLogged.getId()) {
-			Provider provider = productOrderService.findProviderByOrder(orderId);
-			Collection<ProductOrder> productsOrder = productOrderService.findProductOrderByOrder(orderId);
+		Optional<Order> order = orderService.findEntityById(orderId);
+		if (!order.isPresent())
+			return "redirect:/oups";
 
-			modelMap.addAttribute("order", order);
-			modelMap.addAttribute("productsOrder", productsOrder);
-			modelMap.addAttribute("provider", provider);
-		} else {
-			modelMap.addAttribute("message",
-				"Se esta intentando acceder a un pedido que no pertenece al manager actual");
+		if (!order.get().getManager().getId().equals(manager.getId()))
+			return "redirect:/oups";
 
-			returnView = "redirect:/oups";
-		}
-		return returnView;
+		Provider provider = productOrderService.findProviderByOrder(orderId);
+		Collection<ProductOrder> productsOrder = productOrderService.findProductOrderByOrder(orderId);
+
+		modelMap.addAttribute("order", order.get());
+		modelMap.addAttribute("productsOrder", productsOrder);
+		modelMap.addAttribute("provider", provider);
+
+		return "orders/orderDetails";
+
 	}
 
 	// listado de providers
 	@GetMapping(path = "/providers/listAvailable")
 	public String listAvailableProviders(ModelMap modelMap) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		if (manager == null)
+			return "redirect:/oups";
 
 		Collection<Provider> providerList = providerService.findProvidersByManagerId(manager.getId());
 		modelMap.addAttribute("providers", providerList);
@@ -147,6 +173,8 @@ public class OrderController {
 	@GetMapping(path = "/list")
 	public String listOrders(ModelMap modelMap) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		if (manager == null)
+			return "redirect:/oups";
 
 		Collection<Order> orderList = orderService.findAllOrdersByManagerId(manager.getId());
 		modelMap.addAttribute("orders", orderList);
