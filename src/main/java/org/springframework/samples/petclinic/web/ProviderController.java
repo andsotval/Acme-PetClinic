@@ -63,7 +63,7 @@ public class ProviderController {
 			return createModelProviderList(model,
 				"We are very sorry, it is not possible to add a Provider that is already assigned to another Manager");
 
-		return "redirect:/providers/listAvailable";
+		return createModelProviderList(model, "Provider succesfully added");
 	}
 
 	@GetMapping(value = "/listProductsByProvider/{providerId}")
@@ -89,7 +89,7 @@ public class ProviderController {
 	private String createModelProviderList(ModelMap model, String message) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (manager == null)
-			return "redirect:oups";
+			return REDIRECT_OUPS;
 
 		Collection<Provider> availableProviderList = providerService.findAvailableProviders();
 		Collection<Provider> addedProviderList = providerService.findProvidersByManagerId(manager.getId());
