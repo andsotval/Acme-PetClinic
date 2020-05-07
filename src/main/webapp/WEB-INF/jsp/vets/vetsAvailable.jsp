@@ -6,6 +6,10 @@
 
 <petclinic:layout pageName="vets">
 	<h1>Veterinarians</h1>
+	
+	<div class="form-group" style="color: green;">
+		<c:out value="${message}" />
+	</div>
 
 	<h2>Available veterinarians for hire</h2>
 	<c:if test="${not empty vets2}">

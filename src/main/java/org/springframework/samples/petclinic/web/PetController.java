@@ -173,7 +173,6 @@ public class PetController {
 		Clinic clinic = pet.get().getOwner().getClinic();
 		if (clinic != null) {
 			stay.setClinic(clinic);
-			model.addAttribute("clinicId", clinic);
 			model.addAttribute("hasClinic", true);
 		} else
 			model.addAttribute("hasClinic", false);

@@ -13,6 +13,10 @@
 		<h2>Pending Stays</h2>
 	</c:if>
 	
+	<div class="form-group" style="color: green;">
+		<c:out value="${message}" />
+	</div>
+	
 	<c:if test="${not empty stays}">
     <table id="staysTable" class="table table-striped">
         <thead>
