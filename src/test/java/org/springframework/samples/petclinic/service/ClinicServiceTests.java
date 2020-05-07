@@ -1,4 +1,3 @@
-
 package org.springframework.samples.petclinic.service;
 
 import static org.junit.Assert.assertNull;

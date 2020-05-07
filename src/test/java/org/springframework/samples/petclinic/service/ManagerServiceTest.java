@@ -1,4 +1,3 @@
-
 package org.springframework.samples.petclinic.service;
 
 
@@ -49,11 +48,11 @@ public class ManagerServiceTest {
 	public void testFindManagerById() {
 		Optional<Manager> entity = managerService.findEntityById(TEST_MANAGER_ID);
 		assertTrue(entity.isPresent());
-		assertTrue(entity.get().getId().equals(1));
+		assertTrue(entity.get().getId().equals(TEST_MANAGER_ID));
 	}
 
 	@Test
-	public void testFindClinicByIdNotPresent() {
+	public void testFindManagerByIdNotPresent() {
 		Optional<Manager> entity = managerService.findEntityById(TEST_MANAGER_ID_NOT_PRESENT);
 		assertTrue(!entity.isPresent());
 	}
@@ -125,7 +124,7 @@ public class ManagerServiceTest {
 	}
 
 	@Test
-	public void testDeleteEntityById() {
+	public void testDeleteManagerById() {
 		managerService.deleteEntityById(TEST_MANAGER_ID);
 
 		Optional<Manager> entity = managerService.findEntityById(TEST_MANAGER_ID);

@@ -1,26 +1,7 @@
-/*
- * Copyright 2002-2013 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.samples.petclinic.service;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -36,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -49,7 +29,22 @@ class OwnerServiceTests {
 
 	@Autowired
 	protected ClinicService	clinicService;
+	
+	private String TEST_OWNER_LAST_NAME = "Padilla";
+	
+	private String TEST_OWNER_LAST_NAME_NOT_PRESENT = "Last Name Not Present";
+	
+	private String TEST_USERNAME = "owner1";
+	
+	private String TEST_USERNAME_NOT_PRESENT = "owner user name not present";
+	
+	private int TEST_CLINIC_ID = 1;
+	
+	private int TEST_CLINIC_ID_NOT_PRESENT = 100;
 
+	private int TEST_OWNER_ID = 1;
+	
+	private int TEST_OWNER_ID_NOT_PRESENT = 100;
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -58,84 +53,64 @@ class OwnerServiceTests {
 	}
 
 	@Test
-	public void TestFindClinicByManagerIdPositive() {
-		String name = "Padilla";
-		Collection<Owner> owners = ownerService.findOwnerByLastName(name);
+	public void testFindOwnerByLastName() {
+		Collection<Owner> owners = ownerService.findOwnerByLastName(TEST_OWNER_LAST_NAME);
 		assertEquals(owners.size(), 1);
 	}
 	@Test
-	public void TestFindClinicByManagerIdNegative() {
-		String name = "APELIIDOPRUEBA";
-		Collection<Owner> owners = ownerService.findOwnerByLastName(name);
+	public void testFindOwnerByLastNameNotPresent() {
+		Collection<Owner> owners = ownerService.findOwnerByLastName(TEST_OWNER_LAST_NAME_NOT_PRESENT);
 		assertEquals(owners.size(), 0);
 	}
-
+	
 	@Test
-	public void TestFindClinicByManagerIdNegativeNotPresent() {
-		String name = "Clinic1";
-		Collection<Owner> owners = ownerService.findOwnerByLastName(name);
-		assertEquals(owners.size(), 0);
-		;
+	public void testFindOwnerByUsername() {
+		String name = ownerService.findByOwnerByUsername(TEST_USERNAME).getUser().getUsername();
+		assertEquals(name, TEST_USERNAME );
 	}
 
 	@Test
-	public void TestFindClinicByNamePositive() {
-		String name = "owner1";
-		assertEquals(name, ownerService.findByOwnerByUsername(name).getUser().getUsername());
+	public void testFindOwnerByUsernameNotPresent() {
+		Owner owner = ownerService.findByOwnerByUsername(TEST_USERNAME_NOT_PRESENT);
+		assertEquals(null, owner);
+	}
+
+
+	@Test
+	public void testFindOwnersByClinicId() {
+		Iterable<Owner> owners = ownerService.findOwnersByClinicId(TEST_CLINIC_ID);
+		owners.forEach(o -> assertEquals(TEST_CLINIC_ID, o.getClinic().getId()));
 	}
 
 	@Test
-	public void TestFindClinicByNameNegativeNotPresent() {
-		String name = "OWNERPRUEBA";
-		assertEquals(null, ownerService.findByOwnerByUsername(name));
+	public void testFindOwnersByClinicIdNotPresent() {
+		Collection<Owner> owners = (Collection<Owner>) ownerService.findOwnersByClinicId(TEST_CLINIC_ID_NOT_PRESENT);
+		assertEquals(0, owners.size());
 	}
 
 	@Test
-	public void TestFindClinicByNameNegative() {
-		String name = "owner1";
-		String nameWrong = "owner2";
-		assertNotEquals(nameWrong, ownerService.findByOwnerByUsername(name).getUser().getUsername());
-	}
-
-	@Test
-	public void TestFindPetsByClinicPositive() {
-		Clinic clinic = clinicService.findEntityById(1).get();
-		assertNotNull(clinic);
-		Iterable<Owner> pets = ownerService.findOwnersByClinicId(clinic.getId());
-		assertNotNull(pets);
-	}
-
-	@Test
-	public void TestFindPetsByClinicNegative() {
-		Clinic clinic = null;
-		assertNull(clinic);
-		Iterable<Owner> pets = ownerService.findOwnersByClinicId(null);
-		assertNotNull(pets);
-	}
-
-	@Test
-	public void testFindAllEntities() {
+	public void testFindAllOwners() {
 		Collection<Owner> collection = (Collection<Owner>) ownerService.findAllEntities();
 		assertEquals(collection.size(), 11);
 	}
 
 	@Test
-	public void testFindEntityByIdPositive() {
-		Optional<Owner> entity = ownerService.findEntityById(1);
+	public void testFindOwnerById() {
+		Optional<Owner> entity = ownerService.findEntityById(TEST_OWNER_ID);
 		assertTrue(entity.isPresent());
-		assertTrue(entity.get().getId().equals(1));
+		assertTrue(entity.get().getId().equals(TEST_OWNER_ID));
 	}
 
 	@Test
 	public void testFindEntityByIdNegative() {
-		Optional<Owner> entity = ownerService.findEntityById(99);
+		Optional<Owner> entity = ownerService.findEntityById(TEST_OWNER_ID_NOT_PRESENT);
 		assertTrue(!entity.isPresent());
 	}
 
 	@Test
-	public void testSaveEntityPositive() {
+	public void testSaveOwner() {
 		Collection<Owner> collection = (Collection<Owner>) ownerService.findAllEntities();
-		assertEquals(collection.size(), 11);
+		int collectionSize = collection.size();
 
 		Owner entity = new Owner();
 		entity.setFirstName("FirstName 1");
@@ -147,9 +122,9 @@ class OwnerServiceTests {
 		ownerService.saveEntity(entity);
 
 		collection = (Collection<Owner>) ownerService.findAllEntities();
-		assertEquals(collection.size(), 12);
+		assertEquals(collection.size(), collectionSize+1);
 
-		Optional<Owner> newEntity = ownerService.findEntityById(12);
+		Optional<Owner> newEntity = ownerService.findEntityById(collectionSize+1);
 		assertTrue(newEntity.isPresent());
 		assertEquals(newEntity.get().getFirstName(), "FirstName 1");
 		assertEquals(newEntity.get().getLastName(), "LastName 1");
@@ -160,8 +135,9 @@ class OwnerServiceTests {
 	}
 
 	@Test
-	public void testSaveEntityNegative() {
+	public void testSaveOwnerEmptyParameters() {
 		LocaleContextHolder.setLocale(Locale.ENGLISH);
+		
 		Owner entity = new Owner();
 		entity.setFirstName(null);
 		entity.setLastName(null);
@@ -204,20 +180,20 @@ class OwnerServiceTests {
 	}
 
 	@Test
-	public void testDeleteEntity() {
-		Optional<Owner> entity = ownerService.findEntityById(1);
+	public void testDeleteOwner() {
+		Optional<Owner> entity = ownerService.findEntityById(TEST_OWNER_ID);
 		assertTrue(entity.isPresent());
 		ownerService.deleteEntity(entity.get());
 
-		Optional<Owner> deleteEntity = ownerService.findEntityById(1);
+		Optional<Owner> deleteEntity = ownerService.findEntityById(TEST_OWNER_ID);
 		assertTrue(!deleteEntity.isPresent());
 	}
 
 	@Test
 	public void testDeleteEntityById() {
-		ownerService.deleteEntityById(1);
+		ownerService.deleteEntityById(TEST_OWNER_ID);
 
-		Optional<Owner> entity = ownerService.findEntityById(1);
+		Optional<Owner> entity = ownerService.findEntityById(TEST_OWNER_ID);
 		assertTrue(!entity.isPresent());
 	}
 }

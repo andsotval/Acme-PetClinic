@@ -26,6 +26,10 @@ public class PetTypeServiceTest {
 
 	@Autowired
 	protected PetTypeService service;
+	
+	private int TEST_PET_TYPE_ID = 1;
+	
+	private int TEST_PET_TYPE_ID_NOT_PRESENT = 100;
 
 
 	private Validator createValidator() {
@@ -35,44 +39,42 @@ public class PetTypeServiceTest {
 	}
 
 	@Test
-	public void testFindAvailable() {
-		Collection<PetType> collection = service.findAvailable();
-		assertEquals(collection.size(), 6);
+	public void testFindAvailablePetTypes() {
+		Collection<PetType> petTypes = service.findAvailable();
 
-		collection.forEach(pettype -> assertEquals(pettype.getAvailable(), true));
+		petTypes.forEach(pettype -> assertEquals(pettype.getAvailable(), true));
 	}
 
 	@Test
-	public void testFindNotAvailable() {
-		Collection<PetType> collection = service.findNotAvailable();
-		assertEquals(collection.size(), 1);
+	public void testFindNotAvailablePetTypes() {
+		Collection<PetType> petTypes = service.findNotAvailable();
 
-		collection.forEach(pettype -> assertEquals(pettype.getAvailable(), false));
+		petTypes.forEach(pettype -> assertEquals(pettype.getAvailable(), false));
 	}
 
 	@Test
-	public void testFindAllEntities() {
-		Collection<PetType> collection = (Collection<PetType>) service.findAllEntities();
-		assertEquals(collection.size(), 7);
+	public void testFindAllPetTypes() {
+		Collection<PetType> petTypes = (Collection<PetType>) service.findAllEntities();
+		assertEquals(petTypes.size(), 7);
 	}
 
 	@Test
-	public void testFindEntityByIdPositive() {
-		Optional<PetType> entity = service.findEntityById(1);
+	public void testFindPetTypeById() {
+		Optional<PetType> entity = service.findEntityById(TEST_PET_TYPE_ID);
 		assertTrue(entity.isPresent());
-		assertTrue(entity.get().getId().equals(1));
+		assertTrue(entity.get().getId().equals(TEST_PET_TYPE_ID));
 	}
 
 	@Test
-	public void testFindEntityByIdNegative() {
-		Optional<PetType> entity = service.findEntityById(99);
+	public void testFindPetTypeByIdNotPresent() {
+		Optional<PetType> entity = service.findEntityById(TEST_PET_TYPE_ID_NOT_PRESENT);
 		assertTrue(!entity.isPresent());
 	}
 
 	@Test
-	public void testSaveEntityPositive() {
+	public void testSavePetType() {
 		Collection<PetType> collection = (Collection<PetType>) service.findAllEntities();
-		assertEquals(collection.size(), 7);
+		int collectionSize = collection.size();
 
 		PetType entity = new PetType();
 		entity.setAvailable(true);
@@ -80,16 +82,16 @@ public class PetTypeServiceTest {
 		service.saveEntity(entity);
 
 		collection = (Collection<PetType>) service.findAllEntities();
-		assertEquals(collection.size(), 8);
+		assertEquals(collection.size(), collectionSize+1);
 
-		Optional<PetType> newEntity = service.findEntityById(8);
+		Optional<PetType> newEntity = service.findEntityById(collectionSize+1);
 		assertTrue(newEntity.isPresent());
 		assertEquals(newEntity.get().getAvailable(), true);
 		assertEquals(newEntity.get().getName(), "name1");
 	}
 
 	@Test
-	public void testSaveEntityNegative() {
+	public void testSavePetTypeWithNullAvaliability() {
 		LocaleContextHolder.setLocale(Locale.ENGLISH);
 		PetType entity = new PetType();
 		entity.setName("name1");
@@ -105,20 +107,20 @@ public class PetTypeServiceTest {
 	}
 
 	@Test
-	public void testDeleteEntity() {
-		Optional<PetType> entity = service.findEntityById(1);
+	public void testDeletePetType() {
+		Optional<PetType> entity = service.findEntityById(TEST_PET_TYPE_ID);
 		assertTrue(entity.isPresent());
 		service.deleteEntity(entity.get());
 
-		Optional<PetType> deleteEntity = service.findEntityById(1);
+		Optional<PetType> deleteEntity = service.findEntityById(TEST_PET_TYPE_ID);
 		assertTrue(!deleteEntity.isPresent());
 	}
 
 	@Test
-	public void testDeleteEntityById() {
-		service.deleteEntityById(1);
+	public void testDeletePetTypeById() {
+		service.deleteEntityById(TEST_PET_TYPE_ID);
 
-		Optional<PetType> entity = service.findEntityById(1);
+		Optional<PetType> entity = service.findEntityById(TEST_PET_TYPE_ID);
 		assertTrue(!entity.isPresent());
 	}
 
