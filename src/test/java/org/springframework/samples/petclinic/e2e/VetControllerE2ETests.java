@@ -22,8 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 class VetControllerE2ETests {
 
-	private static final int	TEST_VET1_ID	= 1;
-	private static final int	TEST_VET2_ID	= 2;
+	private static final int	TEST_VET1_ID			= 1;
+	private static final int	TEST_VET2_ID			= 2;
+	private static final int	TEST_VET_UNACCEPTED_ID	= 7;
 
 	@Autowired
 	private MockMvc				mockMvc;
@@ -38,8 +39,8 @@ class VetControllerE2ETests {
 	}
 
 	//Al añadir con otro tipo de usuario
-	@WithMockUser(value = "vet1", authorities = {
-		"veterinarian"
+	@WithMockUser(value = "manager123", authorities = {
+		"manager"
 	})
 	@Test
 	void testVetsAvailableAndOwnListNegative() throws Exception {
@@ -51,7 +52,7 @@ class VetControllerE2ETests {
 	})
 	@Test
 	void testAcceptVet() throws Exception {
-		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET2_ID)).andExpect(status().isFound()).andExpect(view().name("redirect:/vets/vetsAvailable"));
+		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET_UNACCEPTED_ID)).andExpect(status().isFound()).andExpect(view().name("redirect:/vets/vetsAvailable"));
 	}
 
 	//añadir un veterinario con clínica ya asignada
@@ -72,8 +73,8 @@ class VetControllerE2ETests {
 	}
 
 	//Acceder desde otro tipo usuario
-	@WithMockUser(value = "vet1", authorities = {
-		"veterinarian"
+	@WithMockUser(value = "manager123", authorities = {
+		"manager"
 	})
 	@Test
 	void testShowVetNegative() throws Exception {

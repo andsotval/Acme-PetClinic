@@ -8,43 +8,58 @@
 
 <petclinic:layout pageName="orders">
 	<h2>New Order</h2>
-	<form:form class="form-horizontal"
-		id="create-order-form" action="/orders/save/${providerId}">
-
-		<table id="productsTable" class="table table-striped">
-			<thead>
-				<tr>
-					<th width="70%">Name</th>
-					<th>Price</th>
-					<th>Tax % Include</th>
-					<th>Amount</th>
-				</tr>
-			</thead>
-			<tbody>
-				<c:forEach items="${products}" var="product">
-					<input type="hidden" name="productIds" value="${product.id}"/>
+	
+	<c:if test="${empty products}">
+		<h3>The provider doesn't have products by the moment...</h3>
+	</c:if>
+	
+	<c:if test="${not empty products}">	
+		<form:form class="form-horizontal"
+			id="create-order-form" action="/orders/save/${providerId}">
+			
+			<table id="productsTable" class="table table-striped">
+				<thead>
 					<tr>
-						<td><c:out value="${product.name}" /></td>
-						<td align="center"><c:out value="${product.price}" /></td>
-						<td align="center"><c:out value="${product.tax}" /></td>
-						<td>
-							<input id="input"  type="number" min="0" name="amountNumber" value="0">
-						</td>
+						<th width="70%">Name</th>
+						<th>Price</th>
+						<th>Tax % Include</th>
+						<th>Amount</th>
 					</tr>
-				</c:forEach>
-			</tbody>
-		</table>
-		
-		<div class="form-group" style="color: red;">
-			<c:out value="${notProductsOrder}" />
-		</div>
-
+				</thead>
+				<tbody>
+					<c:forEach items="${products}" var="product">
+						<input type="hidden" name="productIds" value="${product.id}"/>
+						<tr>
+							<td><c:out value="${product.name}" /></td>
+							<td align="center"><c:out value="${product.price}" /></td>
+							<td align="center"><c:out value="${product.tax}" /></td>
+							<td>
+								<input id="input"  type="number" min="0" name="amountNumber" value="0">
+							</td>
+						</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+			
+			<div class="form-group" style="color: red;">
+				<c:out value="${notProductsOrder}" />
+			</div>
+	
+			<div class="form-group">
+				<a class="btn btn-default"
+					href='<spring:url value="/orders/providers/listAvailable" htmlEscape="true"/>'>Back
+					to Providers List</a>
+				<button class="btn btn-default" type="submit">Create Order</button>
+			</div>
+		</form:form>
+	</c:if>
+	
+	<c:if test="${empty products}">
 		<div class="form-group">
-			<a class="btn btn-default"
-				href='<spring:url value="/orders/providers/listAvailable" htmlEscape="true"/>'>Back
-				to Providers List</a>
-			<button class="btn btn-default" type="submit">Create Order</button>
-		</div>
-	</form:form>
+				<a class="btn btn-default"
+					href='<spring:url value="/orders/providers/listAvailable" htmlEscape="true"/>'>Back
+					to Providers List</a>
+			</div>
+	</c:if>
 	
 </petclinic:layout>

@@ -1,18 +1,3 @@
-/*
- * Copyright 2002-2013 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package org.springframework.samples.petclinic.service;
 
@@ -23,6 +8,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.StreamSupport;
@@ -36,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.samples.petclinic.model.Authorities;
 import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.Owner;
@@ -228,7 +215,7 @@ class StayServiceTests {
 	}
 
 	@Test
-	public void saveStay() {
+	public void testSaveStay() {
 		//Fixture -----------------------------------
 		LocalDate actualDate = LocalDate.of(2019, Month.APRIL, 5);
 
@@ -286,14 +273,18 @@ class StayServiceTests {
 		assertEquals(stay.getClinic().getId(), staySaved.getClinic().getId());
 		assertEquals(stay.getPet().getId(), staySaved.getPet().getId());
 	}
+
 	@Test
-	public void saveStayNegative() {
+	public void testSaveStayNegative() {
+		LocaleContextHolder.setLocale(Locale.ENGLISH);
 		Clinic clinic = new Clinic();
 		clinic.setId(2);
 
 		Stay stay = new Stay();
 		stay.setId(2);
 		stay.setDescription(null);
+
+		stayService.saveEntity(stay);
 
 		Validator validator = createValidator();
 		Set<ConstraintViolation<Stay>> constraintViolations = validator.validate(stay);
@@ -307,7 +298,7 @@ class StayServiceTests {
 
 			switch (violation.getPropertyPath().toString()) {
 			case "description":
-				assertTrue(message.equals("no puede estar vacío"));
+				assertTrue(message.equals("must not be blank"));
 				break;
 			default:
 				break;

@@ -1,3 +1,8 @@
+/**
+ * DP2 - Grupo 8
+ * LAB F1.33
+ * Date: 05-may-2020
+ */
 
 package org.springframework.samples.petclinic.service;
 
@@ -24,13 +29,13 @@ public class StayService extends BaseService<Stay> {
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Stay> findAllPendingByVet(final Integer vetId) {
+	public Collection<Stay> findAllPendingByVet(final Integer vetId) {
 		LocalDate actualDate = LocalDate.now();
 		return stayRepository.findAllPendingByVet(actualDate, vetId);
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Stay> findAllAcceptedByVet(final Integer vetId) {
+	public Collection<Stay> findAllAcceptedByVet(final Integer vetId) {
 		LocalDate actualDate = LocalDate.now();
 		return stayRepository.findAllAcceptedByVet(actualDate, vetId);
 	}
@@ -42,17 +47,23 @@ public class StayService extends BaseService<Stay> {
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Stay> findAllStayByPet(final Integer petId) {
+	public Collection<Stay> findAllStayByPet(final Integer petId) {
 		return stayRepository.findByPetId(petId);
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Stay> findAllPendingByOwner(final Integer ownerId) {
+	public Collection<Stay> findAllPendingByOwner(final Integer ownerId) {
 		return stayRepository.findAllPendingByOwner(ownerId);
 	}
 
-	public Iterable<Stay> findAllAcceptedByOwner(final Integer ownerId) {
+	@Transactional(readOnly = true)
+	public Collection<Stay> findAllAcceptedByOwner(final Integer ownerId) {
 		return stayRepository.findAllAcceptedByOwner(ownerId);
+	}
+
+	@Transactional(readOnly = true)
+	public boolean canUnsubscribe(Integer ownerId) {
+		return stayRepository.findAllAcceptedOrPendingByOwner(ownerId).size() == 0;
 	}
 
 }

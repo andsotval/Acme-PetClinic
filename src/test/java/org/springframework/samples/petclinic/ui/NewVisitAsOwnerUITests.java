@@ -1,6 +1,7 @@
 
 package org.springframework.samples.petclinic.ui;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import org.junit.jupiter.api.AfterEach;
@@ -11,7 +12,7 @@ import org.openqa.selenium.WebDriver;
 public class NewVisitAsOwnerUITests extends AbstractUITests {
 
 	@Test
-	public void testUntitledTestCase() throws Exception {
+	public void testNewVisitAsOwnerTestCase() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsOwner();
@@ -26,8 +27,29 @@ public class NewVisitAsOwnerUITests extends AbstractUITests {
 		driver.findElement(By.id("dateTime")).clear();
 		driver.findElement(By.id("dateTime")).sendKeys("2020/06/05 18:55:56");
 		driver.findElement(By.name("authorized")).click();
-		driver.findElement(By.linkText("My Visits")).click();
+		assertEquals("My Visits", driver.findElement(By.xpath("//h1")).getText());
 		driver.findElement(By.xpath("(//table[@id='visitsTable']/tbody/tr/td[2])[2]")).click();
+
+		LogOut();
+
+	}
+
+	@Test
+	public void testNewVisitAsOwnerWrongDateNegativeTestCase() throws Exception {
+		driver.get("http://localhost:" + port);
+
+		LogInAsOwner();
+
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[2]/a/span[2]")).click();
+		driver.findElement(By.xpath("//table[@id='petsTable']/tbody/tr/td[4]/a/span")).click();
+		driver.findElement(By.id("description")).click();
+		driver.findElement(By.id("description")).clear();
+		driver.findElement(By.id("description")).sendKeys("Nueva visita 2");
+		driver.findElement(By.id("dateTime")).click();
+		driver.findElement(By.id("dateTime")).clear();
+		driver.findElement(By.id("dateTime")).sendKeys("2019/05/01 19:00:11");
+		driver.findElement(By.name("authorized")).click();
+		driver.findElement(By.xpath("//form[@id='visit']/div/div[2]/div")).click();
 
 		LogOut();
 

@@ -7,6 +7,10 @@
 
 <petclinic:layout pageName="orders">
 	<h2>Orders</h2>
+	
+	<div class="form-group" style="color: green;">
+		<c:out value="${message}" />
+	</div>
 
 	<c:if test="${empty orders}">
 		<h3>You don't have orders by the moment...</h3>

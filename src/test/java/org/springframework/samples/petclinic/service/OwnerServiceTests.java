@@ -116,7 +116,7 @@ class OwnerServiceTests {
 	@Test
 	public void testFindAllEntities() {
 		Collection<Owner> collection = (Collection<Owner>) ownerService.findAllEntities();
-		assertEquals(collection.size(), 8);
+		assertEquals(collection.size(), 11);
 	}
 
 	@Test
@@ -135,7 +135,7 @@ class OwnerServiceTests {
 	@Test
 	public void testSaveEntityPositive() {
 		Collection<Owner> collection = (Collection<Owner>) ownerService.findAllEntities();
-		assertEquals(collection.size(), 8);
+		assertEquals(collection.size(), 11);
 
 		Owner entity = new Owner();
 		entity.setFirstName("FirstName 1");
@@ -144,11 +144,12 @@ class OwnerServiceTests {
 		entity.setAddress("Address 1");
 		entity.setCity("City 1");
 		entity.setTelephone("912654555");
+		ownerService.saveEntity(entity);
 
 		collection = (Collection<Owner>) ownerService.findAllEntities();
-		assertEquals(collection.size(), 4);
+		assertEquals(collection.size(), 12);
 
-		Optional<Owner> newEntity = ownerService.findEntityById(5);
+		Optional<Owner> newEntity = ownerService.findEntityById(12);
 		assertTrue(newEntity.isPresent());
 		assertEquals(newEntity.get().getFirstName(), "FirstName 1");
 		assertEquals(newEntity.get().getLastName(), "LastName 1");
@@ -171,7 +172,7 @@ class OwnerServiceTests {
 
 		Validator validator = createValidator();
 		Set<ConstraintViolation<Owner>> constraintViolations = validator.validate(entity);
-		assertEquals(constraintViolations.size(), 3);
+		assertEquals(constraintViolations.size(), 6);
 		Iterator<ConstraintViolation<Owner>> it = constraintViolations.iterator();
 		while (it.hasNext()) {
 			ConstraintViolation<Owner> violation = it.next();

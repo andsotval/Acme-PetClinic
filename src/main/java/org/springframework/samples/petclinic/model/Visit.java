@@ -1,8 +1,7 @@
 /**
  * DP2 - Grupo 8
  * LAB F1.33
- * Date: 03-mar-2020
- * User: carlo
+ * Date: 05-may-2020
  */
 
 package org.springframework.samples.petclinic.model;
@@ -15,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -29,22 +29,24 @@ public class Visit extends BaseEntity {
 
 	@Column(name = "visit_date")
 	@DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")
-	private LocalDateTime dateTime;
+	@NotNull
+	private LocalDateTime	dateTime;
 
 	@NotEmpty
 	@Column(name = "description")
-	private String description;
+	private String			description;
 
 	@Column(name = "is_accepted")
-	private Boolean isAccepted;
+	private Boolean			isAccepted;
 
 	@ManyToOne
 	@JoinColumn(name = "clinic_id")
-	private Clinic clinic;
+	private Clinic			clinic;
 
 	@ManyToOne
 	@JoinColumn(name = "pet_id")
-	private Pet pet;
+	private Pet				pet;
+
 
 	/**
 	 * Creates a new instance of Visit for the current date

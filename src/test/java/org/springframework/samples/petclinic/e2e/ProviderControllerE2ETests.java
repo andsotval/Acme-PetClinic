@@ -77,7 +77,7 @@ class ProviderControllerE2ETests {
 	})
 	@Test
 	void testListProductsByProviderNegative() throws Exception {
-		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}", 99)).andExpect(status().isOk())
-			.andExpect(view().name("exception"));
+		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}", 99))
+			.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/providers/listAvailable"));
 	}
 }

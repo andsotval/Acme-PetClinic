@@ -6,7 +6,7 @@
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
 <petclinic:layout pageName="/providers">
-	<h2>Provider: ${provider.firstName} - ${provider.lastName}</h2>
+	<h2><c:out value="Provider: ${provider.firstName} ${provider.lastName}"/></h2>
 
 
     <table id="productsTable" class="table table-striped">
@@ -23,7 +23,7 @@
                     <c:out value="${product.name}"/>
                 </td>
                 <td>
-                    <c:out value="${product.price}"/>
+                    <c:out value="${product.price}"/> &#8364
                 </td>           
             </tr>
         </c:forEach>

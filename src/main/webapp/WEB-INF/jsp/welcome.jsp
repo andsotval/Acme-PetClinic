@@ -5,21 +5,21 @@
 <!-- %@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %-->  
 
 <petclinic:layout pageName="home">
-    <!--<h2><fmt:message key="welcome.title"/></h2>-->
-    <!--<h3><fmt:message key="welcome.message"/></h3>-->
+    <h2><fmt:message key="welcome.title"/></h2>
+    <h3><fmt:message key="welcome.message"/></h3>
     <div class="row">
         <div class="col-md-12">
             <!-- <spring:url value="/resources/images/pets.png" htmlEscape="true" var="petsImage"/>
             <img class="img-responsive" src="${petsImage}"/> -->
         </div>
     </div>
-	<div class="container">
+	<!--<div class="container">
 	 <div class="jumbotron" style="border-radius:10px;background-color:white">
       <div class="container">
         <h1 class="display-3"><fmt:message key="welcome.title"/></h1>
         <p><fmt:message key="welcome.message"/></p>
       </div>
-    </div>
+    </div>-->
 	 <div style="border-radius: 10px;margin-top:25px" id="myCarousel" class="carousel slide" data-ride="carousel">
 	   <!-- Indicators -->
 	   <ol class="carousel-indicators">

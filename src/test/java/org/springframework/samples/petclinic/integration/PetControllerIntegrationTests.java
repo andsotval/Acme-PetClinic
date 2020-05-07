@@ -77,7 +77,7 @@ public class PetControllerIntegrationTests {
 		assertEquals("pets/list", view);
 
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
-		Collection<Pet> list = (Collection<Pet>) petService.findPetsByOwnerId(owner.getId());
+		Collection<Pet> list = petService.findPetsByOwnerId(owner.getId());
 		assertNotNull(model.get("pets"));
 		assertNotNull(model.get("ownerId"));
 		assertEquals(((Collection<Pet>) model.get("pets")).size(), list.size());
@@ -93,7 +93,7 @@ public class PetControllerIntegrationTests {
 	@Order(5)
 	public void TestNewPetPositive() {
 		ModelMap model = new ModelMap();
-		String view = petController.newPet(TEST_OWNER_ID, model);
+		String view = petController.newPet(model);
 
 		assertEquals("pets/createOrUpdatePetForm", view);
 		assertNotNull(model.get("pet"));
@@ -122,8 +122,8 @@ public class PetControllerIntegrationTests {
 
 		assertEquals(view, "redirect:/pets/listMyPets");
 
-		List<Pet> pets = ((Collection<Pet>) petService.findPetsByOwnerId(TEST_OWNER_ID)).stream()
-			.filter(p -> p.getName().equals("newPet")).collect(Collectors.toList());
+		List<Pet> pets = petService.findPetsByOwnerId(TEST_OWNER_ID).stream().filter(p -> p.getName().equals("newPet"))
+			.collect(Collectors.toList());
 
 		assertNotNull(pets.get(0));
 
