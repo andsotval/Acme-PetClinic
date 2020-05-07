@@ -60,11 +60,6 @@ public class VisitController {
 		this.authoritiesService = authoritiesService;
 	}
 
-	//	@InitBinder
-	//	public void setAllowedFields(final WebDataBinder dataBinder) {
-	//		dataBinder.setDisallowedFields("id");
-	//	}
-
 	@GetMapping(value = "/listAllPending")
 	public String listAllPending(ModelMap modelMap) {
 		return createModelVisitsList(modelMap, false, "");
