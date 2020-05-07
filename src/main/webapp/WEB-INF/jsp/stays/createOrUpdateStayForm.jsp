@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="sec"	uri="http://www.springframework.org/security/tags"%>
 
 
 <petclinic:layout pageName="staysByPet">
@@ -61,12 +62,20 @@
 		            </div>
 		            <div class="form-group">
 		                <div class="col-sm-offset-2 col-sm-10">
+	                     	<sec:authorize access="hasAuthority('veterinarian')">
+								<a class="btn btn-default"
+								href='<spring:url value="/stays/listAllAccepted" htmlEscape="true"/>'>Back to list of pending stays</a>
+		                	</sec:authorize>
+		                	<sec:authorize access="hasAuthority('owner')">
+		                	<a class="btn btn-default"
+								href='<spring:url value="/pets/listMyPets" htmlEscape="true"/>'>Back to list of Pets</a>
+		                	</sec:authorize>
 		                    <input type="hidden" name="id" value="${stay.id}" />
 		                    <%-- <input type="hidden" name="clinic" value="${stay.clinic.id}"/>
 		                    <input type="hidden" name="pet" value="${stay.pet}"/> --%>
 		                    <c:if test="${stay.id == null}">
 		                    	<input type="hidden" name="clinic"
-										value="${clinicId}" />
+										value="${stay.clinic.id}" />
 		                    	<input type="hidden" name="pet"
 										value="${stay.pet.id}" />
 								<button class="btn btn-default" type="submit"

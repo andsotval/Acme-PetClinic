@@ -11,6 +11,10 @@
 	<c:if test="${empty suggestions}">
 		<h3>You don't have suggestions by the moment...</h3>
 	</c:if>
+	
+	<div class="form-group" style="color: green;">
+		<c:out value="${message}" />
+	</div>
 
 	<c:if test="${not empty suggestions}">
 	<table id="staysTable" class="table table-striped">

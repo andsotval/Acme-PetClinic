@@ -7,13 +7,12 @@
 package org.springframework.samples.petclinic.web;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.Manager;
 import org.springframework.samples.petclinic.model.Vet;
-import org.springframework.samples.petclinic.model.Vets;
 import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.samples.petclinic.service.ManagerService;
 import org.springframework.samples.petclinic.service.VetService;
@@ -34,8 +33,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/vets")
 public class VetController {
 
+	private static final String		REDIRECT_OUPS			= "redirect:/oups";
+
+	private static final String		VIEWS_VETS_AVAILABLE	= "vets/vetsAvailable";
+
 	private final ClinicService		clinicService;
+
 	private final VetService		vetService;
+
 	private final ManagerService	managerService;
 
 
@@ -46,68 +51,60 @@ public class VetController {
 		this.managerService = managerService;
 	}
 
-	@GetMapping(value = {
-		"/vetsList"
-	})
-	public String showVetList(Map<String, Object> model) {
-		// Here we are returning an object of type 'Vets' rather than a collection of Vet
-		// objects
-		// so it is simpler for Object-Xml mapping
-		Vets vets = new Vets();
-		vets.getVetList().addAll((Collection<Vet>) vetService.findAllEntities());
-		model.put("vets", vets);
-		return "vets/vetList";
-	}
-
 	//este metodo devuelve la lista de vets disponibles y la de los ya registrados de la clinica
 	//a la que pertenece el manager que este conectado
 	@GetMapping(path = "/vetsAvailable")
 	public String vetsAvailableAndOwnList(ModelMap modelMap) {
-		String vista = "vets/vetsAvailable";
-
-		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
-
-		if (manager != null) {
-			Iterable<Vet> vetsAvailable = vetService.findAvailableVets();
-			modelMap.addAttribute("vets2", vetsAvailable);
-
-			Iterable<Vet> hiredVets = vetService.findVetsByManager(manager.getId());
-			modelMap.addAttribute("hiredVets", hiredVets);
-
-			return vista;
-		} else
-			return "redirect:/oups";
-
+		return createModelVetsList(modelMap, "");
 	}
 
 	@GetMapping(path = "/accept/{vetId}")
 	public String acceptVet(@PathVariable("vetId") final int vetId, final ModelMap modelMap) {
-		String returnView;
+		Optional<Vet> vet = vetService.findEntityById(vetId);
+		if (!vet.isPresent())
+			return REDIRECT_OUPS;
 
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		if (manager == null)
+			return REDIRECT_OUPS;
+
 		Clinic clinic = clinicService.findClinicByManagerId(manager.getId());
-		Vet vet = vetService.findEntityById(vetId).get();
 
-		if (vet.getClinic() == null) {
-			vet.setClinic(clinic);
-			vetService.saveEntity(vet);
-			returnView = "redirect:/vets/vetsAvailable";
+		if (vet.get().getClinic() == null) {
+			vet.get().setClinic(clinic);
+			vetService.saveEntity(vet.get());
+			return createModelVetsList(modelMap, "Vet succesfully accepted");
 		} else
-			returnView = "redirect:/oups";
-
-		return returnView;
+			return REDIRECT_OUPS;
 	}
 
 	@GetMapping(path = "/{vetId}")
 	public String showVet(@PathVariable("vetId") int vetId, ModelMap modelMap) {
-		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		Optional<Vet> vet = vetService.findEntityById(vetId);
+		if (!vet.isPresent())
+			return REDIRECT_OUPS;
 
-		if (manager != null) {
-			Vet vet = vetService.findEntityById(vetId).get();
-			modelMap.addAttribute("vet", vet);
-			return "vets/vetDetails";
-		} else
-			return "redirect:/oups";
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		if (manager == null)
+			return REDIRECT_OUPS;
+
+		modelMap.addAttribute("vet", vet.get());
+		return "vets/vetDetails";
+	}
+
+	private String createModelVetsList(ModelMap model, String message) {
+		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		if (manager == null)
+			return REDIRECT_OUPS;
+
+		Collection<Vet> vetsAvailable = vetService.findAvailableVets();
+		model.addAttribute("vets2", vetsAvailable);
+
+		Collection<Vet> hiredVets = vetService.findVetsByManager(manager.getId());
+		model.addAttribute("hiredVets", hiredVets);
+
+		model.addAttribute("message", message);
+		return VIEWS_VETS_AVAILABLE;
 	}
 
 }
