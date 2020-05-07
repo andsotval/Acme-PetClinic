@@ -8,6 +8,7 @@ package org.springframework.samples.petclinic.web;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -32,6 +33,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/suggestion/user")
 public class SuggestionUserController {
+
+	private static final String	REDIRECT_OUPS					= "redirect:/oups";
+
+	private static final String	VIEWS_SUGGESTION_CREATE_FORM	= "suggestion/user/createSuggestionForm";
 
 	private SuggestionService	suggestionService;
 
@@ -60,18 +65,19 @@ public class SuggestionUserController {
 
 	@GetMapping(path = "/list")
 	public String list(ModelMap modelMap) {
-		Collection<Suggestion> list = suggestionService
-			.findAllEntitiesAvailableByUsername(SessionUtils.obtainUserInSession().getUsername());
-		modelMap.addAttribute("suggestions", list);
-		modelMap.addAttribute("isTrash", false);
-		return "suggestion/user/list";
+		return createModelSuggestionsList(modelMap, "");
 	}
 
 	@GetMapping(path = "/details/{suggestionId}")
 	public String detail(@PathVariable("suggestionId") Integer suggestionId, ModelMap modelMap) {
-		Suggestion suggestion = suggestionService.findEntityById(suggestionId).get();
+		Optional<Suggestion> suggestion = suggestionService.findEntityById(suggestionId);
+		if (!suggestion.isPresent())
+			return REDIRECT_OUPS;
 
-		modelMap.addAttribute("suggestion", suggestion);
+		if (!suggestion.get().getUser().getUsername().equals(SessionUtils.obtainUserInSession().getUsername()))
+			return REDIRECT_OUPS;
+
+		modelMap.addAttribute("suggestion", suggestion.get());
 
 		return "suggestion/user/details";
 	}
@@ -90,35 +96,44 @@ public class SuggestionUserController {
 		suggestion.setIsTrash(false);
 
 		modelMap.addAttribute("suggestion", suggestion);
-		return "suggestion/user/createSuggestionForm";
+		return VIEWS_SUGGESTION_CREATE_FORM;
 	}
 
 	@PostMapping(path = "/save")
 	public String save(@Valid Suggestion suggestion, BindingResult result, ModelMap modelMap) {
 		if (result.hasErrors()) {
 			modelMap.addAttribute("suggestion", suggestion);
-			return "suggestion/user/createSuggestionForm";
+			return VIEWS_SUGGESTION_CREATE_FORM;
 		} else {
 			suggestionService.saveEntity(suggestion);
-			return "redirect:/suggestion/user/list";
+			return createModelSuggestionsList(modelMap, "Suggestion succesfully created");
 		}
 
 	}
 
 	@GetMapping(path = "/delete/{suggestionId}")
 	public String delete(@PathVariable("suggestionId") Integer suggestionId, ModelMap modelMap) {
-		Suggestion suggestion = suggestionService.findEntityById(suggestionId).get();
+		Optional<Suggestion> suggestion = suggestionService.findEntityById(suggestionId);
+		if (!suggestion.isPresent())
+			return REDIRECT_OUPS;
 
-		suggestion.setIsAvailable(false);
-		suggestionService.saveEntity(suggestion);
+		suggestion.get().setIsAvailable(false);
+		suggestionService.saveEntity(suggestion.get());
 
-		return "redirect:/suggestion/user/list";
+		return createModelSuggestionsList(modelMap, "Suggestion succesfully deleted");
 	}
 
 	@GetMapping(path = "/deleteAll")
 	public String deleteAll(ModelMap modelMap) {
 		suggestionService.updateAllIsAvailableFalse(SessionUtils.obtainUserInSession().getUsername());
-		return "redirect:/suggestion/user/list";
+		return createModelSuggestionsList(modelMap, "All suggestion succesfully deleted");
+	}
+
+	private String createModelSuggestionsList(ModelMap model, String message) {
+		Collection<Suggestion> list = suggestionService
+			.findAllEntitiesAvailableByUsername(SessionUtils.obtainUserInSession().getUsername());
+		model.addAttribute("suggestions", list);
+		return "suggestion/user/list";
 	}
 
 	private Person obtainPerson(String authority, String username) {

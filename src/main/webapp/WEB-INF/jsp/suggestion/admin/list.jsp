@@ -14,6 +14,10 @@
 			<h2>Suggestions Trash</h2>
 		</c:otherwise>
 	</c:choose>
+	
+	<div class="form-group" style="color: green;">
+		<c:out value="${message}" />
+	</div>
 
 	<c:if test="${empty suggestions}">
 		<h3>You don't have suggestions by the moment...</h3>
