@@ -13,6 +13,9 @@
 		<h2>Pending Visits</h2>
 	</c:if>
 	
+	<div class="form-group" style="color: green;">
+		<c:out value="${message}" />
+	</div>
 
 	<c:if test="${not empty visits}">
     <table id="vetsTable" class="table table-striped">

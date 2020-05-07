@@ -71,7 +71,9 @@ public class ClinicController {
 
 			List<Owner> owners = ownerService.findOwnersByClinicId(clinic.getId());
 			modelMap.addAttribute("owners", owners);
-		} else if (authority.equals("owner")) {
+		}
+
+		else if (authority.equals("owner")) {
 			Owner owner = ownerService.findPersonByUsername(username);
 			if (owner == null)
 				return REDIRECT_OUPS;

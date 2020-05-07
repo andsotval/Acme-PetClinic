@@ -36,6 +36,8 @@
             
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
+	            	<a class="btn btn-default"
+						href='<spring:url value="/pets/listMyPets" htmlEscape="true"/>'>Back to list of Pets</a>
                       <button class="btn btn-default" type="submit">Add Pet</button>
                 </div>
             </div>
