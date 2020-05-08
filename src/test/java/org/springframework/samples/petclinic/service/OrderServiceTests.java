@@ -58,7 +58,7 @@ public class OrderServiceTests {
 	}
 
 	@Test
-	public void testFindAllEntities() {
+	public void testFindAllOrders() {
 		Collection<Order> collection = (Collection<Order>) orderService.findAllEntities();
 		assertEquals(collection.size(), 6);
 	}
@@ -77,7 +77,7 @@ public class OrderServiceTests {
 	}
 
 	@Test
-	public void testSaveOrderPositive() {
+	public void testSaveOrder() {
 		Collection<Order> collection = (Collection<Order>) orderService.findAllEntities();
 		int collectionSize = collection.size();
 

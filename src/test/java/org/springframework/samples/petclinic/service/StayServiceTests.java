@@ -30,9 +30,6 @@ class StayServiceTests {
 	@Autowired
 	protected StayService stayService;
 
-	@Autowired
-	protected VetService vetService;
-
 	private int TEST_STAY_ID = 1;
 
 	private int TEST_STAY_ID_NOT_PRESENT = 100;

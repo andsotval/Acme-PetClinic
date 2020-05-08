@@ -117,7 +117,7 @@ public class PetTypeServiceTest {
 	}
 
 	@Test
-	public void testDeleteProductNotPresent() {
+	public void testDeletePetTypeNotPresent() {
 		Collection<PetType> collection = (Collection<PetType>) petTypeService.findAllEntities();
 		int collectionSize = collection.size();
 
@@ -138,7 +138,7 @@ public class PetTypeServiceTest {
 	}
 
 	@Test
-	public void testDeleteProductByIdNotPresent() {
+	public void testDeletePetTypeByIdNotPresent() {
 		boolean deleted = true;
 
 		try {
