@@ -48,8 +48,8 @@ public class OrderControllerE2ETests {
 			.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_ID)
 				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("productIds", "1").param("productIds", "2")
 				.param("amountNumber", "3").param("amountNumber", "4"))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/orders/list"));
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("/orders/orderList"));
 	}
 
 	@WithMockUser(value = "manager1", authorities = {
@@ -95,7 +95,7 @@ public class OrderControllerE2ETests {
 	@Test
 	void testShowOrderNotPresent() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", 99))
-			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("exception"));
+			.andExpect(MockMvcResultMatchers.status().isFound()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "manager1", authorities = {

@@ -82,7 +82,7 @@ public class VisitControllerE2ETests {
 	@Test
 	void testAcceptVisitNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED))
-				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listAllAccepted"));
+				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(username = "vet4", authorities = { "veterinarian" })
@@ -96,7 +96,7 @@ public class VisitControllerE2ETests {
 	@Test
 	void testCancelVisitAsVetNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/cancel/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED))
-				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listAllAccepted"));
+				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(username = "owner3", authorities = { "owner" })
@@ -110,7 +110,7 @@ public class VisitControllerE2ETests {
 	@Test
 	void testCancelVisitAsOwnerNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/cancel/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED))
-				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listByOwner"));
+				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(username = "vet4", authorities = { "veterinarian" })
@@ -119,7 +119,7 @@ public class VisitControllerE2ETests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/changeDate/{visitId}", TEST_PENDING_VISIT_ID))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.model().attributeExists("visit"))
-				.andExpect(MockMvcResultMatchers.view().name("/visits/createOrUpdateVisitForm"));
+				.andExpect(MockMvcResultMatchers.view().name("visits/createOrUpdateVisitForm"));
 	}
 
 	@WithMockUser(username = "vet4", authorities = { "veterinarian" })
@@ -146,7 +146,7 @@ public class VisitControllerE2ETests {
 				.param("description", "description of the visit").param("dateTime", "2019/08/11 08:30:00"))
 				.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(model().attributeExists("visit"))
 				.andExpect(model().attributeHasFieldErrorCode("visit", "dateTime", "dateInFuture"))
-				.andExpect(MockMvcResultMatchers.view().name("/visits/createOrUpdateVisitForm"));
+				.andExpect(MockMvcResultMatchers.view().name("visits/createOrUpdateVisitForm"));
 	}
 
 	@WithMockUser(username = "owner1", authorities = { "owner" })
@@ -167,7 +167,7 @@ public class VisitControllerE2ETests {
 				.param("pet", String.valueOf(TEST_PET_ID))).andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(model().attributeExists("visit"))
 				.andExpect(model().attributeHasFieldErrorCode("visit", "dateTime", "dateInFuture"))
-				.andExpect(MockMvcResultMatchers.view().name("/visits/createOrUpdateVisitForm"));
+				.andExpect(MockMvcResultMatchers.view().name("visits/createOrUpdateVisitForm"));
 	}
 
 	@WithMockUser(username = "owner1", authorities = { "owner" })
