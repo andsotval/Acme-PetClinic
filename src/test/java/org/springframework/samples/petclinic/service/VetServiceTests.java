@@ -1,61 +1,26 @@
-/*
- * Copyright 2002-2013 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.samples.petclinic.service;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.stream.StreamSupport;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Optional;
+import java.util.Set;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.stereotype.Service;
-
-/**
- * Integration test of the Service and the Repository layer.
- * <p>
- * ClinicServiceSpringDataJpaTests subclasses benefit from the following services provided
- * by the Spring TestContext Framework:
- * </p>
- * <ul>
- * <li><strong>Spring IoC container caching</strong> which spares us unnecessary set up
- * time between test execution.</li>
- * <li><strong>Dependency Injection</strong> of test fixture instances, meaning that we
- * don't need to perform application context lookups. See the use of
- * {@link Autowired @Autowired} on the <code>{@link
- * ClinicServiceTests#clinicService clinicService}</code> instance variable, which uses
- * autowiring <em>by type</em>.
- * <li><strong>Transaction management</strong>, meaning each test method is executed in
- * its own transaction, which is automatically rolled back by default. Thus, even if tests
- * insert or otherwise change database state, there is no need for a teardown or cleanup
- * script.
- * <li>An {@link org.springframework.context.ApplicationContext ApplicationContext} is
- * also inherited and can be used for explicit bean lookup if necessary.</li>
- * </ul>
- *
- * @author Ken Krebs
- * @author Rod Johnson
- * @author Juergen Hoeller
- * @author Sam Brannen
- * @author Michael Isvy
- * @author Dave Syer
- */
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 class VetServiceTests {
@@ -63,80 +28,167 @@ class VetServiceTests {
 	@Autowired
 	protected VetService vetService;
 
-	//Ya estaba implementado, solamente modificado los datos
-	//	@Test
-	//	void shouldFindVets() {
-	//		Collection<Vet> vets = this.vetService.findVets();
-	//
-	//		Vet vet = EntityUtils.getById(vets, Vet.class, 3);
-	//		assertThat(vet.getLastName()).isEqualTo("Douglas");
-	//		assertThat(vet.getNrOfSpecialties()).isEqualTo(2);
-	//		assertThat(vet.getSpecialties().get(0).getName()).isEqualTo("dentistry");
-	//		assertThat(vet.getSpecialties().get(1).getName()).isEqualTo("surgery");
-	//	}
-	/*
-	 * @Test
-	 * void shouldFindVets() {
-	 * Collection<Vet> vets = this.vetService.findVets();
-	 *
-	 * Vet vet = EntityUtils.getById(vets, Vet.class, 3);
-	 * assertThat(vet.getLastName()).isEqualTo("Vega");
-	 * assertThat(vet.getNrOfSpecialties()).isEqualTo(2);
-	 * assertThat(vet.getSpecialties().get(0).getName()).isEqualTo("dentistry");
-	 * assertThat(vet.getSpecialties().get(1).getName()).isEqualTo("surgery");
-	 * }
-	 */
+	private int TEST_VET_ID = 1;
 
+	private int TEST_VET_ID_NOT_PRESENT = 100;
 
-	//TODO: que prueba negativa meter?
-	@Test
-	public void testFindAvailableVetsPositive() {
-		vetService.findAvailableVets().forEach(v -> assertEquals(null, v.getClinic()));
+	private int TEST_MANAGER_ID = 1;
 
+	private int TEST_MANAGER_ID_NOT_PRESENT = 100;
+
+	private int TEST_CLINIC_ID = 1;
+
+	private int TEST_CLINIC_ID_NOT_PRESENT = 100;
+
+	private Validator createValidator() {
+		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
+		localValidatorFactoryBean.afterPropertiesSet();
+		return localValidatorFactoryBean;
 	}
 
 	@Test
-	public void testFindPersonUsernamePositive() {
-		Vet vet = vetService.findPersonByUsername("vet7");
-		assertEquals("vet7@gmail.com", vet.getMail());
-
-	}
-
-	//TODO: En ningun otro test hay alguna prueba negativa o positiva sobre este método.
-	@Test
-	public void testFindPersonUsernameNegative() throws Exception {
-		String vetUsername = "UnexistingVet1928384756";
-		Vet vet = vetService.findPersonByUsername(vetUsername);
-
-		assertEquals(null, vet);
-
+	public void testFindAvailableVets() {
+		Collection<Vet> vets = vetService.findAvailableVets();
+		vets.forEach(v -> assertEquals(null, v.getClinic()));
 	}
 
 	@Test
-	public void testFindVetsByManagerPositive() {
-		int managerId = 2;
-		vetService.findVetsByManager(managerId).forEach(v -> assertEquals(managerId, v.getClinic().getManager().getId()));
+	public void testFindVetsByManagerId() {
+		Collection<Vet> vets = vetService.findVetsByManager(TEST_MANAGER_ID);
+		vets.forEach(v -> assertEquals(TEST_MANAGER_ID, v.getClinic().getManager().getId()));
 	}
 
 	@Test
-	public void testFindVetsByManagerNegative() {
-		Iterable<Vet> vets = vetService.findVetsByManager(-1);
-		int numStays = (int) StreamSupport.stream(vets.spliterator(), false).count();
-		assertEquals(numStays, 0);
+	public void testFindVetsByManagerIdNotPresent() {
+		Collection<Vet> vets = vetService.findVetsByManager(TEST_MANAGER_ID_NOT_PRESENT);
+		assertEquals(vets.size(), 0);
 	}
 
 	@Test
 	public void testFindVetsByClinicId() {
-		Integer clinicId = 2;
-		vetService.findVetsByClinicId(clinicId).forEach(vet -> assertEquals(clinicId, vet.getClinic().getId()));
+		Collection<Vet> vets = vetService.findVetsByManager(TEST_CLINIC_ID);
+		vets.forEach(vet -> assertEquals(TEST_CLINIC_ID, vet.getClinic().getId()));
 	}
 
 	@Test
 	public void testFindVetsByClinicIdNegative() {
-		Iterable<Vet> vets = vetService.findVetsByClinicId(null);
-		int numVets = (int) StreamSupport.stream(vets.spliterator(), false).count();
+		Collection<Vet> vets = vetService.findVetsByManager(TEST_CLINIC_ID_NOT_PRESENT);
+		assertEquals(vets.size(), 0);
+	}
 
-		assertEquals(numVets, 0);
+	@Test
+	public void testFindAllVets() {
+		Collection<Vet> collection = (Collection<Vet>) vetService.findAllEntities();
+		assertEquals(collection.size(), 9);
+	}
+
+	@Test
+	public void testFindVetById() {
+		Optional<Vet> entity = vetService.findEntityById(TEST_VET_ID);
+		assertTrue(entity.isPresent());
+		assertTrue(entity.get().getId().equals(TEST_VET_ID));
+	}
+
+	@Test
+	public void testFindVetByIdNotPresent() {
+		Optional<Vet> entity = vetService.findEntityById(TEST_VET_ID_NOT_PRESENT);
+		assertTrue(!entity.isPresent());
+	}
+
+	@Test
+	public void testSaveVet() {
+
+		Collection<Vet> collection = (Collection<Vet>) vetService.findAllEntities();
+		int collectionSize = collection.size();
+
+		Vet entity = new Vet();
+		entity.setFirstName("James");
+		entity.setLastName("Carter");
+		entity.setAddress("110 W. Liberty St.");
+		entity.setCity("Madison");
+		entity.setTelephone("608555123");
+		entity.setMail("Vet@mail.com");
+
+		vetService.saveEntity(entity);
+
+		Collection<Vet> newCollection = (Collection<Vet>) vetService.findAllEntities();
+		int newCollectionSize = newCollection.size();
+
+		assertEquals(collectionSize + 1, newCollectionSize);
+
+		Assert.assertEquals("James", this.vetService.findEntityById(newCollectionSize).get().getFirstName());
+	}
+
+	@Test
+	public void testSaveVetWithoutFirstName() {
+		Vet entity = new Vet();
+		entity.setLastName("Carter");
+		entity.setAddress("110 W. Liberty St.");
+		entity.setCity("Madison");
+		entity.setTelephone("6085551023");
+
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Vet>> constraintViolations = validator.validate(entity);
+		assertEquals(constraintViolations.size(), 3);
+
+		Iterator<ConstraintViolation<Vet>> it = constraintViolations.iterator();
+		while (it.hasNext()) {
+			ConstraintViolation<Vet> violation = it.next();
+			String message = violation.getMessage();
+			System.out.println(message);
+
+			switch (violation.getPropertyPath().toString()) {
+			case "first name":
+				assertTrue(message.equals("no puede estar vacío"));
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	@Test
+	public void testDeleteVet() {
+		Optional<Vet> entity = vetService.findEntityById(TEST_VET_ID);
+		assertTrue(entity.isPresent());
+		vetService.deleteEntity(entity.get());
+
+		Optional<Vet> deleteEntity = vetService.findEntityById(TEST_VET_ID);
+		assertTrue(!deleteEntity.isPresent());
+	}
+
+	@Test
+	public void testDeleteVetNotPresent() {
+		Collection<Vet> collection = (Collection<Vet>) vetService.findAllEntities();
+		int collectionSize = collection.size();
+
+		vetService.deleteEntity(null);
+
+		Collection<Vet> newCollection = (Collection<Vet>) vetService.findAllEntities();
+		int newCollectionSize = newCollection.size();
+
+		assertEquals(collectionSize, newCollectionSize);
+	}
+
+	@Test
+	public void testDeleteVetById() {
+		vetService.deleteEntityById(TEST_VET_ID);
+
+		Optional<Vet> entity = vetService.findEntityById(TEST_VET_ID);
+		assertTrue(!entity.isPresent());
+	}
+
+	@Test
+	public void testDeleteVetByIdNotPresent() {
+		boolean deleted = true;
+
+		try {
+			vetService.deleteEntityById(TEST_VET_ID_NOT_PRESENT);
+		} catch (EmptyResultDataAccessException e) {
+			deleted = false;
+		}
+
+		assertFalse(deleted);
 	}
 
 }

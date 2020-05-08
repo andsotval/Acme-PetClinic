@@ -6,6 +6,8 @@
 
 package org.springframework.samples.petclinic.service;
 
+import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.Pet;
@@ -37,7 +39,7 @@ public class ClinicService extends BaseService<Clinic> {
 	}
 
 	@Transactional(readOnly = true)
-	public Iterable<Pet> findPetsCyClinic(Clinic id) {
-		return clinicRepository.findPetsByClinic(id);
+	public Collection<Pet> findPetsByClinicId(Integer id) {
+		return clinicRepository.findPetsByClinicId(id);
 	}
 }
