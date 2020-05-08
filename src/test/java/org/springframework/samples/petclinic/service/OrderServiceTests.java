@@ -1,9 +1,8 @@
-
 package org.springframework.samples.petclinic.service;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -20,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.samples.petclinic.model.Manager;
 import org.springframework.samples.petclinic.model.Order;
 import org.springframework.stereotype.Service;
@@ -29,8 +29,15 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 public class OrderServiceTests {
 
 	@Autowired
-	protected OrderService service;
+	protected OrderService orderService;
 
+	private int TEST_MANAGER_ID = 1;
+
+	private int TEST_MANAGER_ID_NOT_PRESENT = 100;
+
+	private int TEST_ORDER_ID = 1;
+
+	private int TEST_ORDER_ID_NOT_PRESENT = 100;
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -39,47 +46,40 @@ public class OrderServiceTests {
 	}
 
 	@Test
-	public void TestFindAllOrdersByManagerIdPositive() {
-		int managerId = 1;
-		service.findAllOrdersByManagerId(managerId).forEach(o -> assertEquals(managerId, o.getManager().getId()));
+	public void TestFindAllOrdersByManagerId() {
+		Collection<Order> orders = orderService.findAllOrdersByManagerId(TEST_MANAGER_ID);
+		orders.forEach(o -> assertEquals(TEST_MANAGER_ID, o.getManager().getId()));
 	}
 
 	@Test
-	public void TestFindAllOrdersByManagerIdNegative() {
-		int managerId = 1;
-		int notManagerId = 2;
-		service.findAllOrdersByManagerId(notManagerId)
-			.forEach(order -> assertNotEquals(managerId, order.getManager().getId()));
-	}
-	@Test
-	public void TestFindAllOrdersByManagerIdNegativeNotPresent() {
-		int managerId = 10;
-		service.findAllOrdersByManagerId(managerId).forEach(o -> assertEquals(null, o.getManager()));
+	public void TestFindAllOrdersByManagerIdNotPresent() {
+		Collection<Order> orders = orderService.findAllOrdersByManagerId(TEST_MANAGER_ID_NOT_PRESENT);
+		assertEquals(0, orders.size());
 	}
 
 	@Test
-	public void testFindAllEntities() {
-		Collection<Order> collection = (Collection<Order>) service.findAllEntities();
+	public void testFindAllOrders() {
+		Collection<Order> collection = (Collection<Order>) orderService.findAllEntities();
 		assertEquals(collection.size(), 6);
 	}
 
 	@Test
-	public void testFindEntityByIdPositive() {
-		Optional<Order> entity = service.findEntityById(1);
+	public void testFindOrderById() {
+		Optional<Order> entity = orderService.findEntityById(TEST_ORDER_ID);
 		assertTrue(entity.isPresent());
-		assertTrue(entity.get().getId().equals(1));
+		assertTrue(entity.get().getId().equals(TEST_ORDER_ID));
 	}
 
 	@Test
-	public void testFindEntityByIdNegative() {
-		Optional<Order> entity = service.findEntityById(99);
+	public void testFindOrderByIdNotPresent() {
+		Optional<Order> entity = orderService.findEntityById(TEST_ORDER_ID_NOT_PRESENT);
 		assertTrue(!entity.isPresent());
 	}
 
 	@Test
-	public void testSaveEntityPositive() {
-		Collection<Order> collection = (Collection<Order>) service.findAllEntities();
-		assertEquals(collection.size(), 6);
+	public void testSaveOrder() {
+		Collection<Order> collection = (Collection<Order>) orderService.findAllEntities();
+		int collectionSize = collection.size();
 
 		LocalDate date = LocalDate.now();
 		Order order = new Order();
@@ -90,12 +90,12 @@ public class OrderServiceTests {
 		manager.setId(1);
 
 		order.setManager(manager);
-		service.saveEntity(order);
+		orderService.saveEntity(order);
 
-		collection = (Collection<Order>) service.findAllEntities();
-		assertEquals(collection.size(), 7);
+		collection = (Collection<Order>) orderService.findAllEntities();
+		assertEquals(collection.size(), collectionSize + 1);
 
-		Optional<Order> newEntity = service.findEntityById(7);
+		Optional<Order> newEntity = orderService.findEntityById(collectionSize + 1);
 		assertTrue(newEntity.isPresent());
 		assertEquals(newEntity.get().getDate(), date);
 		assertEquals(newEntity.get().getIsAccepted(), false);
@@ -103,7 +103,7 @@ public class OrderServiceTests {
 	}
 
 	@Test
-	public void testSaveEntityNegative() {
+	public void testSaveOrderWithNullParameters() {
 		LocaleContextHolder.setLocale(Locale.ENGLISH);
 		Order order = new Order();
 		order.setDate(null);
@@ -132,20 +132,46 @@ public class OrderServiceTests {
 	}
 
 	@Test
-	public void testDeleteEntity() {
-		Optional<Order> entity = service.findEntityById(1);
+	public void testDeleteOrder() {
+		Optional<Order> entity = orderService.findEntityById(TEST_ORDER_ID);
 		assertTrue(entity.isPresent());
-		service.deleteEntity(entity.get());
+		orderService.deleteEntity(entity.get());
 
-		Optional<Order> deleteEntity = service.findEntityById(1);
+		Optional<Order> deleteEntity = orderService.findEntityById(TEST_ORDER_ID);
 		assertTrue(!deleteEntity.isPresent());
 	}
 
 	@Test
-	public void testDeleteEntityById() {
-		service.deleteEntityById(1);
+	public void testDeleteOrderNotPresent() {
+		Collection<Order> collection = (Collection<Order>) orderService.findAllEntities();
+		int collectionSize = collection.size();
 
-		Optional<Order> entity = service.findEntityById(1);
+		orderService.deleteEntity(null);
+
+		Collection<Order> newCollection = (Collection<Order>) orderService.findAllEntities();
+		int newCollectionSize = newCollection.size();
+
+		assertEquals(collectionSize, newCollectionSize);
+	}
+
+	@Test
+	public void testDeleteOrderById() {
+		orderService.deleteEntityById(TEST_ORDER_ID);
+
+		Optional<Order> entity = orderService.findEntityById(TEST_ORDER_ID);
 		assertTrue(!entity.isPresent());
+	}
+
+	@Test
+	public void testDeleteOrderByIdNotPresent() {
+		boolean deleted = true;
+
+		try {
+			orderService.deleteEntityById(TEST_ORDER_ID_NOT_PRESENT);
+		} catch (EmptyResultDataAccessException e) {
+			deleted = false;
+		}
+
+		assertFalse(deleted);
 	}
 }

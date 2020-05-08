@@ -1,11 +1,9 @@
-
 package org.springframework.samples.petclinic.service;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -21,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.stereotype.Service;
@@ -32,6 +31,17 @@ public class ClinicServiceTests {
 	@Autowired
 	protected ClinicService clinicService;
 
+	private int TEST_CLINIC_ID = 1;
+
+	private int TEST_CLINIC_ID_NOT_PRESENT = 100;
+
+	private String TEST_CLINIC_NAME = "Clinic1";
+
+	private String TEST_CLINIC_NAME_NOT_PRESENT = "ClinicNotPresent";
+
+	private int TEST_MANAGER_ID = 1;
+
+	private int TEST_MANAGER_ID_NOT_PRESENT = 100;
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -40,88 +50,66 @@ public class ClinicServiceTests {
 	}
 
 	@Test
-	public void TestFindClinicByManagerIdPositive() {
-		int managerId = 1;
-		Clinic clinic = clinicService.findClinicByManagerId(managerId);
-		assertEquals(managerId, clinic.getManager().getId());
-	}
-	@Test
-	public void TestFindClinicByManagerIdNegative() {
-		int managerId = 1;
-		int notManagerId = 2;
-		Clinic clinic = clinicService.findClinicByManagerId(managerId);
-		assertNotEquals(notManagerId, clinic.getManager().getId());
+	public void TestFindClinicByName() {
+		Clinic clinic = clinicService.findClinicByName(TEST_CLINIC_NAME);
+		String name = clinic.getName();
+		assertEquals(name, TEST_CLINIC_NAME);
 	}
 
 	@Test
-	public void TestFindClinicByManagerIdNegativeNotPresent() {
-		int managerId = 15;
-		Clinic clinic = clinicService.findClinicByManagerId(managerId);
+	public void TestFindClinicByNameNotPresent() {
+		Clinic clinic = clinicService.findClinicByName(TEST_CLINIC_NAME_NOT_PRESENT);
 		assertNull(clinic);
 	}
 
 	@Test
-	public void TestFindClinicByNamePositive() {
-		String name = "Clinic1";
-		assertEquals(name, clinicService.findClinicByName(name).getName());
+	public void TestFindClinicByManagerId() {
+		Clinic clinic = clinicService.findClinicByManagerId(TEST_MANAGER_ID);
+		Integer id = clinic.getManager().getId();
+		assertEquals(TEST_MANAGER_ID, id);
 	}
 
 	@Test
-	public void TestFindClinicByNameNegativeNotPresent() {
-		String name = "ClinicaDePrueba";
-		assertEquals(null, clinicService.findClinicByName(name));
-	}
-
-	@Test
-	public void TestFindClinicByNameNegative() {
-		String name = "Clinic1";
-		String nameWrong = "Clinic2";
-		assertNotEquals(nameWrong, clinicService.findClinicByName(name).getName());
-	}
-
-	@Test
-	public void TestFindPetsByClinicPositive() {
-		String name = "Clinic1";
-
-		Clinic clinic = clinicService.findClinicByName(name);
-		assertNotNull(clinic);
-		Iterable<Pet> pets = clinicService.findPetsCyClinic(clinic);
-		assertNotNull(pets);
-	}
-
-	@Test
-	public void TestFindPetsByClinicNegative() {
-		String name = "ClinicaDePrueba";
-
-		Clinic clinic = clinicService.findClinicByName(name);
+	public void TestFindClinicByManagerIdNotPresent() {
+		Clinic clinic = clinicService.findClinicByManagerId(TEST_MANAGER_ID_NOT_PRESENT);
 		assertNull(clinic);
-		Iterable<Pet> pets = clinicService.findPetsCyClinic(clinic);
-		assertNotNull(pets);
 	}
 
 	@Test
-	public void testFindAllEntities() {
+	public void TestFindPetsByClinicId() {
+		Collection<Pet> pets = clinicService.findPetsByClinicId(TEST_CLINIC_ID);
+		pets.forEach(p -> assertEquals(TEST_CLINIC_ID, p.getOwner().getClinic().getId()));
+	}
+
+	@Test
+	public void TestFindPetsByClinicIdNotPresent() {
+		Collection<Pet> pets = clinicService.findPetsByClinicId(TEST_CLINIC_ID_NOT_PRESENT);
+		assertEquals(0, pets.size());
+	}
+
+	@Test
+	public void testFindAllClinics() {
 		Collection<Clinic> collection = (Collection<Clinic>) clinicService.findAllEntities();
 		assertEquals(collection.size(), 8);
 	}
 
 	@Test
-	public void testFindEntityByIdPositive() {
-		Optional<Clinic> entity = clinicService.findEntityById(1);
+	public void testFindClinicById() {
+		Optional<Clinic> entity = clinicService.findEntityById(TEST_CLINIC_ID);
 		assertTrue(entity.isPresent());
 		assertTrue(entity.get().getId().equals(1));
 	}
 
 	@Test
-	public void testFindEntityByIdNegative() {
-		Optional<Clinic> entity = clinicService.findEntityById(99);
+	public void testFindClinicByIdNotPresent() {
+		Optional<Clinic> entity = clinicService.findEntityById(TEST_CLINIC_ID_NOT_PRESENT);
 		assertTrue(!entity.isPresent());
 	}
 
 	@Test
-	public void testSaveEntityPositive() {
+	public void testSaveClinic() {
 		Collection<Clinic> collection = (Collection<Clinic>) clinicService.findAllEntities();
-		assertEquals(collection.size(), 8);
+		int collectionSize = collection.size();
 
 		Clinic entity = new Clinic();
 		entity.setName("Name 1");
@@ -131,9 +119,9 @@ public class ClinicServiceTests {
 		clinicService.saveEntity(entity);
 
 		collection = (Collection<Clinic>) clinicService.findAllEntities();
-		assertEquals(collection.size(), 9);
+		assertEquals(collection.size(), collectionSize + 1);
 
-		Optional<Clinic> newEntity = clinicService.findEntityById(9);
+		Optional<Clinic> newEntity = clinicService.findEntityById(collectionSize + 1);
 		assertTrue(newEntity.isPresent());
 		assertEquals(newEntity.get().getName(), "Name 1");
 		assertEquals(newEntity.get().getAddress(), "Address 1");
@@ -142,7 +130,7 @@ public class ClinicServiceTests {
 	}
 
 	@Test
-	public void testSaveEntityNegative() {
+	public void testSaveClinicWithEmptyParameters() {
 		LocaleContextHolder.setLocale(Locale.ENGLISH);
 		Clinic entity = new Clinic();
 		entity.setName("Name 1");
@@ -178,20 +166,46 @@ public class ClinicServiceTests {
 	}
 
 	@Test
-	public void testDeleteEntity() {
-		Optional<Clinic> entity = clinicService.findEntityById(1);
+	public void testDeleteClinic() {
+		Optional<Clinic> entity = clinicService.findEntityById(TEST_CLINIC_ID);
 		assertTrue(entity.isPresent());
 		clinicService.deleteEntity(entity.get());
 
-		Optional<Clinic> deleteEntity = clinicService.findEntityById(1);
+		Optional<Clinic> deleteEntity = clinicService.findEntityById(TEST_CLINIC_ID);
 		assertTrue(!deleteEntity.isPresent());
+	}
+	
+	@Test
+	public void testDeleteClinicNotPresent() {
+		Collection<Clinic> collection = (Collection<Clinic>) clinicService.findAllEntities();
+		int collectionSize = collection.size();
+
+		clinicService.deleteEntity(null);
+
+		Collection<Clinic> newCollection = (Collection<Clinic>) clinicService.findAllEntities();
+		int newCollectionSize = newCollection.size();
+
+		assertEquals(collectionSize, newCollectionSize);
 	}
 
 	@Test
-	public void testDeleteEntityById() {
-		clinicService.deleteEntityById(1);
+	public void testDeleteClinicById() {
+		clinicService.deleteEntityById(TEST_CLINIC_ID);
 
-		Optional<Clinic> entity = clinicService.findEntityById(1);
+		Optional<Clinic> entity = clinicService.findEntityById(TEST_CLINIC_ID);
 		assertTrue(!entity.isPresent());
+	}
+	
+	@Test
+	public void testDeleteClinicByIdNotPresent() {
+		boolean deleted = true;
+
+		try {
+			clinicService.deleteEntityById(TEST_CLINIC_ID_NOT_PRESENT);
+		} catch (EmptyResultDataAccessException e) {
+			deleted = false;
+		}
+
+		assertFalse(deleted);
 	}
 }

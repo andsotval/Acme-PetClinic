@@ -43,10 +43,8 @@ import org.springframework.test.web.servlet.MockMvc;
  *
  * @author Colin But
  */
-@WebMvcTest(value = PetController.class,
-	includeFilters = @ComponentScan.Filter(value = PetTypeFormatter.class, type = FilterType.ASSIGNABLE_TYPE),
-	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
-	excludeAutoConfiguration = SecurityConfiguration.class)
+@WebMvcTest(value = PetController.class, includeFilters = @ComponentScan.Filter(value = PetTypeFormatter.class, type = FilterType.ASSIGNABLE_TYPE),
+	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
 public class PetControllerTests {
 
 	private static final int	TEST_OWNER_ID		= 1;
@@ -190,72 +188,49 @@ public class PetControllerTests {
 	@WithMockUser(value = "George")
 	@Test
 	void testListMyPets() throws Exception {
-		mockMvc.perform(get("/pets/listMyPets")).andExpect(status().isOk()).andExpect(model().attributeExists("types"))
-			.andExpect(model().attributeExists("pets")).andExpect(model().attributeExists("ownerId"))
-			.andExpect(view().name("pets/list"));
-	}
-
-	@WithMockUser(value = "George")
-	@Test
-	void testNewPet() throws Exception {
-		mockMvc.perform(get("/pets/new/{ownerId}", TEST_OWNER_ID)).andExpect(status().isOk())
-			.andExpect(model().attributeExists("pet")).andExpect(model().attributeExists("types"))
-			.andExpect(view().name("pets/createOrUpdatePetForm"));
+		mockMvc.perform(get("/pets/listMyPets")).andExpect(status().isOk()).andExpect(model().attributeExists("pets")).andExpect(model().attributeExists("message")).andExpect(view().name("pets/list"));
 	}
 
 	@WithMockUser(value = "George")
 	@Test
 	void testSavePet() throws Exception {
-		mockMvc
-			.perform(post("/pets/save").with(csrf()).param("name", "rex").param("birthDate", "2019/04/11")
-				.param("type", "dog").param("owner.id", String.valueOf(TEST_OWNER_ID)))
-			.andExpect(status().is3xxRedirection())
+		mockMvc.perform(post("/pets/save").with(csrf()).param("name", "rex").param("birthDate", "2019/04/11").param("type", "dog").param("owner.id", String.valueOf(TEST_OWNER_ID))).andExpect(status().isOk())
 			/* .andExpect(model().attribute("message", "Stay succesfully updated")) */
-			.andExpect(view().name("redirect:/pets/listMyPets"));
+			.andExpect(view().name("pets/list"));
 
 	}
 
 	@WithMockUser(value = "George")
 	@Test
 	void testSavePetWrongBirthDate() throws Exception {
-		mockMvc
-			.perform(post("/pets/save").with(csrf()).param("name", "rex").param("birthDate", "2021/04/11")
-				.param("type", "dog").param("owner.id", String.valueOf(TEST_OWNER_ID)))
-			.andExpect(status().isOk())
-			.andExpect(model().attributeHasFieldErrorCode("pet", "birthDate", "birthDateFuture"))
-			.andExpect(view().name("pets/createOrUpdatePetForm"));
+		mockMvc.perform(post("/pets/save").with(csrf()).param("name", "rex").param("birthDate", "2021/04/11").param("type", "dog").param("owner.id", String.valueOf(TEST_OWNER_ID))).andExpect(status().isOk())
+			.andExpect(model().attributeHasFieldErrorCode("pet", "birthDate", "birthDateFuture")).andExpect(view().name("pets/createOrUpdatePetForm"));
 
 	}
 
 	@WithMockUser(value = "George")
 	@Test
 	void testSavePetWrongType() throws Exception {
-		mockMvc
-			.perform(post("/pets/save").with(csrf()).param("name", "rex").param("birthDate", "2019/04/11")
-				.param("type", "bird").param("owner.id", String.valueOf(TEST_OWNER_ID)))
-			.andExpect(status().isOk()).andExpect(model().attributeHasFieldErrors("pet", "type"))
-			.andExpect(view().name("pets/createOrUpdatePetForm"));
+		mockMvc.perform(post("/pets/save").with(csrf()).param("name", "rex").param("birthDate", "2019/04/11").param("type", "bird").param("owner.id", String.valueOf(TEST_OWNER_ID))).andExpect(status().isOk())
+			.andExpect(model().attributeHasFieldErrors("pet", "type")).andExpect(view().name("pets/createOrUpdatePetForm"));
 
 	}
 
 	@WithMockUser(value = "George")
 	@Test
 	void testSavePetWrongName() throws Exception {
-		mockMvc
-			.perform(post("/pets/save").with(csrf()).param("name", "wn").param("birthDate", "2019/04/11")
-				.param("type", "dog").param("owner.id", String.valueOf(TEST_OWNER_ID)))
-			.andExpect(status().isOk()).andExpect(model().attributeHasFieldErrors("pet", "name"))
-			.andExpect(view().name("pets/createOrUpdatePetForm"));
+		mockMvc.perform(post("/pets/save").with(csrf()).param("name", "wn").param("birthDate", "2019/04/11").param("type", "dog").param("owner.id", String.valueOf(TEST_OWNER_ID))).andExpect(status().isOk())
+			.andExpect(model().attributeHasFieldErrors("pet", "name")).andExpect(view().name("pets/createOrUpdatePetForm"));
 
 	}
 
 	@WithMockUser(value = "Lucas")
 	@Test
 	void testSavePetDeniedAccess() throws Exception {
-		mockMvc
-			.perform(post("/pets/save").with(csrf()).param("name", "rex").param("birthDate", "2019/04/11")
-				.param("type", "dog").param("owner.id", String.valueOf(TEST_OWNER_ID)))
-			.andExpect(status().is3xxRedirection())/* .andExpect(model().attributeExists("exception")) */
+		mockMvc.perform(post("/pets/save").with(csrf()).param("name", "rex").param("birthDate", "2019/04/11").param("type", "dog").param("owner.id", String.valueOf(TEST_OWNER_ID))).andExpect(status().is3xxRedirection())/*
+																																																							 * .andExpect(model().
+																																																							 * attributeExists("exception"))
+																																																							 */
 			.andExpect(view().name("redirect:/oups"));
 
 	}
@@ -263,70 +238,59 @@ public class PetControllerTests {
 	@WithMockUser(value = "George")
 	@Test
 	void testDeleteVisit() throws Exception {
-		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID)).andExpect(status().is3xxRedirection())
-			.andExpect(view().name("redirect:/pets/listMyPets"));
+		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID)).andExpect(status().isOk()).andExpect(view().name("pets/list"));
 	}
 
 	@WithMockUser(value = "George")
 	@Test
 	void testDeletePetNotPresent() throws Exception {
-		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID_WRONG)).andExpect(status().isOk())
-			.andExpect(view().name("exception"));
+		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID_WRONG)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "George")
 	@Test
 	void testNewVisit() throws Exception {
-		mockMvc.perform(get("/pets/newVisit/{petId}", TEST_PET_ID_2)).andExpect(status().isOk())
-			.andExpect(model().attributeExists("clinicId")).andExpect(model().attributeExists("visit"))
-			.andExpect(model().attributeExists("visits")).andExpect(view().name("visits/createOrUpdateVisitForm"));
+		mockMvc.perform(get("/pets/newVisit/{petId}", TEST_PET_ID_2)).andExpect(status().isOk()).andExpect(model().attributeExists("clinicId")).andExpect(model().attributeExists("visit")).andExpect(model().attributeExists("visits"))
+			.andExpect(view().name("visits/createOrUpdateVisitForm"));
 	}
 
 	@WithMockUser(value = "George")
 	@Test
 	void testNewVisitWrongPetId() throws Exception {
-		mockMvc.perform(get("/pets/newVisit/{petId}", TEST_PET_ID_WRONG)).andExpect(status().isOk())
-			.andExpect(model().attributeDoesNotExist("clinicId")).andExpect(model().attributeDoesNotExist("visit"))
-			.andExpect(model().attributeDoesNotExist("visits")).andExpect(view().name("exception"));
+		mockMvc.perform(get("/pets/newVisit/{petId}", TEST_PET_ID_WRONG)).andExpect(status().is3xxRedirection()).andExpect(model().attributeDoesNotExist("clinicId")).andExpect(model().attributeDoesNotExist("visit"))
+			.andExpect(model().attributeDoesNotExist("visits")).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "George")
 	@Test
 	void testNewStay() throws Exception {
-		mockMvc.perform(get("/pets/newStay/{petId}", TEST_PET_ID)).andExpect(status().isOk())
-			.andExpect(model().attributeExists("clinicId")).andExpect(model().attributeExists("stay"))
-			.andExpect(model().attributeExists("stays")).andExpect(view().name("stays/createOrUpdateStayForm"));
+		mockMvc.perform(get("/pets/newStay/{petId}", TEST_PET_ID)).andExpect(status().isOk()).andExpect(model().attributeExists("hasClinic")).andExpect(model().attributeExists("stay")).andExpect(model().attributeExists("stays"))
+			.andExpect(view().name("stays/createOrUpdateStayForm"));
 	}
 
 	@WithMockUser(value = "George")
 	@Test
 	void testNewStayWrongPetId() throws Exception {
-		mockMvc.perform(get("/pets/newStay/{petId}", TEST_PET_ID_WRONG)).andExpect(status().isOk())
-			.andExpect(model().attributeDoesNotExist("clinicId")).andExpect(model().attributeDoesNotExist("stay"))
-			.andExpect(model().attributeDoesNotExist("stays")).andExpect(view().name("exception"));
+		mockMvc.perform(get("/pets/newStay/{petId}", TEST_PET_ID_WRONG)).andExpect(status().is3xxRedirection()).andExpect(model().attributeDoesNotExist("clinicId")).andExpect(model().attributeDoesNotExist("stay"))
+			.andExpect(model().attributeDoesNotExist("stays")).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "George")
 	@Test
 	void testInitUpdateFormPet1() throws Exception {
-		mockMvc.perform(get("/pets/{petId}/edit", TEST_PET_ID)).andExpect(status().isOk())
-			.andExpect(model().attributeExists("pet")).andExpect(model().attribute("pet", pet1))
-			.andExpect(view().name("pets/createOrUpdatePetForm"));
+		mockMvc.perform(get("/pets/{petId}/edit", TEST_PET_ID)).andExpect(status().isOk()).andExpect(model().attributeExists("pet")).andExpect(model().attribute("pet", pet1)).andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
 
 	@WithMockUser(value = "George")
 	@Test
 	void testInitUpdateFormPet2() throws Exception {
-		mockMvc.perform(get("/pets/{petId}/edit", TEST_PET_ID_2)).andExpect(status().isOk())
-			.andExpect(model().attributeExists("pet")).andExpect(model().attribute("pet", pet2))
-			.andExpect(view().name("pets/createOrUpdatePetForm"));
+		mockMvc.perform(get("/pets/{petId}/edit", TEST_PET_ID_2)).andExpect(status().isOk()).andExpect(model().attributeExists("pet")).andExpect(model().attribute("pet", pet2)).andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
 
 	@WithMockUser(value = "George")
 	@Test
 	void testInitUpdateFormPetIdWrong() throws Exception {
-		mockMvc.perform(get("/pets/{petId}/edit", TEST_PET_ID_WRONG)).andExpect(status().isOk())
-			.andExpect(model().attributeDoesNotExist("pet")).andExpect(view().name("exception"));
+		mockMvc.perform(get("/pets/{petId}/edit", TEST_PET_ID_WRONG)).andExpect(status().is3xxRedirection()).andExpect(model().attributeDoesNotExist("pet")).andExpect(view().name("redirect:/oups"));
 	}
 
 	//	@WithMockUser(value = "spring")
