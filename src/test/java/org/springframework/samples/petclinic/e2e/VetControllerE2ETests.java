@@ -52,7 +52,7 @@ class VetControllerE2ETests {
 	})
 	@Test
 	void testAcceptVet() throws Exception {
-		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET_UNACCEPTED_ID)).andExpect(status().isFound()).andExpect(view().name("redirect:/vets/vetsAvailable"));
+		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET_UNACCEPTED_ID)).andExpect(status().isOk()).andExpect(view().name("vets/vetsAvailable"));
 	}
 
 	//añadir un veterinario con clínica ya asignada
