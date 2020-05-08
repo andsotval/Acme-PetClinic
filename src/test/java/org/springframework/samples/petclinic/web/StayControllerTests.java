@@ -211,30 +211,28 @@ class StayControllerTests {
 
 	@WithMockUser(value = "falsePepito")
 	@Test
-	void testAcceptStayNegative() throws Exception {
+	void testAcceptStayNegativeNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/accept/{stayId}", StayControllerTests.TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().isFound())/* .andExpect(MockMvcResultMatchers.model().attributeExists("nonAuthorized")) */
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/stays/listAllAccepted"));
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	//cancelStay (pasarle una stay con isAccepted a null y te la actualice a false)
 	@WithMockUser(value = "pepito")
 	@Test
 	void testCancelStay() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/stays/cancel/{stayId}", StayControllerTests.TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().isFound()).andExpect(MockMvcResultMatchers.view().name("redirect:/stays/listAllAccepted"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/cancel/{stayId}", StayControllerTests.TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().isFound()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "falsePepito")
 	@Test
 	void testCancelStayNotExisting() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/stays/cancel/{stayId}", TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/stays/listAllAccepted"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/cancel/{stayId}", TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
-	//TODO: Negativo
-	//changeDateStay (la stay que entra es la misma que sale)
-	@WithMockUser(value = "spring")
+	@WithMockUser(value = "pepito")
 	@Test
 	void testChangeDateStay() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/stays/changeDate/{stayId}", StayControllerTests.TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("/stays/createOrUpdateStayForm"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/changeDate/{stayId}", TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
 	//TODO: No Se valida en ningún caso que el usuario que está
@@ -264,7 +262,7 @@ class StayControllerTests {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/stays/save/{stayId}", StayControllerTests.TEST_STAY_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("id", "").param("description", "Description").param("startDate", "2020/05/22")
 				.param("finishDate", "2020/06/23").param("pet.id", String.valueOf(TEST_PET_ID + 1)).param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
-			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "finishDate", "finishDateMinimumOneWeek")).andExpect(MockMvcResultMatchers.view().name("/stays/createOrUpdateStayForm"));
+			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "finishDate", "finishDateMinimumOneWeek")).andExpect(MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
 	//TODO: No entiendo por que da error
@@ -274,7 +272,7 @@ class StayControllerTests {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/stays/save/{stayId}", StayControllerTests.TEST_STAY_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("id", "").param("description", "Description").param("startDate", "")
 				.param("finishDate", "2020/05/22").param("pet.id", String.valueOf(TEST_PET_ID + 1)).param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
-			/* .andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "startDate", "startDateNotNull")) */.andExpect(MockMvcResultMatchers.view().name("/stays/createOrUpdateStayForm"));
+			/* .andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "startDate", "startDateNotNull")) */.andExpect(MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
 	@WithMockUser(value = "pepito")
@@ -283,13 +281,13 @@ class StayControllerTests {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/stays/save/{stayId}", StayControllerTests.TEST_STAY_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("id", "").param("description", "Description").param("startDate", "2021/11/01")
 				.param("finishDate", "2021/10/01").param("pet.id", String.valueOf(TEST_PET_ID + 1)).param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
-			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "finishDate", "finishDateAfterStartDate")).andExpect(MockMvcResultMatchers.view().name("/stays/createOrUpdateStayForm"));
+			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "finishDate", "finishDateAfterStartDate")).andExpect(MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
-	@WithMockUser(value = "pepito")
+	@WithMockUser(value = "owner")
 	@Test
 	void testSuccesfullStayNegativeLessThan2Days() throws Exception {
-		LocalDate lc1 = LocalDate.now().plusDays(1);
+		LocalDate lc1 = LocalDate.now().plusDays(1L);
 		LocalDate lc2 = LocalDate.now().plusDays(5L);
 
 		String startDate = Integer.valueOf(lc1.getYear()).toString() + "/" + String.format("%02d", lc1.getMonthValue()) + "/" + String.format("%02d", lc1.getDayOfMonth());
@@ -327,7 +325,7 @@ class StayControllerTests {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/stays/save").with(SecurityMockMvcRequestPostProcessors.csrf()).param("id", "").param("description", "Description").param("startDate", "").param("finishDate", "")
 				.param("pet.id", String.valueOf(TEST_PET_ID + 1)).param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
-			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "startDate", "startDateNotNull")).andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "finishDate", "finishDateNotNull"))
+			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "startDate", "NotNull")).andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "finishDate", "NotNull"))
 			.andExpect(MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
