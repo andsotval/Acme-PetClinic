@@ -40,7 +40,6 @@ public class SuggestionUserControllerE2ETests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/list"))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.model().attributeExists("suggestions"))
-			.andExpect(MockMvcResultMatchers.model().attribute("isTrash", false))
 			.andExpect(MockMvcResultMatchers.view().name("suggestion/user/list"));
 	}
 
@@ -61,7 +60,8 @@ public class SuggestionUserControllerE2ETests {
 	@Test
 	void testDetailValueNotPresent() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/details/{suggestionId}", TEST_SUGGESTION_ID_99))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "owner1", authorities = {
