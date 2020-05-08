@@ -74,7 +74,7 @@ class StayControllerE2ETests {
 		"veterinarian"
 	})
 	@Test
-	void testAcceptStayPositive() throws Exception {
+	void testAcceptStay() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/accept/{stayId}", TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().isFound()).andExpect(MockMvcResultMatchers.view().name("redirect:/stays/listAllAccepted"));
 	}
 
@@ -82,9 +82,9 @@ class StayControllerE2ETests {
 		"veterinarian"
 	})
 	@Test
-	void testAcceptStayNegative() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/stays/accept/{stayId}", TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().isFound())/* .andExpect(MockMvcResultMatchers.model().attributeExists("nonAuthorized")) */
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/stays/listAllAccepted"));
+	void testAcceptStayNotExisting() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/accept/{stayId}", TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection())/* .andExpect(MockMvcResultMatchers.model().attributeExists("nonAuthorized")) */
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	//cancelStay (pasarle una stay con isAccepted a null y te la actualice a false)
@@ -101,7 +101,7 @@ class StayControllerE2ETests {
 	})
 	@Test
 	void testCancelStayNotExisting() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/stays/cancel/{stayId}", TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/stays/listAllAccepted"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/cancel/{stayId}", TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	//TODO: Negativo
@@ -111,7 +111,7 @@ class StayControllerE2ETests {
 	})
 	@Test
 	void testChangeDateStay() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/stays/changeDate/{stayId}", TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("/stays/createOrUpdateStayForm"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/changeDate/{stayId}", TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("exception"));
 	}
 
 	//TODO: No Se valida en ningún caso que el usuario que está
@@ -140,40 +140,40 @@ class StayControllerE2ETests {
 		"veterinarian"
 	})
 	@Test
-	void testSuccesfullStayNegativeNoLongerThan7Days() throws Exception {
+	void testSuccesfullStayNoLongerThan7Days() throws Exception {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/stays/save/{stayId}", TEST_STAY_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("id", "").param("description", "Description").param("startDate", "2020/05/22").param("finishDate", "2020/06/23")
 				.param("pet.id", String.valueOf(TEST_PET_ID + 1)).param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
-			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "finishDate", "finishDateMinimumOneWeek")).andExpect(MockMvcResultMatchers.view().name("/stays/createOrUpdateStayForm"));
+			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "finishDate", "finishDateMinimumOneWeek")).andExpect(MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
 	@WithMockUser(value = "vet1", authorities = {
 		"veterinarian"
 	})
 	@Test
-	void testSuccesfullStayNegativeDateNotNull() throws Exception {
+	void testSuccesfullStayDateNotNull() throws Exception {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/stays/save/{stayId}", TEST_STAY_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("id", "").param("description", "Description").param("startDate", "").param("finishDate", "2020/05/22")
 				.param("pet.id", String.valueOf(TEST_PET_ID)).param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
-			/* .andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "startDate", "startDateNotNull")) */.andExpect(MockMvcResultMatchers.view().name("/stays/createOrUpdateStayForm"));
+			/* .andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "startDate", "startDateNotNull")) */.andExpect(MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
 	@WithMockUser(value = "vet1", authorities = {
 		"veterinarian"
 	})
 	@Test
-	void testSuccesfullStayNegativeFinishDateBeforeStart() throws Exception {
+	void testSuccesfullStayFinishDateBeforeStart() throws Exception {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/stays/save/{stayId}", TEST_STAY_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("id", "").param("description", "Description").param("startDate", "2021/11/01").param("finishDate", "2021/10/01")
 				.param("pet.id", String.valueOf(TEST_PET_ID + 1)).param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
-			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "finishDate", "finishDateAfterStartDate")).andExpect(MockMvcResultMatchers.view().name("/stays/createOrUpdateStayForm"));
+			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "finishDate", "finishDateAfterStartDate")).andExpect(MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
 	@WithMockUser(value = "vet1", authorities = {
 		"veterinarian"
 	})
 	@Test
-	void testSuccesfullStayNegativeLessThan2Days() throws Exception {
+	void testSuccesfullStayLessThan2Days() throws Exception {
 		LocalDate lc1 = LocalDate.now().plusDays(1);
 		LocalDate lc2 = LocalDate.now().plusDays(5L);
 
@@ -191,7 +191,7 @@ class StayControllerE2ETests {
 		"owner"
 	})
 	@Test
-	void testNewStayPositive() throws Exception {
+	void testNewStay() throws Exception {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/stays/save").with(SecurityMockMvcRequestPostProcessors.csrf()).param("id", "").param("description", "Description").param("startDate", "2020/05/22").param("finishDate", "2020/05/29")
 				.param("pet.id", String.valueOf(TEST_PET_ID + 1)).param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
@@ -202,7 +202,7 @@ class StayControllerE2ETests {
 		"owner"
 	})
 	@Test
-	void testNewStayNegativeNoLongerThan7Days() throws Exception {
+	void testNewStayNoLongerThan7Days() throws Exception {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/stays/save").with(SecurityMockMvcRequestPostProcessors.csrf()).param("id", "").param("description", "Description").param("startDate", "2020/05/22").param("finishDate", "2020/06/23")
 				.param("pet.id", String.valueOf(TEST_PET_ID + 1)).param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
@@ -214,11 +214,11 @@ class StayControllerE2ETests {
 		"owner"
 	})
 	@Test
-	void testNewStayNegativeDateNotNull() throws Exception {
+	void testNewStayDateNotNull() throws Exception {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/stays/save").with(SecurityMockMvcRequestPostProcessors.csrf()).param("id", "").param("description", "Description").param("startDate", "").param("finishDate", "")
 				.param("pet.id", String.valueOf(TEST_PET_ID + 1)).param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
-			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "startDate", "startDateNotNull")).andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "finishDate", "finishDateNotNull"))
+			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "startDate", "NotNull")).andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "finishDate", "NotNull"))
 			.andExpect(MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
@@ -226,7 +226,7 @@ class StayControllerE2ETests {
 		"owner"
 	})
 	@Test
-	void testNewStayNegativeFinishBeforeStart() throws Exception {
+	void testNewStayFinishBeforeStart() throws Exception {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/stays/save").with(SecurityMockMvcRequestPostProcessors.csrf()).param("id", "").param("description", "Description").param("startDate", "2021/11/01").param("finishDate", "2021/10/01")
 				.param("pet.id", String.valueOf(TEST_PET_ID + 1)).param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
@@ -237,7 +237,7 @@ class StayControllerE2ETests {
 		"owner"
 	})
 	@Test
-	void testNewStayNegativeLessThan2Days() throws Exception {
+	void testNewStayLessThan2Days() throws Exception {
 		LocalDate lc1 = LocalDate.now().plusDays(1);
 		LocalDate lc2 = LocalDate.now().plusDays(5L);
 
@@ -255,7 +255,7 @@ class StayControllerE2ETests {
 		"owner"
 	})
 	@Test
-	void ListAllPendingByOwnerPositive() throws Exception {
+	void ListAllPendingByOwner() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/listByOwner")).andExpect(MockMvcResultMatchers.status().isOk())
 			/*
 			 * .andExpect(MockMvcResultMatchers.model().attributeExists("staysPending")) * .andExpect(MockMvcResultMatchers.model().attributeExists("staysAccepted"))
@@ -266,7 +266,7 @@ class StayControllerE2ETests {
 		"owner"
 	})
 	@Test
-	void ListAllPendingByOwnerNegativeUserNotInSystem() throws Exception {
+	void ListAllPendingByOwnerUserNotInSystem() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/listByOwner")).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 }

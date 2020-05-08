@@ -40,7 +40,7 @@ public class PetControllerE2ETests {
 	@Test
 	void testListMyPets() throws Exception {
 		mockMvc.perform(get("/pets/listMyPets")).andExpect(status().isOk()).andExpect(model().attributeExists("types"))
-			.andExpect(model().attributeExists("pets")).andExpect(model().attributeExists("ownerId"))
+			.andExpect(model().attributeExists("pets"))
 			.andExpect(view().name("pets/list"));
 	}
 
@@ -49,7 +49,7 @@ public class PetControllerE2ETests {
 	})
 	@Test
 	void testNewPet() throws Exception {
-		mockMvc.perform(get("/pets/new/{ownerId}", TEST_OWNER_ID)).andExpect(status().isOk())
+		mockMvc.perform(get("/pets/new")).andExpect(status().isOk())
 			.andExpect(model().attributeExists("pet")).andExpect(model().attributeExists("types"))
 			.andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
@@ -62,7 +62,7 @@ public class PetControllerE2ETests {
 		mockMvc
 			.perform(post("/pets/save").with(csrf()).param("name", "rex").param("birthDate", "2019/04/11")
 				.param("type", "dog").param("owner.id", String.valueOf(TEST_OWNER_ID)))
-			.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/pets/listMyPets"));
+			.andExpect(status().isOk()).andExpect(view().name("pets/list"));
 
 	}
 
@@ -123,8 +123,8 @@ public class PetControllerE2ETests {
 	})
 	@Test
 	void testDeleteVisit() throws Exception {
-		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID)).andExpect(status().is3xxRedirection())
-			.andExpect(view().name("redirect:/pets/listMyPets"));
+		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID)).andExpect(status().isOk())
+			.andExpect(view().name("pets/list"));
 	}
 
 	@WithMockUser(value = "owner1", authorities = {
@@ -132,8 +132,8 @@ public class PetControllerE2ETests {
 	})
 	@Test
 	void testDeletePetNotPresent() throws Exception {
-		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID_WRONG)).andExpect(status().isOk())
-			.andExpect(view().name("exception"));
+		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID_WRONG)).andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "owner1", authorities = {
@@ -151,9 +151,9 @@ public class PetControllerE2ETests {
 	})
 	@Test
 	void testNewVisitWrongPetId() throws Exception {
-		mockMvc.perform(get("/pets/newVisit/{petId}", TEST_PET_ID_WRONG)).andExpect(status().isOk())
+		mockMvc.perform(get("/pets/newVisit/{petId}", TEST_PET_ID_WRONG)).andExpect(status().is3xxRedirection())
 			.andExpect(model().attributeDoesNotExist("clinicId")).andExpect(model().attributeDoesNotExist("visit"))
-			.andExpect(model().attributeDoesNotExist("visits")).andExpect(view().name("exception"));
+			.andExpect(model().attributeDoesNotExist("visits")).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "owner1", authorities = {
@@ -162,7 +162,7 @@ public class PetControllerE2ETests {
 	@Test
 	void testNewStay() throws Exception {
 		mockMvc.perform(get("/pets/newStay/{petId}", TEST_PET_ID)).andExpect(status().isOk())
-			.andExpect(model().attributeExists("clinicId")).andExpect(model().attributeExists("stay"))
+			.andExpect(model().attributeExists("stay"))
 			.andExpect(model().attributeExists("stays")).andExpect(view().name("stays/createOrUpdateStayForm"));
 	}
 
@@ -171,9 +171,9 @@ public class PetControllerE2ETests {
 	})
 	@Test
 	void testNewStayWrongPetId() throws Exception {
-		mockMvc.perform(get("/pets/newStay/{petId}", TEST_PET_ID_WRONG)).andExpect(status().isOk())
+		mockMvc.perform(get("/pets/newStay/{petId}", TEST_PET_ID_WRONG)).andExpect(status().is3xxRedirection())
 			.andExpect(model().attributeDoesNotExist("clinicId")).andExpect(model().attributeDoesNotExist("stay"))
-			.andExpect(model().attributeDoesNotExist("stays")).andExpect(view().name("exception"));
+			.andExpect(model().attributeDoesNotExist("stays")).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "owner1", authorities = {
@@ -190,8 +190,8 @@ public class PetControllerE2ETests {
 	})
 	@Test
 	void testInitUpdateFormPet2() throws Exception {
-		mockMvc.perform(get("/pets/{petId}/edit", TEST_PET_ID_2)).andExpect(status().isOk())
-			.andExpect(model().attributeExists("pet")).andExpect(view().name("pets/createOrUpdatePetForm"));
+		mockMvc.perform(get("/pets/{petId}/edit", TEST_PET_ID_2)).andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "owner1", authorities = {
@@ -199,7 +199,7 @@ public class PetControllerE2ETests {
 	})
 	@Test
 	void testInitUpdateFormPetIdWrong() throws Exception {
-		mockMvc.perform(get("/pets/{petId}/edit", TEST_PET_ID_WRONG)).andExpect(status().isOk())
-			.andExpect(model().attributeDoesNotExist("pet")).andExpect(view().name("exception"));
+		mockMvc.perform(get("/pets/{petId}/edit", TEST_PET_ID_WRONG)).andExpect(status().is3xxRedirection())
+			.andExpect(model().attributeDoesNotExist("pet")).andExpect(view().name("redirect:/oups"));
 	}
 }

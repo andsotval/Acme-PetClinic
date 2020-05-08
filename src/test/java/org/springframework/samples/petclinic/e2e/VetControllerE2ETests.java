@@ -38,12 +38,11 @@ class VetControllerE2ETests {
 		mockMvc.perform(get("/vets/vetsAvailable")).andExpect(status().isOk()).andExpect(model().attributeExists("vets2")).andExpect(model().attributeExists("hiredVets")).andExpect(view().name("vets/vetsAvailable"));
 	}
 
-	//Al añadir con otro tipo de usuario
 	@WithMockUser(value = "manager123", authorities = {
 		"manager"
 	})
 	@Test
-	void testVetsAvailableAndOwnListNegative() throws Exception {
+	void testVetsAvailableAndOwnListWithManagerNotFound() throws Exception {
 		mockMvc.perform(get("/vets/vetsAvailable")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
@@ -60,7 +59,7 @@ class VetControllerE2ETests {
 		"manager"
 	})
 	@Test
-	void testAcceptVetNegative() throws Exception {
+	void testAcceptVetWithAlreadyAssignedClinic() throws Exception {
 		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET2_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
@@ -77,7 +76,7 @@ class VetControllerE2ETests {
 		"manager"
 	})
 	@Test
-	void testShowVetNegative() throws Exception {
+	void testShowVetWithManagerNotPresent() throws Exception {
 		mockMvc.perform(get("/vets/{vetId}", TEST_VET1_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 

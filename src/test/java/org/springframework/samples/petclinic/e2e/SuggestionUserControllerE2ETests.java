@@ -61,7 +61,7 @@ public class SuggestionUserControllerE2ETests {
 	@Test
 	void testDetailValueNotPresent() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/details/{suggestionId}", TEST_SUGGESTION_ID_99))
-			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("exception"));
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "owner1", authorities = {
@@ -85,8 +85,8 @@ public class SuggestionUserControllerE2ETests {
 				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("name", "name1")
 				.param("description", "description1").param("created", "2020/05/26 12:00:00").param("isRead", "false")
 				.param("isTrash", "false").param("isAvailable", "true").param("user", "26"))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/suggestion/user/list"));
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/user/list"));
 	}
 
 	@WithMockUser(value = "owner1", authorities = {
@@ -112,8 +112,8 @@ public class SuggestionUserControllerE2ETests {
 	@Test
 	void testDelete() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/delete/{suggestionId}", TEST_SUGGESTION_ID_1))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/suggestion/user/list"));
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/user/list"));
 	}
 
 	@WithMockUser(value = "owner1", authorities = {
@@ -122,7 +122,7 @@ public class SuggestionUserControllerE2ETests {
 	@Test
 	void testDeleteAll() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/deleteAll"))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/suggestion/user/list"));
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/user/list"));
 	}
 }

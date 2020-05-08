@@ -70,7 +70,7 @@ public class SuggestionAdminControllerE2ETests {
 	@Test
 	void testDetailValueNotPresent() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/details/{suggestionId}", TEST_SUGGESTION_ID_99))
-			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("exception"));
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "admin", authorities = {
@@ -79,8 +79,8 @@ public class SuggestionAdminControllerE2ETests {
 	@Test
 	void testReadPositive() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/read/{suggestionId}", TEST_SUGGESTION_ID_1))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/suggestion/admin/list"));
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
 	}
 
 	@WithMockUser(value = "admin", authorities = {
@@ -89,7 +89,7 @@ public class SuggestionAdminControllerE2ETests {
 	@Test
 	void testReadValueNotPresent() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/read/{suggestionId}", TEST_SUGGESTION_ID_99))
-			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("exception"));
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "admin", authorities = {
@@ -98,8 +98,8 @@ public class SuggestionAdminControllerE2ETests {
 	@Test
 	void testNotReadPositive() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/notRead/{suggestionId}", TEST_SUGGESTION_ID_1))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/suggestion/admin/list"));
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
 	}
 
 	@WithMockUser(value = "admin", authorities = {
@@ -108,7 +108,7 @@ public class SuggestionAdminControllerE2ETests {
 	@Test
 	void testNotReadValueNotPresent() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/notRead/{suggestionId}", TEST_SUGGESTION_ID_99))
-			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("exception"));
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "admin", authorities = {
@@ -117,8 +117,8 @@ public class SuggestionAdminControllerE2ETests {
 	@Test
 	void testMoveTrashPositive() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/moveTrash/{suggestionId}", TEST_SUGGESTION_ID_1))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/suggestion/admin/list"));
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
 	}
 
 	@WithMockUser(value = "admin", authorities = {
@@ -127,7 +127,7 @@ public class SuggestionAdminControllerE2ETests {
 	@Test
 	void testMoveTrashValueNotPresent() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/moveTrash/{suggestionId}", TEST_SUGGESTION_ID_99))
-			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("exception"));
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "admin", authorities = {
@@ -136,8 +136,8 @@ public class SuggestionAdminControllerE2ETests {
 	@Test
 	void testMoveAllTrash() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/moveAllTrash"))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/suggestion/admin/list"));
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
 	}
 
 	@WithMockUser(value = "admin", authorities = {
@@ -146,8 +146,8 @@ public class SuggestionAdminControllerE2ETests {
 	@Test
 	void testDelete() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/delete/{suggestionId}", TEST_SUGGESTION_ID_1))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/suggestion/admin/listTrash"));
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
 	}
 
 	@WithMockUser(value = "admin", authorities = {
@@ -156,8 +156,8 @@ public class SuggestionAdminControllerE2ETests {
 	@Test
 	void testDeleteAllTrash() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/deleteAllTrash"))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/suggestion/admin/listTrash"));
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
 	}
 
 }
