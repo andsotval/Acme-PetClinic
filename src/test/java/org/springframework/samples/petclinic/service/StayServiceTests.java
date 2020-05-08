@@ -1,34 +1,26 @@
-
 package org.springframework.samples.petclinic.service;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.StreamSupport;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
 import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.samples.petclinic.model.Authorities;
-import org.springframework.samples.petclinic.model.Clinic;
-import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.model.Pet;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.samples.petclinic.model.Stay;
-import org.springframework.samples.petclinic.model.User;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
@@ -36,11 +28,26 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 class StayServiceTests {
 
 	@Autowired
-	protected StayService	stayService;
+	protected StayService stayService;
 
 	@Autowired
-	protected VetService	vetService;
+	protected VetService vetService;
 
+	private int TEST_STAY_ID = 1;
+
+	private int TEST_STAY_ID_NOT_PRESENT = 100;
+
+	private int TEST_OWNER_ID = 1;
+
+	private int TEST_OWNER_ID_CAN_UNSUBSCRIBE = 4;
+
+	private int TEST_PET_ID = 1;
+
+	private int TEST_PET_ID_NOT_PRESENT = 100;
+
+	private int TEST_VET_ID = 1;
+
+	private int TEST_VET_ID_NOT_PRESENT = 100;
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -48,246 +55,144 @@ class StayServiceTests {
 		return localValidatorFactoryBean;
 	}
 
+	@Test
+	public void testFindAllPendingByVetId() {
+		Collection<Stay> stays = stayService.findAllPendingByVet(TEST_VET_ID);
+		stays.forEach(stay -> Assert.assertEquals(stay.getIsAccepted(), null));
+	}
 
-	private static final int	TEST_STAY_ID	= 1;
-	private static final int	TEST_CLINIC_ID	= 1;
-	private static final int	TEST_OWNER_ID	= 1;
-	private static final int	TEST_PET_ID		= 1;
-
-
-	@BeforeEach
-	void setup() {
-		//Arrange ------------------------------
-		LocalDate actualDate = LocalDate.of(2019, Month.APRIL, 5);
-
-		Clinic clinic = new Clinic();
-		clinic.setId(TEST_CLINIC_ID);
-
-		User user = new User();
-		user.setEnabled(true);
-		user.setUsername("pepito");
-		user.setPassword("pepito");
-
-		Authorities authority = new Authorities();
-		authority.setAuthority("Owner");
-		authority.setUsername("Owner");
-
-		Owner owner = new Owner();
-		owner.setUser(user);
-		owner.setId(TEST_OWNER_ID);
-		owner.setFirstName("owner");
-		owner.setLastName("Leary");
-		owner.setAddress("110 W. Liberty St.");
-		owner.setCity("Madison");
-		owner.setTelephone("6085551023");
-		owner.setClinic(clinic);
-
-		Pet pet = new Pet();
-		pet.setId(TEST_PET_ID);
-		pet.setBirthDate(LocalDate.of(2019, Month.FEBRUARY, 1));
-		pet.setName("Wiskers");
-		pet.setOwner(owner);
-
-		Stay stay = new Stay();
-		stay.setId(1);
-		stay.setDescription("Description in test");
-		stay.setIsAccepted(false);
-		stay.setStartDate(actualDate);
-		stay.setFinishDate(actualDate);
-		stay.setClinic(clinic);
-		stay.setPet(pet);
-
-		stayService.saveEntity(stay);
+	public void testFindAllPendingByVetIdNotPresent() {
+		Collection<Stay> stays = stayService.findAllPendingByVet(TEST_VET_ID_NOT_PRESENT);
+		assertEquals(stays.size(), 0);
 	}
 
 	@Test
-	public void testFindAllPendingByVet() {
-		stayService.findAllPendingByVet(1).forEach(stay -> Assert.assertEquals(stay.getIsAccepted(), null));
-	}
-
-	public void testFindAllPendingByNullVet() {
-		Iterable<Stay> stays = stayService.findAllPendingByVet(null);
-		int numStays = (int) StreamSupport.stream(stays.spliterator(), false).count();
-		assertEquals(numStays, 0);
-	}
-	@Test
-	public void testFindAllAcceptedByVet() {
-		stayService.findAllAcceptedByVet(1).forEach(stay -> Assert.assertEquals(stay.getIsAccepted(), true));
-	}
-	@Test
-	public void testFindAllAcceptedByNullVet() {
-		Iterable<Stay> stays = stayService.findAllAcceptedByVet(null);
-		int numStays = (int) StreamSupport.stream(stays.spliterator(), false).count();
-		assertEquals(numStays, 0);
+	public void testFindAllAcceptedByVetId() {
+		Collection<Stay> stays = stayService.findAllAcceptedByVet(TEST_VET_ID);
+		stays.forEach(stay -> Assert.assertEquals(stay.getIsAccepted(), true));
 	}
 
 	@Test
-	public void testDeleteByPet() {
-		//		//Arrange ----------------------------------
-		Collection<Stay> stays = (Collection<Stay>) stayService.findAllStayByPet(TEST_PET_ID);
-		assertTrue(stays.size() != 0);
-		//-------------------------------------------
+	public void testFindAllAcceptedByVetIdNotPresent() {
+		Collection<Stay> stays = stayService.findAllAcceptedByVet(TEST_VET_ID_NOT_PRESENT);
+		assertEquals(stays.size(), 0);
+	}
 
-		//Act ---------------------------------------
+	@Test
+	public void testDeleteByPetId() {
 		stayService.deleteByPetId(TEST_PET_ID);
-		//-------------------------------------------
 
-		//Assertion ---------------------------------
-		stays = (Collection<Stay>) stayService.findAllStayByPet(TEST_PET_ID);
-		assertTrue(stays.size() == 0);
-		//-------------------------------------------
+		Collection<Stay> stays = (Collection<Stay>) stayService.findAllStayByPet(TEST_PET_ID);
+		assertEquals(stays.size(), 0);
 	}
+
 	@Test
-	public void testDeleteByNullPet() {
-		//		//Arrange ----------------------------------
+	public void testDeleteByPetIdNotPresent() {
 		Collection<Stay> staysBefore = (Collection<Stay>) stayService.findAllEntities();
 		Integer numStaysBefore = staysBefore.size();
-		//-------------------------------------------
 
-		//Act ---------------------------------------
-		stayService.deleteByPetId(-1);
-		//-------------------------------------------
+		stayService.deleteByPetId(TEST_PET_ID_NOT_PRESENT);
 
-		//Assertion ---------------------------------
 		Collection<Stay> staysAfter = (Collection<Stay>) stayService.findAllEntities();
 		Integer numStaysAfter = staysAfter.size();
-		assertTrue(numStaysBefore == numStaysAfter);
-		//-------------------------------------------
+		assertEquals(numStaysBefore, numStaysAfter);
 	}
 
 	@Test
 	public void testFindAllStayByPet() {
-		//Act --------------------------------
 		Collection<Stay> stays = (Collection<Stay>) stayService.findAllStayByPet(TEST_PET_ID);
-		//-----------------------------------
+		stays.forEach(s -> assertEquals(s.getPet().getId(), TEST_PET_ID));
 
-		//Assertion -------------------------
-		assertTrue(stays.size() != 0);
-		//----------------------------------
 	}
 
 	@Test
-	public void testFindAllStayByNullPet() {
-		//Act --------------------------------
-		Collection<Stay> stays = (Collection<Stay>) stayService.findAllStayByPet(null);
-		//-----------------------------------
-
-		//Assertion -------------------------
-		assertTrue(stays.size() == 0);
-		//----------------------------------
+	public void testFindAllStayByPetIdNotPresent() {
+		Collection<Stay> stays = (Collection<Stay>) stayService.findAllStayByPet(TEST_PET_ID_NOT_PRESENT);
+		assertEquals(stays.size(), 0);
 	}
 
 	@Test
 	public void testFindAllPendingByOwner() {
-		//Act & assert-------------------------------
-		stayService.findAllPendingByOwner(TEST_OWNER_ID).forEach((x) -> assertTrue(!x.getIsAccepted() && x.getPet().getOwner().getId() == TEST_OWNER_ID));
-		//-------------------------------------------
+		Collection<Stay> stays = stayService.findAllPendingByOwner(TEST_OWNER_ID);
+		stays.forEach(stay -> Assert.assertEquals(stay.getIsAccepted(), null));
 	}
 
 	@Test
-	public void testFindAllPendingByNullOwner() {
-		//Act ---------------------------------------
-		Iterable<Stay> stays = stayService.findAllPendingByOwner(null);
-		int numStays = (int) StreamSupport.stream(stays.spliterator(), false).count();
-		//-------------------------------------------
-
-		//Assert ------------------------------------
-		assertEquals(numStays, 0);
+	public void testFindAllPendingByOwnerIdNotPresent() {
+		Collection<Stay> stays = stayService.findAllPendingByVet(TEST_VET_ID_NOT_PRESENT);
+		assertEquals(stays.size(), 0);
 	}
 
 	@Test
 	public void testFindAllAcceptedByOwner() {
-		//Act & assert-------------------------------
-		stayService.findAllAcceptedByOwner(TEST_OWNER_ID).forEach((x) -> assertTrue(x.getIsAccepted() && x.getPet().getOwner().getId() == TEST_OWNER_ID));
-		//-------------------------------------------
+		Collection<Stay> stays = stayService.findAllAcceptedByOwner(TEST_OWNER_ID);
+		stays.forEach(stay -> Assert.assertEquals(stay.getIsAccepted(), true));
 	}
 
 	@Test
-	public void testFindAllAcceptedByNullOwner() {
-		//Act ---------------------------------------
-		Iterable<Stay> stays = stayService.findAllAcceptedByOwner(null);
-		int numStays = (int) StreamSupport.stream(stays.spliterator(), false).count();
-		//-------------------------------------------
+	public void testFindAllAcceptedByOwnerIdNotPresent() {
+		Collection<Stay> stays = stayService.findAllAcceptedByOwner(TEST_VET_ID_NOT_PRESENT);
+		assertEquals(stays.size(), 0);
+	}
 
-		//Assert ------------------------------------
-		assertEquals(numStays, 0);
-		//-------------------------------------------
+	@Test
+	public void testCanUnsubscribeWithOwnerAllowed() {
+		Boolean canUnsubscribe = stayService.canUnsubscribe(TEST_OWNER_ID_CAN_UNSUBSCRIBE);
+		assertTrue(canUnsubscribe);
+	}
+
+	@Test
+	public void testCanUnsubscribeWithOwnerNotAllowed() {
+		Boolean canUnsubscribe = stayService.canUnsubscribe(TEST_OWNER_ID);
+		assertFalse(canUnsubscribe);
+	}
+
+	@Test
+	public void testFindAllStays() {
+		Collection<Stay> collection = (Collection<Stay>) stayService.findAllEntities();
+		assertEquals(collection.size(), 11);
+	}
+
+	@Test
+	public void testFindStayById() {
+		Optional<Stay> entity = stayService.findEntityById(TEST_STAY_ID);
+		assertTrue(entity.isPresent());
+		assertEquals(entity.get().getId(), TEST_STAY_ID);
+	}
+
+	@Test
+	public void testFindStayByIdNotPresent() {
+		Optional<Stay> entity = stayService.findEntityById(TEST_STAY_ID_NOT_PRESENT);
+		assertFalse(entity.isPresent());
 	}
 
 	@Test
 	public void testSaveStay() {
-		//Fixture -----------------------------------
-		LocalDate actualDate = LocalDate.of(2019, Month.APRIL, 5);
 
-		Clinic clinic = new Clinic();
-		clinic.setId(2);
+		Stay entity = stayService.findEntityById(TEST_STAY_ID).get();
 
-		User user = new User();
-		user.setEnabled(true);
-		user.setUsername("pepito");
-		user.setPassword("pepito");
+		entity.setDescription("New Description for Service Test");
+		entity.setIsAccepted(false);
 
-		Authorities authority = new Authorities();
-		authority.setAuthority("Owner");
-		authority.setUsername("Owner");
+		stayService.saveEntity(entity);
 
-		Owner owner = new Owner();
-		owner.setUser(user);
-		owner.setId(2);
-		owner.setFirstName("owner");
-		owner.setLastName("Leary");
-		owner.setAddress("110 W. Liberty St.");
-		owner.setCity("Madison");
-		owner.setTelephone("6085551023");
-		owner.setClinic(clinic);
+		Stay savedEntity = stayService.findEntityById(TEST_STAY_ID).get();
 
-		Pet pet = new Pet();
-		pet.setId(2);
-		pet.setBirthDate(LocalDate.of(2019, Month.FEBRUARY, 1));
-		pet.setName("Wiskers");
-		pet.setOwner(owner);
-
-		Stay stay = new Stay();
-		stay.setId(2);
-		stay.setDescription("Description in test");
-		stay.setIsAccepted(false);
-		stay.setStartDate(actualDate);
-		stay.setFinishDate(actualDate);
-		stay.setClinic(clinic);
-		stay.setPet(pet);
-
-		//Act -----------------------------------
-		stayService.saveEntity(stay);
-		//---------------------------------------
-
-		//Assert --------------------------------
-		Optional<Stay> stayOptional = stayService.findEntityById(2);
-		Stay staySaved = stayOptional.get();
-
-		assertTrue(stayOptional.isPresent());
-		assertEquals(stay.getId(), staySaved.getId());
-		assertEquals(stay.getDescription(), staySaved.getDescription());
-		assertEquals(stay.getIsAccepted(), staySaved.getIsAccepted());
-		assertEquals(stay.getStartDate(), staySaved.getStartDate());
-		assertEquals(stay.getFinishDate(), staySaved.getFinishDate());
-		assertEquals(stay.getClinic().getId(), staySaved.getClinic().getId());
-		assertEquals(stay.getPet().getId(), staySaved.getPet().getId());
+		assertEquals(savedEntity.getDescription(), "New Description for Service Test");
+		assertEquals(savedEntity.getIsAccepted(), false);
 	}
 
 	@Test
-	public void testSaveStayNegative() {
+	public void testSaveStayWithNullDescription() {
 		LocaleContextHolder.setLocale(Locale.ENGLISH);
-		Clinic clinic = new Clinic();
-		clinic.setId(2);
 
-		Stay stay = new Stay();
-		stay.setId(2);
-		stay.setDescription(null);
+		Stay entity = stayService.findEntityById(TEST_STAY_ID).get();
+		entity.setDescription(null);
 
-		stayService.saveEntity(stay);
+		stayService.saveEntity(entity);
 
 		Validator validator = createValidator();
-		Set<ConstraintViolation<Stay>> constraintViolations = validator.validate(stay);
+		Set<ConstraintViolation<Stay>> constraintViolations = validator.validate(entity);
 		assertEquals(constraintViolations.size(), 1);
 
 		Iterator<ConstraintViolation<Stay>> it = constraintViolations.iterator();
@@ -305,6 +210,50 @@ class StayServiceTests {
 			}
 		}
 
+	}
+
+	@Test
+	public void testDeleteStay() {
+		Optional<Stay> entity = stayService.findEntityById(TEST_STAY_ID);
+		assertTrue(entity.isPresent());
+		stayService.deleteEntity(entity.get());
+
+		Optional<Stay> deleteEntity = stayService.findEntityById(TEST_STAY_ID);
+		assertTrue(!deleteEntity.isPresent());
+	}
+
+	@Test
+	public void testDeleteStayNotPresent() {
+		Collection<Stay> collection = (Collection<Stay>) stayService.findAllEntities();
+		int collectionSize = collection.size();
+
+		stayService.deleteEntity(null);
+
+		Collection<Stay> newCollection = (Collection<Stay>) stayService.findAllEntities();
+		int newCollectionSize = newCollection.size();
+
+		assertEquals(collectionSize, newCollectionSize);
+	}
+
+	@Test
+	public void testDeleteStayById() {
+		stayService.deleteEntityById(TEST_STAY_ID);
+
+		Optional<Stay> entity = stayService.findEntityById(TEST_STAY_ID);
+		assertTrue(!entity.isPresent());
+	}
+
+	@Test
+	public void testDeleteStayByIdNotPresent() {
+		boolean deleted = true;
+
+		try {
+			stayService.deleteEntityById(TEST_STAY_ID_NOT_PRESENT);
+		} catch (EmptyResultDataAccessException e) {
+			deleted = false;
+		}
+
+		assertFalse(deleted);
 	}
 
 }

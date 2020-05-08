@@ -4,7 +4,6 @@ package org.springframework.samples.petclinic.service;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -19,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.samples.petclinic.model.Product;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -26,11 +26,16 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 public class ProductServiceTest {
 
-	private static final int	TEST_PRODUCT_ID	= 1;
+	private int TEST_PRODUCT_ID = 1;
+
+	private int TEST_PRODUCT_ID_NOT_PRESENT = 100;
+
+	private int TEST_PROVIDER_ID = 1;
+
+	private int TEST_PROVIDER_ID_NOT_PRESENT = 100;
 
 	@Autowired
-	protected ProductService	productService;
-
+	protected ProductService productService;
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -39,46 +44,62 @@ public class ProductServiceTest {
 	}
 
 	@Test
-	public void TestFindAllProductsByManagerIdPositive() {
-		int providerId = 1;
-		productService.findProductsAvailableByProviderId(providerId)
-			.forEach(product -> assertEquals(providerId, product.getProvider().getId()));
+	public void testFindProductsByProviderId() {
+		Collection<Product> products = productService.findProductsAvailableByProviderId(TEST_PROVIDER_ID);
+		products.forEach(product -> assertEquals(TEST_PROVIDER_ID, product.getProvider().getId()));
 	}
+
 	@Test
-	public void TestFindAllProductsByManagerIdNegative() {
-		int providerId = 1;
-		int notProviderId = 2;
-		productService.findProductsAvailableByProviderId(notProviderId)
-			.forEach(product -> assertNotEquals(providerId, product.getProvider().getId()));
+	public void testFindProductsByProviderIdNotPresent() {
+		Collection<Product> products = productService.findProductsAvailableByProviderId(TEST_PROVIDER_ID_NOT_PRESENT);
+		assertEquals(products.size(), 0);
 	}
+
 	@Test
-	public void TestFindAllProductsByManagerIdNegativeNotPresent() {
-		int providerId = 20;
-		productService.findProductsAvailableByProviderId(providerId).forEach(o -> assertEquals(null, o.getProvider()));
+	public void testFindAllProducts() {
+		Collection<Product> collection = (Collection<Product>) productService.findAllEntities();
+		assertEquals(collection.size(), 16);
+	}
+
+	@Test
+	public void testFindProductById() {
+		Optional<Product> entity = productService.findEntityById(TEST_PRODUCT_ID);
+		assertTrue(entity.isPresent());
+		assertEquals(entity.get().getId(), TEST_PRODUCT_ID);
+	}
+
+	@Test
+	public void testFindProductByIdNotPresent() {
+		Optional<Product> entity = productService.findEntityById(TEST_PRODUCT_ID_NOT_PRESENT);
+		assertFalse(entity.isPresent());
 	}
 
 	@Test
 	public void testSaveProduct() {
-		//Fixture
+		Collection<Product> collection = (Collection<Product>) productService.findAllEntities();
+		int collectionSize = collection.size();
+		
 		Product entity = new Product();
-		entity.setId(ProductServiceTest.TEST_PRODUCT_ID);
 		entity.setName("Comida para perros castrados");
 		entity.setPrice(15.95);
 		entity.setAvailable(true);
+		entity.setTax(1.20);
 
-		//Act
 		productService.saveEntity(entity);
+		
+		Collection<Product> newCollection = (Collection<Product>) productService.findAllEntities();
+		int newCollectionSize = newCollection.size();
+		
+		assertEquals(collectionSize+1, newCollectionSize);
 
-		//Assert
 		Assert.assertEquals("Comida para perros castrados",
-			productService.findEntityById(ProductServiceTest.TEST_PRODUCT_ID).get().getName());
+				productService.findEntityById(newCollectionSize).get().getName());
 	}
 
 	@Test
 	public void testSaveProductWithoutName() {
-		//Fixture
 		Product entity = new Product();
-		entity.setId(ProductServiceTest.TEST_PRODUCT_ID);
+		entity.setId(TEST_PRODUCT_ID);
 		entity.setPrice(15.95);
 		entity.setAvailable(true);
 
@@ -104,66 +125,46 @@ public class ProductServiceTest {
 
 	@Test
 	public void testDeleteProduct() {
-		Optional<Product> entity = productService.findEntityById(1);
+		Optional<Product> entity = productService.findEntityById(TEST_PRODUCT_ID);
 		assertTrue(entity.isPresent());
 		productService.deleteEntity(entity.get());
 
-		Optional<Product> deleteEntity = productService.findEntityById(1);
+		Optional<Product> deleteEntity = productService.findEntityById(TEST_PRODUCT_ID);
 		assertTrue(!deleteEntity.isPresent());
 	}
 
 	@Test
-	public void testDeleteProductNonExisisting() {
+	public void testDeleteProductNotPresent() {
 		Collection<Product> collection = (Collection<Product>) productService.findAllEntities();
-		assertEquals(collection.size(), 16);
+		int collectionSize = collection.size();
 
 		productService.deleteEntity(null);
 
-		Collection<Product> collectionAfter = (Collection<Product>) productService.findAllEntities();
-		assertEquals(collectionAfter.size(), 16);
+		Collection<Product> newCollection = (Collection<Product>) productService.findAllEntities();
+		int newCollectionSize = newCollection.size();
+
+		assertEquals(collectionSize, newCollectionSize);
 	}
 
 	@Test
 	public void testDeleteProductById() {
-		Collection<Product> collection = (Collection<Product>) productService.findAllEntities();
-		assertEquals(collection.size(), 16);
+		productService.deleteEntityById(TEST_PRODUCT_ID);
 
-		productService.deleteEntityById(1);
-
-		Collection<Product> collectionAfter = (Collection<Product>) productService.findAllEntities();
-		assertEquals(collectionAfter.size(), 16 - 1);
-	}
-
-	/*
-	 * @Test
-	 * public void testDeleteVisitByIdNonExisting() {
-	 * Collection<Visit> collection = (Collection<Visit>) service.findAllEntities();
-	 * assertEquals(collection.size(), 11);
-	 * 
-	 * service.deleteEntityById(90000);
-	 * 
-	 * Collection<Visit> collectionAfter = (Collection<Visit>) service.findAllEntities();
-	 * assertEquals(collectionAfter.size(), 11);
-	 * }
-	 */
-
-	@Test
-	public void testFindAllProducts() {
-		Collection<Product> collection = (Collection<Product>) productService.findAllEntities();
-		assertEquals(collection.size(), 16);
+		Optional<Product> entity = productService.findEntityById(TEST_PRODUCT_ID);
+		assertTrue(!entity.isPresent());
 	}
 
 	@Test
-	public void testFindProductById() {
-		Optional<Product> entity = productService.findEntityById(1);
-		assertTrue(entity.isPresent());
-		assertEquals(entity.get().getId(), 1);
-	}
+	public void testDeleteProductByIdNotPresent() {
+		boolean deleted = true;
 
-	@Test
-	public void testFindProductByIdNonExisiting() {
-		Optional<Product> entity = productService.findEntityById(900000);
-		assertFalse(entity.isPresent());
+		try {
+			productService.deleteEntityById(TEST_PRODUCT_ID_NOT_PRESENT);
+		} catch (EmptyResultDataAccessException e) {
+			deleted = false;
+		}
+
+		assertFalse(deleted);
 	}
 
 }

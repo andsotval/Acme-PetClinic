@@ -1,8 +1,9 @@
-
 package org.springframework.samples.petclinic.service;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -10,6 +11,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.persistence.NoResultException;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.samples.petclinic.model.Order;
 import org.springframework.samples.petclinic.model.Product;
 import org.springframework.samples.petclinic.model.ProductOrder;
@@ -29,8 +32,18 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 public class ProductOrderServiceTests {
 
 	@Autowired
-	protected ProductOrderService service;
+	protected ProductOrderService productOrderService;
 
+	@Autowired
+	protected OrderService orderService;
+
+	private int TEST_ORDER_ID = 1;
+
+	private int TEST_ORDER_ID_NOT_PRESENT = 100;
+
+	private int TEST_PRODUCT_ORDER_ID = 1;
+
+	private int TEST_PRODUCT_ORDER_ID_NOT_PRESENT = 100;
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -39,40 +52,59 @@ public class ProductOrderServiceTests {
 	}
 
 	@Test
-	public void TestFindProductOrderByOrderdPositive() {
-		Collection<ProductOrder> collection = service.findProductOrderByOrder(1);
-		assertEquals(collection.size(), 3);
+	public void testFindProductOrderByOrderId() {
+		Collection<ProductOrder> productOrders = productOrderService.findProductOrderByOrder(TEST_ORDER_ID);
+		productOrders.forEach(p -> assertEquals(p.getOrder().getId(), TEST_ORDER_ID));
 	}
 
 	@Test
-	public void TestfindProviderByOrderPositive() {
-		Provider provider = service.findProviderByOrder(1);
-		assertEquals(provider.getId(), 1);
+	public void testFindProductOrderByOrderIdNotPresent() {
+		Collection<ProductOrder> productOrders = productOrderService.findProductOrderByOrder(TEST_ORDER_ID_NOT_PRESENT);
+		assertEquals(productOrders.size(), 0);
 	}
 
 	@Test
-	public void testFindAllEntities() {
-		Collection<ProductOrder> collection = (Collection<ProductOrder>) service.findAllEntities();
+	public void testFindProviderByOrderId() {
+		Provider provider = productOrderService.findProviderByOrder(TEST_ORDER_ID);
+		Integer providerId = provider.getId();
+		Collection<ProductOrder> productOrders = productOrderService.findProductOrderByOrder(TEST_ORDER_ID);
+		productOrders.forEach(p -> assertEquals(p.getProduct().getProvider().getId(), providerId));
+	}
+
+	@Test
+	public void testFindProviderByOrderIdNotPresent() {
+		Provider provider = null;
+		try {
+			provider = productOrderService.findProviderByOrder(TEST_ORDER_ID_NOT_PRESENT);
+		} catch (NoResultException e) {
+			provider = null;
+		}
+		assertNull(provider);
+	}
+
+	@Test
+	public void testFindAllProductOrders() {
+		Collection<ProductOrder> collection = (Collection<ProductOrder>) productOrderService.findAllEntities();
 		assertEquals(collection.size(), 12);
 	}
 
 	@Test
-	public void testFindEntityByIdPositive() {
-		Optional<ProductOrder> entity = service.findEntityById(1);
+	public void testFindProductOrderById() {
+		Optional<ProductOrder> entity = productOrderService.findEntityById(TEST_PRODUCT_ORDER_ID);
 		assertTrue(entity.isPresent());
-		assertTrue(entity.get().getId().equals(1));
+		assertTrue(entity.get().getId().equals(TEST_PRODUCT_ORDER_ID));
 	}
 
 	@Test
-	public void testFindEntityByIdNegative() {
-		Optional<ProductOrder> entity = service.findEntityById(99);
+	public void testFindProductOrderByIdNotPresent() {
+		Optional<ProductOrder> entity = productOrderService.findEntityById(TEST_PRODUCT_ORDER_ID_NOT_PRESENT);
 		assertTrue(!entity.isPresent());
 	}
 
 	@Test
-	public void testSaveEntityPositive() {
-		Collection<ProductOrder> collection = (Collection<ProductOrder>) service.findAllEntities();
-		assertEquals(collection.size(), 12);
+	public void testSaveProductOrder() {
+		Collection<ProductOrder> collection = (Collection<ProductOrder>) productOrderService.findAllEntities();
+		int collectionSize = collection.size();
 
 		ProductOrder productOrder = new ProductOrder();
 		productOrder.setAmount(3);
@@ -87,12 +119,12 @@ public class ProductOrderServiceTests {
 		product.setId(1);
 		productOrder.setProduct(product);
 
-		service.saveEntity(productOrder);
+		productOrderService.saveEntity(productOrder);
 
-		collection = (Collection<ProductOrder>) service.findAllEntities();
-		assertEquals(collection.size(), 13);
+		collection = (Collection<ProductOrder>) productOrderService.findAllEntities();
+		assertEquals(collection.size(), collectionSize + 1);
 
-		Optional<ProductOrder> newEntity = service.findEntityById(13);
+		Optional<ProductOrder> newEntity = productOrderService.findEntityById(13);
 		assertTrue(newEntity.isPresent());
 		assertEquals(newEntity.get().getAmount(), 3);
 		assertEquals(newEntity.get().getPrice(), 10.0);
@@ -102,7 +134,7 @@ public class ProductOrderServiceTests {
 	}
 
 	@Test
-	public void testSaveEntityNegative() {
+	public void testSaveProductOrderWithNullParameters() {
 		LocaleContextHolder.setLocale(Locale.ENGLISH);
 		ProductOrder productOrder = new ProductOrder();
 		productOrder.setAmount(null);
@@ -135,21 +167,47 @@ public class ProductOrderServiceTests {
 	}
 
 	@Test
-	public void testDeleteEntity() {
-		Optional<ProductOrder> entity = service.findEntityById(1);
+	public void testDeleteProductOrder() {
+		Optional<ProductOrder> entity = productOrderService.findEntityById(TEST_PRODUCT_ORDER_ID);
 		assertTrue(entity.isPresent());
-		service.deleteEntity(entity.get());
+		productOrderService.deleteEntity(entity.get());
 
-		Optional<ProductOrder> deleteEntity = service.findEntityById(1);
+		Optional<ProductOrder> deleteEntity = productOrderService.findEntityById(TEST_PRODUCT_ORDER_ID);
 		assertTrue(!deleteEntity.isPresent());
 	}
 
 	@Test
-	public void testDeleteEntityById() {
-		service.deleteEntityById(1);
+	public void testDeleteProductOrderNotPresent() {
+		Collection<ProductOrder> collection = (Collection<ProductOrder>) productOrderService.findAllEntities();
+		int collectionSize = collection.size();
 
-		Optional<ProductOrder> entity = service.findEntityById(1);
+		productOrderService.deleteEntity(null);
+
+		Collection<ProductOrder> newCollection = (Collection<ProductOrder>) productOrderService.findAllEntities();
+		int newCollectionSize = newCollection.size();
+
+		assertEquals(collectionSize, newCollectionSize);
+	}
+	
+	@Test
+	public void testDeleteProductOrderById() {
+		productOrderService.deleteEntityById(TEST_PRODUCT_ORDER_ID);
+
+		Optional<ProductOrder> entity = productOrderService.findEntityById(TEST_PRODUCT_ORDER_ID);
 		assertTrue(!entity.isPresent());
+	}
+	
+	@Test
+	public void testDeleteProductOrderByIdNotPresent() {
+		boolean deleted = true;
+
+		try {
+			productOrderService.deleteEntityById(TEST_PRODUCT_ORDER_ID_NOT_PRESENT);
+		} catch (EmptyResultDataAccessException e) {
+			deleted = false;
+		}
+
+		assertFalse(deleted);
 	}
 
 }

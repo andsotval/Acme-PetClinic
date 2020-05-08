@@ -1,6 +1,6 @@
 package org.springframework.samples.petclinic.service;
 
-
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
@@ -27,11 +28,11 @@ public class ManagerServiceTest {
 
 	@Autowired
 	protected ManagerService managerService;
-	
+
 	private int TEST_MANAGER_ID = 1;
-	
+
 	private int TEST_MANAGER_ID_NOT_PRESENT = 100;
-	
+
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
 		localValidatorFactoryBean.afterPropertiesSet();
@@ -72,9 +73,9 @@ public class ManagerServiceTest {
 		managerService.saveEntity(entity);
 
 		collection = (Collection<Manager>) managerService.findAllEntities();
-		assertEquals(collection.size(), collectionSize+1);
+		assertEquals(collection.size(), collectionSize + 1);
 
-		Optional<Manager> newEntity = managerService.findEntityById(collectionSize+1);
+		Optional<Manager> newEntity = managerService.findEntityById(collectionSize + 1);
 		assertTrue(newEntity.isPresent());
 		assertEquals(newEntity.get().getFirstName(), "Manager Name");
 		assertEquals(newEntity.get().getLastName(), "Manager Surname");
@@ -86,7 +87,7 @@ public class ManagerServiceTest {
 	@Test
 	public void testSaveManagerWithoutFirstName() {
 		LocaleContextHolder.setLocale(Locale.ENGLISH);
-		
+
 		Manager entity = new Manager();
 		entity.setFirstName(null);
 		entity.setLastName("Manager Surname");
@@ -97,7 +98,7 @@ public class ManagerServiceTest {
 		Validator validator = createValidator();
 		Set<ConstraintViolation<Manager>> constraintViolations = validator.validate(entity);
 		assertEquals(constraintViolations.size(), 2);
-		
+
 		Iterator<ConstraintViolation<Manager>> it = constraintViolations.iterator();
 		while (it.hasNext()) {
 			ConstraintViolation<Manager> violation = it.next();
@@ -124,11 +125,37 @@ public class ManagerServiceTest {
 	}
 
 	@Test
+	public void testDeleteManagerNotPresent() {
+		Collection<Manager> collection = (Collection<Manager>) managerService.findAllEntities();
+		int collectionSize = collection.size();
+
+		managerService.deleteEntity(null);
+
+		Collection<Manager> newCollection = (Collection<Manager>) managerService.findAllEntities();
+		int newCollectionSize = newCollection.size();
+
+		assertEquals(collectionSize, newCollectionSize);
+	}
+
+	@Test
 	public void testDeleteManagerById() {
 		managerService.deleteEntityById(TEST_MANAGER_ID);
 
 		Optional<Manager> entity = managerService.findEntityById(TEST_MANAGER_ID);
 		assertTrue(!entity.isPresent());
+	}
+
+	@Test
+	public void testDeleteManagerByIdNotPresent() {
+		boolean deleted = true;
+
+		try {
+			managerService.deleteEntityById(TEST_MANAGER_ID_NOT_PRESENT);
+		} catch (EmptyResultDataAccessException e) {
+			deleted = false;
+		}
+
+		assertFalse(deleted);
 	}
 
 }

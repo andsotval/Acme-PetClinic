@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.service;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -18,28 +19,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 class PetServiceTests {
 
 	@Autowired
-	protected PetService	petService;
+	protected PetService petService;
 
 	@Autowired
-	protected OwnerService	ownerService;
+	protected OwnerService ownerService;
 
 	private int TEST_OWNER_ID = 1;
-	
+
 	private int TEST_OWNER_ID_NOT_PRESENT = 100;
-	
+
 	private int TEST_PET_ID = 1;
-	
+
 	private int TEST_PET_ID_NOT_PRESENT = 100;
 
 	private Validator createValidator() {
@@ -47,7 +48,7 @@ class PetServiceTests {
 		localValidatorFactoryBean.afterPropertiesSet();
 		return localValidatorFactoryBean;
 	}
-	
+
 	@Test
 	public void testFindPetsByOwnerId() {
 		Collection<Pet> pets = petService.findPetsByOwnerId(TEST_OWNER_ID);
@@ -59,7 +60,6 @@ class PetServiceTests {
 		Collection<Pet> pets = petService.findPetsByOwnerId(TEST_OWNER_ID_NOT_PRESENT);
 		assertEquals(pets.size(), 0);
 	}
-
 
 	@Test
 	public void testFindAllPets() {
@@ -101,9 +101,9 @@ class PetServiceTests {
 		petService.saveEntity(pet);
 
 		collection = (Collection<Pet>) petService.findAllEntities();
-		assertEquals(collection.size(), collectionSize+1);
+		assertEquals(collection.size(), collectionSize + 1);
 
-		Optional<Pet> newEntity = petService.findEntityById(collectionSize+1);
+		Optional<Pet> newEntity = petService.findEntityById(collectionSize + 1);
 		assertTrue(newEntity.isPresent());
 		assertEquals(newEntity.get().getBirthDate(), birthDate);
 		assertEquals(newEntity.get().getName(), "Pet Name");
@@ -112,7 +112,7 @@ class PetServiceTests {
 	}
 
 	@Test
-	public void testSavePetNegativeDateNullAndNameTooShort() {
+	public void testSavePetDateNullAndNameTooShort() {
 		LocaleContextHolder.setLocale(Locale.ENGLISH);
 		Pet pet = new Pet();
 		pet.setBirthDate(null);
@@ -182,11 +182,37 @@ class PetServiceTests {
 	}
 
 	@Test
-	public void testDeleteEntityById() {
+	public void testDeletePetNotPresent() {
+		Collection<Pet> collection = (Collection<Pet>) petService.findAllEntities();
+		int collectionSize = collection.size();
+
+		petService.deleteEntity(null);
+
+		Collection<Pet> newCollection = (Collection<Pet>) petService.findAllEntities();
+		int newCollectionSize = newCollection.size();
+
+		assertEquals(collectionSize, newCollectionSize);
+	}
+
+	@Test
+	public void testDeletePetById() {
 		petService.deleteEntityById(TEST_PET_ID);
 
 		Optional<Pet> entity = petService.findEntityById(TEST_PET_ID);
 		assertTrue(!entity.isPresent());
+	}
+
+	@Test
+	public void testDeletePetByIdNotPresent() {
+		boolean deleted = true;
+
+		try {
+			petService.deleteEntityById(TEST_PET_ID_NOT_PRESENT);
+		} catch (EmptyResultDataAccessException e) {
+			deleted = false;
+		}
+
+		assertFalse(deleted);
 	}
 
 }

@@ -1,4 +1,3 @@
-
 package org.springframework.samples.petclinic.service;
 
 import static org.junit.Assert.assertTrue;
@@ -28,8 +27,15 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 public class SuggestionServiceTests {
 
 	@Autowired
-	private SuggestionService service;
-
+	private SuggestionService suggestionService;
+	
+	private String TEST_USERNAME = "owner1";
+	
+	private String TEST_USERNAME_NOT_PRESENT = "username that is not present";
+	
+	private int TEST_SUGGESTION_ID = 1;
+	
+	private int TEST_SUGGESTION_ID_NOT_PRESENT = 100;
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -39,101 +45,105 @@ public class SuggestionServiceTests {
 
 	@Test
 	public void testFindAllEntitiesNotTrashOrderByIsReadAndCreated() {
-		Collection<Suggestion> collection = service.findAllEntitiesNotTrashOrderByIsReadAndCreated();
-		assertEquals(collection.size(), 3);
-
-		collection.forEach(s -> {
-			assertEquals(s.getIsTrash(), false);
-		});
+		Collection<Suggestion> suggestions = suggestionService.findAllEntitiesNotTrashOrderByIsReadAndCreated();
+		suggestions.forEach(s -> assertEquals(s.getIsTrash(), false));
 	}
 
 	@Test
 	public void testFindAllEntitiesTrashOrderByIsReadAndCreated() {
-		Collection<Suggestion> collection = service.findAllEntitiesTrashOrderByIsReadAndCreated();
-		assertEquals(collection.size(), 1);
-
-		collection.forEach(s -> {
-			assertEquals(s.getIsTrash(), true);
-		});
+		Collection<Suggestion> suggestions = suggestionService.findAllEntitiesTrashOrderByIsReadAndCreated();
+		suggestions.forEach(s -> assertEquals(s.getIsTrash(), true));
 	}
 
 	@Test
 	public void testMoveAllTrash() {
-		Collection<Suggestion> collection = service.findAllEntitiesNotTrashOrderByIsReadAndCreated();
-		assertEquals(collection.size(), 3);
-		collection.forEach(s -> {
-			assertEquals(s.getIsTrash(), false);
-		});
+		Collection<Suggestion> suggestions = suggestionService.findAllEntitiesNotTrashOrderByIsReadAndCreated();
+		suggestions.forEach(s -> assertEquals(s.getIsTrash(), false));
 
-		service.moveAllTrash();
-		collection = service.findAllEntitiesNotTrashOrderByIsReadAndCreated();
-		assertEquals(collection.size(), 0);
+		suggestionService.moveAllTrash();
+		
+		suggestions = suggestionService.findAllEntitiesNotTrashOrderByIsReadAndCreated();
+		assertEquals(suggestions.size(), 0);
 
 	}
 
 	@Test
 	public void testDeleteAllTrash() {
-		Collection<Suggestion> collection = service.findAllEntitiesNotTrashOrderByIsReadAndCreated();
-		assertEquals(collection.size(), 3);
-		collection.forEach(s -> {
-			assertEquals(s.getIsTrash(), false);
-		});
+		Collection<Suggestion> suggestions = suggestionService.findAllEntitiesNotTrashOrderByIsReadAndCreated();
+		suggestions.forEach(s -> assertEquals(s.getIsTrash(), false));
 
-		service.moveAllTrash();
-		collection = service.findAllEntitiesTrashOrderByIsReadAndCreated();
-		assertEquals(collection.size(), 4);
-
-		service.deleteAllTrash(collection);
-		collection = (Collection<Suggestion>) service.findAllEntities();
-		assertEquals(collection.size(), 0);
+		suggestionService.moveAllTrash();
+		
+		suggestions = suggestionService.findAllEntitiesTrashOrderByIsReadAndCreated();
+		suggestionService.deleteAllTrash(suggestions);
+		
+		suggestions = (Collection<Suggestion>) suggestionService.findAllEntities();
+		assertEquals(suggestions.size(), 0);
 	}
 
 	@Test
-	public void testFindAllEntitiesByUsername() {
-		Collection<Suggestion> collection = service.findAllEntitiesAvailableByUsername("owner1");
-		assertEquals(collection.size(), 2);
-		collection.forEach(s -> {
-			assertEquals(s.getUser().getUsername(), "owner1");
+	public void testFindAllSuggestionsAvailableByUsername() {
+		Collection<Suggestion> suggestions = suggestionService.findAllEntitiesAvailableByUsername(TEST_USERNAME);
+		suggestions.forEach(s -> {
+			assertEquals(s.getUser().getUsername(), TEST_USERNAME);
 			assertEquals(s.getIsAvailable(), true);
 		});
 	}
+	
+	@Test
+	public void testFindAllSuggestionsAvailableByUsernameNotPresent() {
+		Collection<Suggestion> suggestions = suggestionService.findAllEntitiesAvailableByUsername(TEST_USERNAME_NOT_PRESENT);
+		assertEquals(suggestions.size(), 0);
+	}
 
 	@Test
-	public void testUpdateAllIsAvailableFalse() {
-		Collection<Suggestion> collection = service.findAllEntitiesAvailableByUsername("owner1");
-		assertEquals(collection.size(), 2);
-		collection.forEach(s -> {
+	public void testUpdateAllSuggestionsToNotAvailable() {
+		Collection<Suggestion> suggestions = suggestionService.findAllEntitiesAvailableByUsername(TEST_USERNAME);
+		suggestions.forEach(s -> {
 			assertEquals(s.getUser().getUsername(), "owner1");
 			assertEquals(s.getIsAvailable(), true);
 		});
 
-		service.updateAllIsAvailableFalse("owner1");
-		collection = service.findAllEntitiesAvailableByUsername("owner1");
-		assertEquals(collection.size(), 0);
+		suggestionService.updateAllIsAvailableFalse(TEST_USERNAME);
+		suggestions = suggestionService.findAllEntitiesAvailableByUsername(TEST_USERNAME);
+		assertEquals(suggestions.size(), 0);
+	}
+	
+	@Test
+	public void testUpdateAllSuggestionsToNotAvailableOfUserNotPresent() {
+		Collection<Suggestion> suggestions = suggestionService.findAllEntitiesAvailableByUsername(TEST_USERNAME_NOT_PRESENT);
+		assertEquals(suggestions.size(), 0);
+
+		suggestionService.updateAllIsAvailableFalse(TEST_USERNAME_NOT_PRESENT);
+		
+		suggestions = suggestionService.findAllEntitiesAvailableByUsername(TEST_USERNAME_NOT_PRESENT);
+		assertEquals(suggestions.size(), 0);
 	}
 
 	@Test
-	public void testFindAllEntities() {
-		Collection<Suggestion> collection = (Collection<Suggestion>) service.findAllEntities();
+	public void testFindAllSuggestions() {
+		Collection<Suggestion> collection = (Collection<Suggestion>) suggestionService.findAllEntities();
 		assertEquals(collection.size(), 4);
 	}
 
 	@Test
-	public void testFindEntityByIdPositive() {
-		Optional<Suggestion> entity = service.findEntityById(1);
+	public void testFindSuggestionById() {
+		Optional<Suggestion> entity = suggestionService.findEntityById(TEST_SUGGESTION_ID);
 		assertTrue(entity.isPresent());
-		assertTrue(entity.get().getId().equals(1));
+		assertTrue(entity.get().getId().equals(TEST_SUGGESTION_ID));
 	}
 
 	@Test
-	public void testFindEntityByIdNegative() {
-		Optional<Suggestion> entity = service.findEntityById(99);
+	public void testFindEntityByIdNotPresent() {
+		Optional<Suggestion> entity = suggestionService.findEntityById(TEST_SUGGESTION_ID_NOT_PRESENT);
 		assertTrue(!entity.isPresent());
 	}
+	
+	////////////////////////////////////////////////VOY POR AQUI ///// PABAJOOOOOO
 
 	@Test
 	public void testSaveEntityPositive() {
-		Collection<Suggestion> collection = (Collection<Suggestion>) service.findAllEntities();
+		Collection<Suggestion> collection = (Collection<Suggestion>) suggestionService.findAllEntities();
 		assertEquals(collection.size(), 4);
 
 		LocalDateTime date = LocalDateTime.now();
@@ -147,12 +157,12 @@ public class SuggestionServiceTests {
 		User user = new User();
 		user.setId(1);
 		entity.setUser(user);
-		service.saveEntity(entity);
+		suggestionService.saveEntity(entity);
 
-		collection = (Collection<Suggestion>) service.findAllEntities();
+		collection = (Collection<Suggestion>) suggestionService.findAllEntities();
 		assertEquals(collection.size(), 5);
 
-		Optional<Suggestion> newEntity = service.findEntityById(5);
+		Optional<Suggestion> newEntity = suggestionService.findEntityById(5);
 		assertTrue(newEntity.isPresent());
 		assertEquals(newEntity.get().getName(), "Name 1");
 		assertEquals(newEntity.get().getDescription(), "Description 1");
@@ -210,19 +220,19 @@ public class SuggestionServiceTests {
 
 	@Test
 	public void testDeleteEntity() {
-		Optional<Suggestion> entity = service.findEntityById(1);
+		Optional<Suggestion> entity = suggestionService.findEntityById(1);
 		assertTrue(entity.isPresent());
-		service.deleteEntity(entity.get());
+		suggestionService.deleteEntity(entity.get());
 
-		Optional<Suggestion> deleteEntity = service.findEntityById(1);
+		Optional<Suggestion> deleteEntity = suggestionService.findEntityById(1);
 		assertTrue(!deleteEntity.isPresent());
 	}
 
 	@Test
 	public void testDeleteEntityById() {
-		service.deleteEntityById(1);
+		suggestionService.deleteEntityById(1);
 
-		Optional<Suggestion> entity = service.findEntityById(1);
+		Optional<Suggestion> entity = suggestionService.findEntityById(1);
 		assertTrue(!entity.isPresent());
 	}
 }
