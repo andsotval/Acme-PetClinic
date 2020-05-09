@@ -12,7 +12,7 @@ import org.openqa.selenium.WebDriver;
 public class AddNewPetTypeAsAdminUITests extends AbstractUITests {
 
 	@Test
-	public void testAddNewPeyTypePositiveTestCase() throws Exception {
+	public void testAddNewPetTypeCorrectFields() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsAdmin();
@@ -34,7 +34,7 @@ public class AddNewPetTypeAsAdminUITests extends AbstractUITests {
 	}
 
 	@Test
-	public void testAddNewPetTypeFormErrorsNegativeTestCase() throws Exception {
+	public void testAddNewPetTypeErrorsOnFields() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsAdmin();
@@ -45,13 +45,23 @@ public class AddNewPetTypeAsAdminUITests extends AbstractUITests {
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
 		assertEquals("el tamaño tiene que estar entre 3 y 50",
 			driver.findElement(By.xpath("//form[@id='create-pettype-form']/div/div/span[2]")).getText());
+		driver.findElement(By.id("name")).click();
+		driver.findElement(By.id("name")).sendKeys("aa");
+		driver.findElement(By.xpath("//button[@type='submit']")).click();
+		assertEquals("el tamaño tiene que estar entre 3 y 50",
+			driver.findElement(By.xpath("//form[@id='create-pettype-form']/div/div/span[2]")).getText());
+		driver.findElement(By.id("name")).click();
+		driver.findElement(By.id("name")).sendKeys("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		driver.findElement(By.xpath("//button[@type='submit']")).click();
+		assertEquals("el tamaño tiene que estar entre 3 y 50",
+			driver.findElement(By.xpath("//form[@id='create-pettype-form']/div/div/span[2]")).getText());
 
 		LogOut();
 
 	}
 
 	@Test
-	public void testAddNeePetTypeAsOwnerNegativeTestCase() throws Exception {
+	public void testAddNewPetTypeAsOwnerForbiddenAccess() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsOwner();

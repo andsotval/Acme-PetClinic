@@ -13,7 +13,7 @@ import org.openqa.selenium.support.ui.Select;
 public class AddNewPetAsOwnerUITests extends AbstractUITests {
 
 	@Test
-	public void testAddNewPetPositiveTestCase() throws Exception {
+	public void testAddNewPetCorrectFields() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsOwner();
@@ -36,18 +36,20 @@ public class AddNewPetAsOwnerUITests extends AbstractUITests {
 	}
 
 	@Test
-	public void testAddNewPetFormErrorsNegativeTestCase() throws Exception {
+	public void testAddNewPetErrorsOnFields() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsOwner();
 
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li/a/span[2]")).click();
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[2]/a/span[2]")).click();
-		driver.findElement(By.xpath("//body/div")).click();
 		driver.findElement(By.linkText("Add new Pet")).click();
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
 		assertEquals("el tamaño tiene que estar entre 3 y 50",
 			driver.findElement(By.xpath("//form[@id='pet']/div/div[2]/div/span[2]")).getText());
+		assertEquals("no puede ser null",
+			driver.findElement(By.xpath("//form[@id='pet']/div/div[3]/div/span[2]")).getText());
+		assertEquals("is required",
+			driver.findElement(By.xpath("/html/body/div[1]/div/form/div[1]/div[4]/div/div/span[2]")).getText());
 		driver.findElement(By.id("birthDate")).click();
 		driver.findElement(By.id("birthDate")).click();
 		driver.findElement(By.id("birthDate")).clear();
@@ -67,33 +69,14 @@ public class AddNewPetAsOwnerUITests extends AbstractUITests {
 		assertEquals("el tamaño tiene que estar entre 3 y 50",
 			driver.findElement(By.xpath("//form[@id='pet']/div/div[2]/div/span[2]")).getText());
 		driver.findElement(By.id("name")).clear();
-		driver.findElement(By.id("name")).sendKeys("");
-		driver.findElement(By.id("name")).clear();
 		driver.findElement(By.id("name")).sendKeys("Wiskers");
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		assertEquals("Wiskers", driver.findElement(By.linkText("Wiskers")).getText());
-
-		LogOut();
-
-	}
-
-	@Test
-	public void testAddNewPetToOtherUserErrorNegativeCaseTestCase() throws Exception {
-		driver.get("http://localhost:" + port);
-
-		LogInAsOwner();
-
-		driver.get("http://localhost:" + port + "/pets/new/3");
-		driver.findElement(By.id("name")).click();
-		driver.findElement(By.id("name")).clear();
-		driver.findElement(By.id("name")).sendKeys("bety");
-		driver.findElement(By.id("birthDate")).clear();
-		driver.findElement(By.id("birthDate")).sendKeys("2020/1/1");
-		driver.findElement(By.xpath("//form[@id='pet']/div[2]")).click();
-		new Select(driver.findElement(By.id("type"))).selectByVisibleText("lizard");
-		driver.findElement(By.xpath("//option[@value='lizard']")).click();
+		assertEquals("is required",
+			driver.findElement(By.xpath("/html/body/div[1]/div/form/div[1]/div[4]/div/div/span[2]")).getText());
+		new Select(driver.findElement(By.id("type"))).selectByVisibleText("cat");
+		driver.findElement(By.xpath("//option[@value='cat']")).click();
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		assertEquals("Something happened...", driver.findElement(By.xpath("//h2")).getText());
+		assertEquals("Wiskers", driver.findElement(By.linkText("Wiskers")).getText());
 
 		LogOut();
 

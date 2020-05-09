@@ -9,7 +9,7 @@
 	<h2>Veterinarian Information</h2>
 
 
-	<table class="table table-striped">
+	<table id="vetTable" class="table table-striped">
 		<tr>
 			<th>Name</th>
 			<td><b><c:out value="${vet.firstName} ${vet.lastName}" /></b></td>

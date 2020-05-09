@@ -12,7 +12,7 @@ import org.openqa.selenium.WebDriver;
 public class AddVetsToClinicAsManagerUITests extends AbstractUITests {
 
 	@Test
-	public void testUIAddVetsToClinicAsManagerSuccesfull() throws Exception {
+	public void testAddVetsToClinicAsManagerSuccesfull() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsManager();
@@ -21,34 +21,31 @@ public class AddVetsToClinicAsManagerUITests extends AbstractUITests {
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[2]/a/span[2]")).click();
 
 		//revisa que el encabezado sea Veterinarians y el de las tablas sea correcto
-		driver.findElement(By.xpath("//h1")).click();
 		assertEquals("Veterinarians", driver.findElement(By.xpath("//h1")).getText());
-		driver.findElement(By.xpath("/html/body/div/div/h2[1]")).click();
-		assertEquals("Available veterinarians for hire",
-			driver.findElement(By.xpath("/html/body/div/div/h2[1]")).getText());
-		driver.findElement(By.xpath("/html/body/div/div/h2[2]")).click();
-		assertEquals("Veterinarians hired by your clinic",
-			driver.findElement(By.xpath("/html/body/div/div/h2[2]")).getText());
+		assertEquals("Available veterinarians for hire", driver.findElement(By.xpath("//h2[1]")).getText());
+		assertEquals("Veterinarians hired by your clinic", driver.findElement(By.xpath("//h2[2]")).getText());
 
-		//comprueba que exista el elemento que corresponde a ese nombre
-		assertEquals("Lourdes Villegas", driver.findElement(By.linkText("Lourdes Villegas")).getText());
+		String name = driver.findElement(By.xpath("//table[@id=\"vetsAvailableTable\"]/tbody/tr[1]/td[1]/a")).getText();
+		String specialties = driver.findElement(By.xpath("//table[@id=\"vetsAvailableTable\"]/tbody/tr[1]/td[2]"))
+			.getText();
 
 		//añade a la clinica el veterinario de la primera linea
 		driver.findElement(By.xpath("//table[@id=\"vetsAvailableTable\"]/tbody/tr[1]/td[3]/a/span")).click();
 
 		//comprueba que ahora ese elemento con ese nombre pertenece a la segunda tabla
-		assertEquals("Lourdes Villegas",
+		assertEquals(name,
 			driver.findElement(By.xpath("//*[@id=\"vetsOfClinicTable\"]/tbody/tr[2]/td[1]/a")).getText());
 
 		//entramos a la vista de detalles de ese veterinario
 		driver.findElement(By.xpath("//*[@id=\"vetsOfClinicTable\"]/tbody/tr[2]/td[1]/a")).click();
 
-		//se comprueban los datos de este
+		//se comprueban los datos de este  /html/body/div/div/table/tbody/tr[2]/td
+		assertEquals(name, driver.findElement(By.xpath("//table[@id=\"vetTable\"]/tbody/tr[1]/td/b")).getText());
 		assertEquals("C/Andalucia, 34",
-			driver.findElement(By.xpath("/html/body/div/div/table/tbody/tr[2]/td")).getText());
-		assertEquals("Bilbao", driver.findElement(By.xpath("/html/body/div/div/table/tbody/tr[3]/td")).getText());
-		assertEquals("[ophtalmology]",
-			driver.findElement(By.xpath("/html/body/div/div/table/tbody/tr[5]/td")).getText());
+			driver.findElement(By.xpath("//table[@id=\"vetTable\"]/tbody/tr[2]/td")).getText());
+		assertEquals("Bilbao", driver.findElement(By.xpath("//table[@id=\"vetTable\"]/tbody/tr[3]/td")).getText());
+		assertEquals("679123162", driver.findElement(By.xpath("//table[@id=\"vetTable\"]/tbody/tr[4]/td")).getText());
+		assertEquals(specialties, driver.findElement(By.xpath("//table[@id=\"vetTable\"]/tbody/tr[5]/td")).getText());
 
 		//volvemos a la lista y desconectamos
 		driver.findElement(By.linkText("Back to list of veterinarian")).click();
@@ -57,7 +54,7 @@ public class AddVetsToClinicAsManagerUITests extends AbstractUITests {
 	}
 
 	@Test
-	public void testUIAddVetsToClinicAsManagerWithVetAlreadyLinkedToAClinic() throws Exception {
+	public void testAddVetsToClinicAsManagerWithVetAlreadyLinkedToAClinic() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsManager();
@@ -66,21 +63,14 @@ public class AddVetsToClinicAsManagerUITests extends AbstractUITests {
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[2]/a/span[2]")).click();
 
 		//revisa que el encabezado sea Veterinarians y el de las tablas sea correcto
-		driver.findElement(By.xpath("//h1")).click();
 		assertEquals("Veterinarians", driver.findElement(By.xpath("//h1")).getText());
-		driver.findElement(By.xpath("/html/body/div/div/h2[1]")).click();
-		assertEquals("Available veterinarians for hire",
-			driver.findElement(By.xpath("/html/body/div/div/h2[1]")).getText());
-		driver.findElement(By.xpath("/html/body/div/div/h2[2]")).click();
-		assertEquals("Veterinarians hired by your clinic",
-			driver.findElement(By.xpath("/html/body/div/div/h2[2]")).getText());
+		assertEquals("Available veterinarians for hire", driver.findElement(By.xpath("//h2[1]")).getText());
+		assertEquals("Veterinarians hired by your clinic", driver.findElement(By.xpath("//h2[2]")).getText());
 		//Intenta añadir un veterinario con una clinica ya asignada
 		driver.get("http://localhost:" + port + "/vets/accept/1");
 
 		//Comprueba que ha llegado a la pagina de error
-		driver.findElement(By.xpath("//h2")).click();
 		assertEquals("Something happened...", driver.findElement(By.xpath("//h2")).getText());
-		driver.findElement(By.xpath("//body/div/div/p")).click();
 		assertEquals("Expected: controller used to showcase what happens when an exception is thrown",
 			driver.findElement(By.xpath("//body/div/div/p")).getText());
 
@@ -89,7 +79,7 @@ public class AddVetsToClinicAsManagerUITests extends AbstractUITests {
 	}
 
 	@Test
-	public void testUIAddVetsToClinicAsManagerNotPresentVet() throws Exception {
+	public void testAddVetsToClinicAsManagerVetNotFound() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsManager();
@@ -98,22 +88,16 @@ public class AddVetsToClinicAsManagerUITests extends AbstractUITests {
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[2]/a/span[2]")).click();
 
 		//revisa que el encabezado sea Veterinarians y el de las tablas sea correcto
-		driver.findElement(By.xpath("//h1")).click();
 		assertEquals("Veterinarians", driver.findElement(By.xpath("//h1")).getText());
-		driver.findElement(By.xpath("/html/body/div/div/h2[1]")).click();
-		assertEquals("Available veterinarians for hire",
-			driver.findElement(By.xpath("/html/body/div/div/h2[1]")).getText());
-		driver.findElement(By.xpath("/html/body/div/div/h2[2]")).click();
-		assertEquals("Veterinarians hired by your clinic",
-			driver.findElement(By.xpath("/html/body/div/div/h2[2]")).getText());
+		assertEquals("Available veterinarians for hire", driver.findElement(By.xpath("//h2[1]")).getText());
+		assertEquals("Veterinarians hired by your clinic", driver.findElement(By.xpath("//h2[2]")).getText());
 		//Intenta añadir un veterinario no existente
 		driver.get("http://localhost:" + port + "/vets/accept/321");
 
 		//Comprueba que ha llegado a la pagina de error
-		driver.findElement(By.xpath("//h2")).click();
 		assertEquals("Something happened...", driver.findElement(By.xpath("//h2")).getText());
-		driver.findElement(By.xpath("//body/div/div/p")).click();
-		assertEquals("No value present", driver.findElement(By.xpath("//body/div/div/p")).getText());
+		assertEquals("Expected: controller used to showcase what happens when an exception is thrown",
+			driver.findElement(By.xpath("//body/div/div/p")).getText());
 
 		LogOut();
 

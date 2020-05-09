@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-public class ReadSuggestionsAsAdminUITests extends AbstractUITests {
+public class MarkAsReadSuggestionsAsAdminUITests extends AbstractUITests {
 
 	@Test
-	public void testReadSuggestion() throws Exception {
+	public void testReadSuggestionSuccesfull() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsAdmin();
@@ -20,21 +20,25 @@ public class ReadSuggestionsAsAdminUITests extends AbstractUITests {
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a/span[2]")).click();
 		driver.findElement(By.xpath("//h2")).click();
 		assertEquals("Suggestions Received", driver.findElement(By.xpath("//h2")).getText());
-		assertEquals("Intervalo de tiempo en estancias",
-			driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td/a/strong")).getText());
-		assertEquals("Mas proveedores",
-			driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[2]/td/a/strong")).getText());
-		assertEquals("Mas clínicas",
-			driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[3]/td/a/strong")).getText());
-		driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td[3]/a/span")).click();
-		driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td[3]/a/span")).click();
-		driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td[3]/a/span")).click();
-		assertEquals("Mas clínicas",
-			driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr/td/a/strong")).getText());
-		assertEquals("Intervalo de tiempo en estancias",
-			driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[2]/td/a/strong")).getText());
-		assertEquals("Mas proveedores",
-			driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[3]/td/a/strong")).getText());
+
+		//		assertEquals("Intervalo de tiempo en estancias",
+		//			driver.findElement(By.xpath("//table[@id='suggestionsTable']/tbody/tr/td/a/strong")).getText());
+		//		assertEquals("Mas proveedores",
+		//			driver.findElement(By.xpath("//table[@id='suggestionsTable']/tbody/tr[2]/td/a/strong")).getText());
+		//		assertEquals("Mas clínicas",
+		//			driver.findElement(By.xpath("//table[@id='suggestionsTable']/tbody/tr[3]/td/a/strong")).getText());
+
+		driver.findElement(By.xpath("//table[@id='suggestionsTable']/tbody/tr/td[3]/a/span")).click();
+		assertEquals("Suggestion succesfully updated",
+			driver.findElement(By.xpath("/html/body/div/div/div[1]")).getText());
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a/span[2]")).click();
+		driver.findElement(By.xpath("//table[@id='suggestionsTable']/tbody/tr/td[3]/a/span")).click();
+		assertEquals("Suggestion succesfully updated",
+			driver.findElement(By.xpath("/html/body/div/div/div[1]")).getText());
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a/span[2]")).click();
+		driver.findElement(By.xpath("//table[@id='suggestionsTable']/tbody/tr/td[3]/a/span")).click();
+		assertEquals("Suggestion succesfully updated",
+			driver.findElement(By.xpath("/html/body/div/div/div[1]")).getText());
 
 		LogOut();
 
@@ -58,7 +62,8 @@ public class ReadSuggestionsAsAdminUITests extends AbstractUITests {
 		driver.findElement(By.xpath("//h2")).click();
 		assertEquals("Something happened...", driver.findElement(By.xpath("//h2")).getText());
 		driver.findElement(By.xpath("//body/div/div/p")).click();
-		assertEquals("No value present", driver.findElement(By.xpath("//body/div/div/p")).getText());
+		assertEquals("Expected: controller used to showcase what happens when an exception is thrown",
+			driver.findElement(By.xpath("//body/div/div/p")).getText());
 
 		LogOut();
 
