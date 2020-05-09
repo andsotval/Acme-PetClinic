@@ -13,7 +13,7 @@ import org.openqa.selenium.WebDriver;
 public class ClinicDetailAsOwnerUITests extends AbstractUITests {
 
 	@Test
-	public void testCheckDetailClinic() throws Exception {
+	public void testCheckClinicDetails() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsOwner("owner1", "owner1");

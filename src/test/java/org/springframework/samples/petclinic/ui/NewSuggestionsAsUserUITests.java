@@ -12,7 +12,7 @@ import org.openqa.selenium.WebDriver;
 public class NewSuggestionsAsUserUITests extends AbstractUITests {
 
 	@Test
-	public void testUntitledTestCase() throws Exception {
+	public void testNewSuggestionCorrectFields() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsOwner();
@@ -39,17 +39,16 @@ public class NewSuggestionsAsUserUITests extends AbstractUITests {
 	}
 
 	@Test
-	public void testNewSuggestionWrongParameters() throws Exception {
+	public void testNewSuggestionErrorsOnFields() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsOwner();
 
 		driver.get("http://localhost:" + port + "/suggestion/user/list");
-		driver.findElement(By.xpath("//h2")).click();
 		assertEquals("Suggestions send", driver.findElement(By.xpath("//h2")).getText());
 		driver.findElement(By.linkText("New Suggestion")).click();
-		driver.findElement(By.xpath("//h2")).click();
 		assertEquals("New Suggestion", driver.findElement(By.xpath("//h2")).getText());
+
 		driver.findElement(By.id("name")).click();
 		driver.findElement(By.id("name")).clear();
 		driver.findElement(By.id("name")).sendKeys("");
@@ -57,10 +56,31 @@ public class NewSuggestionsAsUserUITests extends AbstractUITests {
 		driver.findElement(By.id("description")).clear();
 		driver.findElement(By.id("description")).sendKeys("TEST WITH NULL TITLE MUST SHOW AN ERROR");
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		driver.findElement(By.xpath("//h2")).click();
 		assertEquals("New Suggestion", driver.findElement(By.xpath("//h2")).getText());
 		assertEquals("el tamaño tiene que estar entre 3 y 50",
 			driver.findElement(By.xpath("//form[@id='create-suggestion-form']/div/div/span[2]")).getText());
+
+		driver.findElement(By.id("name")).click();
+		driver.findElement(By.id("name")).clear();
+		driver.findElement(By.id("name")).sendKeys("UI Name");
+		driver.findElement(By.id("description")).click();
+		driver.findElement(By.id("description")).clear();
+		driver.findElement(By.id("description")).sendKeys("aa");
+		driver.findElement(By.xpath("//button[@type='submit']")).click();
+		assertEquals("New Suggestion", driver.findElement(By.xpath("//h2")).getText());
+		assertEquals("la longitud tiene que estar entre 3 y 250",
+			driver.findElement(By.xpath("//form[@id='create-suggestion-form']/div[2]/div/span[2]")).getText());
+
+		driver.findElement(By.id("description")).click();
+		driver.findElement(By.id("description")).clear();
+		driver.findElement(By.id("description"))
+			.sendKeys("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+				+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+				+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		driver.findElement(By.xpath("//button[@type='submit']")).click();
+		assertEquals("New Suggestion", driver.findElement(By.xpath("//h2")).getText());
+		assertEquals("la longitud tiene que estar entre 3 y 250",
+			driver.findElement(By.xpath("//form[@id='create-suggestion-form']/div[2]/div/span[2]")).getText());
 
 		LogOut();
 

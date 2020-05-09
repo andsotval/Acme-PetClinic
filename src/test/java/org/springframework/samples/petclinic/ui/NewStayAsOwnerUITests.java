@@ -13,26 +13,27 @@ import org.openqa.selenium.WebDriver;
 
 public class NewStayAsOwnerUITests extends AbstractUITests {
 
-	private LocalDate	startdate		= LocalDate.now().plusMonths(3L);
-	private LocalDate	finishdate		= LocalDate.now().plusMonths(3L).plusDays(4L);
-	private LocalDate	startdateWrong	= LocalDate.now().minusMonths(3L);
-	private LocalDate	finishdateWrong	= LocalDate.now().plusMonths(3L).plusDays(4L);
+	private LocalDate	startdate				= LocalDate.now().plusMonths(3L);
+	private LocalDate	finishdate				= LocalDate.now().plusMonths(3L).plusDays(4L);
+	private LocalDate	startdateWrong			= LocalDate.now().minusMonths(3L);
+	private LocalDate	finishdateWrong			= LocalDate.now().plusMonths(3L).plusDays(4L);
+	private LocalDate	finishdateWrongTooEarly	= LocalDate.now().plusMonths(3L).minusDays(4L);
 
 
 	@Test
-	public void testNewStay() throws Exception {
+	public void testNewStayCorrectFields() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsOwner();
 
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[2]/a/span[2]")).click();
 		driver.findElement(By.xpath("//table[@id='petsTable']/tbody/tr/td")).click();
-		assertEquals("Leo", driver.findElement(By.linkText("Leo")).getText());
+		assertEquals("Basil", driver.findElement(By.linkText("Basil")).getText());
 		driver.findElement(By.xpath("//table[@id='petsTable']/tbody/tr/td[5]/a/span")).click();
 		driver.findElement(By.xpath("//h2")).click();
 		assertEquals("New Stay", driver.findElement(By.xpath("//h2")).getText());
 		driver.findElement(By.xpath("//body/div")).click();
-		assertEquals("Leo", driver.findElement(By.xpath("//td")).getText());
+		assertEquals("Basil", driver.findElement(By.xpath("//td")).getText());
 		driver.findElement(By.id("description")).click();
 		driver.findElement(By.id("description")).click();
 		driver.findElement(By.id("description")).clear();
@@ -44,10 +45,11 @@ public class NewStayAsOwnerUITests extends AbstractUITests {
 		driver.findElement(By.id("finishDate")).click();
 		driver.findElement(By.id("finishDate")).clear();
 		driver.findElement(By.id("finishDate")).sendKeys(dateToString(finishdate));
-		driver.findElement(By.xpath("//form[@id='stay']/div[2]/div")).click();
+		driver.findElement(By.xpath("//form[@id='stay']/div[2]/div")).click(); //repetimos el click para que de tiempo
+		driver.findElement(By.xpath("//form[@id='stay']/div[2]/div")).click(); //a cerrar el selector de fecha
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
 		driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[2]/td")).click();
-		assertEquals("Leo", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[2]/td")).getText());
+		assertEquals("Basil", driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[2]/td")).getText());
 		driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[2]/td[2]")).click();
 		assertEquals(dateToStringInTable(startdate),
 			driver.findElement(By.xpath("//table[@id='staysTable']/tbody/tr[2]/td[2]")).getText());
@@ -69,7 +71,7 @@ public class NewStayAsOwnerUITests extends AbstractUITests {
 	}
 
 	@Test
-	public void testNewStayWithWrongDate() throws Exception {
+	public void testNewStayErrorsOnFields() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsOwner();
@@ -77,14 +79,20 @@ public class NewStayAsOwnerUITests extends AbstractUITests {
 		//Accede a la lista de mascotas
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[2]/a/span[2]")).click();
 		driver.findElement(By.xpath("//table[@id='petsTable']/tbody/tr/td")).click();
-		assertEquals("Leo", driver.findElement(By.linkText("Leo")).getText()); //Comprueba el nombre del perro
+		assertEquals("Basil", driver.findElement(By.linkText("Basil")).getText()); //Comprueba el nombre del perro
 
 		//Accede al formulario para crear una nueva estancia y comprueba que ha llegado bien
 		driver.findElement(By.xpath("//table[@id='petsTable']/tbody/tr/td[5]/a/span")).click();
-		driver.findElement(By.xpath("//h2")).click();
 		assertEquals("New Stay", driver.findElement(By.xpath("//h2")).getText());
-		driver.findElement(By.xpath("//body/div")).click();
-		assertEquals("Leo", driver.findElement(By.xpath("//td")).getText());
+		assertEquals("Basil", driver.findElement(By.xpath("//td")).getText());
+		driver.findElement(By.xpath("//button[@type='submit']")).click();
+		assertEquals("no puede estar vacío",
+			driver.findElement(By.xpath("//form[@id='stay']/div/div/div/span[2]")).getText());
+		assertEquals("no puede ser null",
+			driver.findElement(By.xpath("//form[@id='stay']/div/div[2]/div/span[2]")).getText());
+		assertEquals("no puede ser null",
+			driver.findElement(By.xpath("//form[@id='stay']/div/div[3]/div/span[2]")).getText());
+
 		driver.findElement(By.id("description")).click();
 		driver.findElement(By.id("description")).click();
 		driver.findElement(By.id("description")).clear();
@@ -98,11 +106,25 @@ public class NewStayAsOwnerUITests extends AbstractUITests {
 		driver.findElement(By.id("finishDate")).click();
 		driver.findElement(By.id("finishDate")).clear();
 		driver.findElement(By.id("finishDate")).sendKeys(dateToString(finishdateWrong));
-		driver.findElement(By.xpath("//form[@id='stay']/div[2]/div")).click();
+		driver.findElement(By.xpath("//form[@id='stay']/div[2]/div")).click(); //repetimos el click para que de tiempo
+		driver.findElement(By.xpath("//form[@id='stay']/div[2]/div")).click(); //a cerrar el selector de fecha
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
 		assertEquals("Minimum 2 days after today",
 			driver.findElement(By.xpath("//form[@id='stay']/div/div[2]/div/span[2]")).getText());
 		assertEquals("Stays cannot last longer than one week",
+			driver.findElement(By.xpath("//form[@id='stay']/div/div[3]/div/span[2]")).getText());
+
+		driver.findElement(By.id("startDate")).click();
+		driver.findElement(By.id("startDate")).clear();
+		driver.findElement(By.id("startDate")).sendKeys(dateToString(startdate));
+		driver.findElement(By.id("finishDate")).click();
+		driver.findElement(By.id("finishDate")).click();
+		driver.findElement(By.id("finishDate")).clear();
+		driver.findElement(By.id("finishDate")).sendKeys(dateToString(finishdateWrongTooEarly));
+		driver.findElement(By.xpath("//form[@id='stay']/div[2]/div")).click(); //repetimos el click para que de tiempo
+		driver.findElement(By.xpath("//form[@id='stay']/div[2]/div")).click(); //a cerrar el selector de fecha
+		driver.findElement(By.xpath("//button[@type='submit']")).click();
+		assertEquals("The finish date must be after the start date",
 			driver.findElement(By.xpath("//form[@id='stay']/div/div[3]/div/span[2]")).getText());
 
 		LogOut();
@@ -134,10 +156,10 @@ public class NewStayAsOwnerUITests extends AbstractUITests {
 		driver.findElement(By.xpath("//a[contains(text(),'Login')]")).click();
 		driver.findElement(By.id("username")).click();
 		driver.findElement(By.id("username")).clear();
-		driver.findElement(By.id("username")).sendKeys("owner1");
+		driver.findElement(By.id("username")).sendKeys("owner2");
 		driver.findElement(By.id("password")).click();
 		driver.findElement(By.id("password")).clear();
-		driver.findElement(By.id("password")).sendKeys("owner1");
+		driver.findElement(By.id("password")).sendKeys("owner2");
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
 		return driver;
 	}

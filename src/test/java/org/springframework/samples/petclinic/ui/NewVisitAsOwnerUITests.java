@@ -12,7 +12,7 @@ import org.openqa.selenium.WebDriver;
 public class NewVisitAsOwnerUITests extends AbstractUITests {
 
 	@Test
-	public void testNewVisitAsOwnerTestCase() throws Exception {
+	public void testNewVisitAsOwnerCorrectFields() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsOwner();
@@ -25,31 +25,40 @@ public class NewVisitAsOwnerUITests extends AbstractUITests {
 		driver.findElement(By.id("dateTime")).click();
 		driver.findElement(By.id("dateTime")).click();
 		driver.findElement(By.id("dateTime")).clear();
-		driver.findElement(By.id("dateTime")).sendKeys("2020/06/05 18:55:56");
+		driver.findElement(By.id("dateTime")).sendKeys("2020/06/05 18:55:00");
 		driver.findElement(By.name("authorized")).click();
 		assertEquals("My Visits", driver.findElement(By.xpath("//h1")).getText());
-		driver.findElement(By.xpath("(//table[@id='visitsTable']/tbody/tr/td[2])[2]")).click();
+		assertEquals("Nueva visita",
+			driver.findElement(By.xpath("//table[@id='visitsTable'][2]/tbody/tr/td[3]")).getText());
+		assertEquals("2020-06-05 18:55:00",
+			driver.findElement(By.xpath("//table[@id='visitsTable'][2]/tbody/tr/td[2]")).getText());
 
 		LogOut();
 
 	}
 
 	@Test
-	public void testNewVisitAsOwnerWrongDateNegativeTestCase() throws Exception {
+	public void testNewVisitAsOwnerErrorsOnFields() throws Exception {
 		driver.get("http://localhost:" + port);
 
 		LogInAsOwner();
 
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[2]/a/span[2]")).click();
 		driver.findElement(By.xpath("//table[@id='petsTable']/tbody/tr/td[4]/a/span")).click();
-		driver.findElement(By.id("description")).click();
-		driver.findElement(By.id("description")).clear();
-		driver.findElement(By.id("description")).sendKeys("Nueva visita 2");
+		driver.findElement(By.id("dateTime")).click();
+		driver.findElement(By.id("dateTime")).click();
+		driver.findElement(By.id("dateTime")).clear();
+		driver.findElement(By.name("authorized")).click();
+		assertEquals("no puede estar vacío",
+			driver.findElement(By.xpath("//form[@id=\"visit\"]/div/div/div/span[2]")).getText());
+		assertEquals("no puede ser null",
+			driver.findElement(By.xpath("//form[@id=\"visit\"]/div/div[2]/div/span[2]")).getText());
 		driver.findElement(By.id("dateTime")).click();
 		driver.findElement(By.id("dateTime")).clear();
 		driver.findElement(By.id("dateTime")).sendKeys("2019/05/01 19:00:11");
 		driver.findElement(By.name("authorized")).click();
-		driver.findElement(By.xpath("//form[@id='visit']/div/div[2]/div")).click();
+		assertEquals("Minimum 2 days after today",
+			driver.findElement(By.xpath("//form[@id=\"visit\"]/div/div[2]/div/span[2]")).getText());
 
 		LogOut();
 
