@@ -68,6 +68,17 @@ public class ClinicControllerIntegrationTests {
 		assertEquals(view, "redirect:/oups");
 	}
 
+	@WithMockUser(value = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	public void testShowClinicAsRoleNotAuthorizated() throws Exception {
+		ModelMap model = new ModelMap();
+		String view = clinicController.getDetail(model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
 	@WithMockUser(value = "owner1", authorities = {
 		"owner"
 	})
@@ -145,6 +156,17 @@ public class ClinicControllerIntegrationTests {
 		assertEquals(view, "redirect:/oups");
 	}
 
+	@WithMockUser(value = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	public void testShowListAsRoleNotAuthorizated() throws Exception {
+		ModelMap model = new ModelMap();
+		String view = clinicController.initClinicView(model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
 	@WithMockUser(value = "owner1", authorities = {
 		"owner"
 	})
@@ -210,6 +232,17 @@ public class ClinicControllerIntegrationTests {
 		assertEquals(view, "redirect:/oups");
 	}
 
+	@WithMockUser(value = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	public void testShowClinicDetailsAsRoleNotAuthorizated() throws Exception {
+		ModelMap model = new ModelMap();
+		String view = clinicController.showClinic(2, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
 	@WithMockUser(value = "owner8", authorities = {
 		"owner"
 	})
@@ -237,6 +270,17 @@ public class ClinicControllerIntegrationTests {
 	})
 	@Test
 	public void testUnsubscribeFromClinicAsOwnerNegative() throws Exception {
+		ModelMap model = new ModelMap();
+		String view = clinicController.unsubscribeOwnerFromClinic(model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(value = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	public void testUnsubscribeFromClinicAsRoleNotAuthorizated() throws Exception {
 		ModelMap model = new ModelMap();
 		String view = clinicController.unsubscribeOwnerFromClinic(model);
 
@@ -281,6 +325,17 @@ public class ClinicControllerIntegrationTests {
 	})
 	@Test
 	public void testSubscribeToClinicAsOwnerNegativeOwnerAlreadyInClinic() throws Exception {
+		ModelMap model = new ModelMap();
+		String view = clinicController.subscribeToClinic(TEST_CLINIC_ID_1, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(value = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	public void testSubscribeToClinicAsRoleNotAuthorizated() throws Exception {
 		ModelMap model = new ModelMap();
 		String view = clinicController.subscribeToClinic(TEST_CLINIC_ID_1, model);
 

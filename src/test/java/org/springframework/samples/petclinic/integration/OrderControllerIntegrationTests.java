@@ -112,6 +112,17 @@ public class OrderControllerIntegrationTests {
 		assertEquals(view, "redirect:/oups");
 	}
 
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
+	})
+	@Test
+	public void TestInitCreationFormAsRoleNotAuthorizated() {
+		ModelMap model = new ModelMap();
+		String view = orderController.initCreationForm(TEST_PROVIDER_ID, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
 	@WithMockUser(username = "manager1", authorities = {
 		"manager"
 	})
@@ -194,6 +205,23 @@ public class OrderControllerIntegrationTests {
 		assertEquals(view, "redirect:/oups");
 	}
 
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
+	})
+	@Test
+	public void TestProcessCreationFormAsRoleNotAuthorizated() {
+		String[] productIds = {
+			"1", "2"
+		};
+		String[] amountNumber = {
+			"3", "5"
+		};
+		ModelMap model = new ModelMap();
+		String view = orderController.processCreationForm(99, model, productIds, amountNumber);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
 	@SuppressWarnings("unchecked")
 	@WithMockUser(username = "manager1", authorities = {
 		"manager"
@@ -252,6 +280,17 @@ public class OrderControllerIntegrationTests {
 		assertEquals(view, "redirect:/oups");
 	}
 
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
+	})
+	@Test
+	public void TestShowOrderAsRoleNotAuthorizated() {
+		ModelMap model = new ModelMap();
+		String view = orderController.showOrder(99, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
 	@SuppressWarnings("unchecked")
 	@WithMockUser(username = "manager1", authorities = {
 		"manager"
@@ -283,6 +322,17 @@ public class OrderControllerIntegrationTests {
 		assertEquals(view, "redirect:/oups");
 	}
 
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
+	})
+	@Test
+	public void TestListAvailableProvidersAsRoleNotAuthorizated() {
+		ModelMap model = new ModelMap();
+		String view = orderController.listAvailableProviders(model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
 	@SuppressWarnings("unchecked")
 	@WithMockUser(username = "manager1", authorities = {
 		"manager"
@@ -308,6 +358,17 @@ public class OrderControllerIntegrationTests {
 	})
 	@Test
 	public void TestListOrdersAsManagerNotExisting() {
+		ModelMap model = new ModelMap();
+		String view = orderController.listOrders(model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
+	})
+	@Test
+	public void TestListOrdersAsRoleNotAuthorizated() {
 		ModelMap model = new ModelMap();
 		String view = orderController.listOrders(model);
 

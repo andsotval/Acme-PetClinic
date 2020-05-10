@@ -89,6 +89,9 @@ public class ClinicController {
 
 		}
 
+		else
+			return REDIRECT_OUPS;
+
 		modelMap.addAttribute("clinic", clinic);
 		return "/clinics/clinicDetails";
 
