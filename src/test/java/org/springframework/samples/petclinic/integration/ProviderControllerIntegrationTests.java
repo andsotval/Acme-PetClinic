@@ -28,6 +28,10 @@ public class ProviderControllerIntegrationTests {
 
 	private static final int	TEST_PROVIDER_ID_1	= 1;
 
+	private static final int	TEST_PROVIDER_ID_2	= 2;
+
+	private static final int	TEST_PROVIDER_ID_3	= 3;
+
 	@Autowired
 	private ProviderController	providerController;
 
@@ -60,45 +64,99 @@ public class ProviderControllerIntegrationTests {
 		});
 	}
 
-	@WithMockUser(username = "manager1", authorities = {
-		"manager"
-	})
-	@Test
-	public void testInitAddProviderToManager() {
-		ModelMap model = new ModelMap();
-		String view = providerController.initAddProviderToManager(TEST_PROVIDER_ID_1, model);
-
-		assertEquals(view, "redirect:/providers/listAvailable");
-
-		//		assertNotNull(model.get("provider"));
-		//		assertEquals(((Provider) model.get("provider")).getManager(), false);
-	}
-
 	@WithMockUser(username = "provider1", authorities = {
 		"provider"
 	})
 	@Test
-	public void testInitAddProviderToManagerNegative() {
+	public void TestListAvailableAsRoleNotAuthorizated() {
+		ModelMap model = new ModelMap();
+		String view = providerController.listAvailable(model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "manager99", authorities = {
+		"manager"
+	})
+	@Test
+	public void TestListAvailableAsManagerNotPresent() {
+		ModelMap model = new ModelMap();
+		String view = providerController.listAvailable(model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "manager1", authorities = {
+		"manager"
+	})
+	@Test
+	public void TestInitAddProviderToManager() {
+		ModelMap model = new ModelMap();
+		String view = providerController.initAddProviderToManager(TEST_PROVIDER_ID_2, model);
+
+		assertEquals(view, "providers/providersList");
+
+		assertNotNull(model.get("availableProviders"));
+		assertNotNull(model.get("addedProviders"));
+		assertNotNull(model.get("message"));
+	}
+
+	@WithMockUser(username = "manager99", authorities = {
+		"manager"
+	})
+	@Test
+	public void TestInitAddProviderToManagerAsManagerNotPresent() {
 		ModelMap model = new ModelMap();
 		String view = providerController.initAddProviderToManager(TEST_PROVIDER_ID_1, model);
 
-		assertEquals(view, "redirect:/providers/listAvailable");
-
-		assertNotNull(model.get("message"));
-		assertEquals(model.get("message"), "No es posible añadir un Provider que ya esta asignado a otro Manager");
+		assertEquals(view, "redirect:/oups");
 	}
+
+	@WithMockUser(username = "manager1", authorities = {
+		"manager"
+	})
+	@Test
+	public void TestInitAddProviderToManagerNegativeNotExistingProvider() {
+		ModelMap model = new ModelMap();
+		String view = providerController.initAddProviderToManager(99, model);
+
+		assertEquals(view, "providers/providersList");
+
+		assertNotNull(model.get("availableProviders"));
+		assertNotNull(model.get("addedProviders"));
+		assertNotNull(model.get("message"));
+		assertEquals(model.get("message"), "We are very sorry, but the selected provider does not exist");
+	}
+
+	@WithMockUser(username = "manager1", authorities = {
+		"manager"
+	})
+	@Test
+	public void TestInitAddProviderToManagerNegativeAlreadyAddedProvider() {
+		ModelMap model = new ModelMap();
+		String view = providerController.initAddProviderToManager(TEST_PROVIDER_ID_2, model);
+
+		assertEquals(view, "providers/providersList");
+
+		assertNotNull(model.get("availableProviders"));
+		assertNotNull(model.get("addedProviders"));
+		assertNotNull(model.get("message"));
+		assertEquals(model.get("message"),
+			"We are very sorry, it is not possible to add a Provider that is already assigned to another Manager");
+	}
+
 	@WithMockUser(username = "manager1", authorities = {
 		"manager"
 	})
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testListProductsByProvider() {
+	public void TestListProductsByProvider() {
 		ModelMap model = new ModelMap();
-		String view = providerController.listProductsByProvider(TEST_PROVIDER_ID_1, model);
+		String view = providerController.listProductsByProvider(TEST_PROVIDER_ID_3, model);
 
 		assertEquals(view, "providers/providerProductsList");
 
-		Collection<Product> list = productService.findProductsAvailableByProviderId(TEST_PROVIDER_ID_1);
+		Collection<Product> list = productService.findProductsAvailableByProviderId(TEST_PROVIDER_ID_3);
 
 		assertNotNull(model.get("products"));
 		assertEquals(((Collection<Product>) model.get("products")).size(), list.size());
@@ -107,15 +165,45 @@ public class ProviderControllerIntegrationTests {
 		});
 
 	}
+
+	@WithMockUser(username = "manager99", authorities = {
+		"manager"
+	})
+	@Test
+	public void TestListProductsByProviderAsManagerNotPresent() {
+		ModelMap model = new ModelMap();
+		String view = providerController.listProductsByProvider(TEST_PROVIDER_ID_1, model);
+
+		assertEquals(view, "redirect:/oups");
+
+	}
+
 	@WithMockUser(username = "provider1", authorities = {
 		"provider"
 	})
 	@Test
-	public void testListProductsByProviderNegative() {
+	public void TestListProductsByProviderAsRoleNotAuthorizated() {
+		ModelMap model = new ModelMap();
+		String view = providerController.listProductsByProvider(TEST_PROVIDER_ID_1, model);
+
+		assertEquals(view, "redirect:/oups");
+
+	}
+
+	@WithMockUser(username = "manager1", authorities = {
+		"manager"
+	})
+	@Test
+	public void TestListProductsByProviderNotExistingProvider() {
 		ModelMap model = new ModelMap();
 		String view = providerController.listProductsByProvider(99, model);
 
-		assertEquals(view, "redirect:/providers/listAvailable");
+		assertEquals(view, "providers/providersList");
+
+		assertNotNull(model.get("availableProviders"));
+		assertNotNull(model.get("addedProviders"));
+		assertNotNull(model.get("message"));
+		assertEquals(model.get("message"), "We are very sorry, but the selected provider does not exist");
 	}
 
 }

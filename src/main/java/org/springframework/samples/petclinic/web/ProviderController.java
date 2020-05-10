@@ -76,7 +76,13 @@ public class ProviderController {
 		if (!provider.isPresent())
 			return createModelProviderList(model, "We are very sorry, but the selected provider does not exist");
 
-		if (!providerService.findAvailableProviders().contains(provider.get()))
+		Collection<Provider> providersAvailables = providerService.findAvailableProviders();
+		boolean providerAvailable = false;
+		for (Provider p : providersAvailables)
+			if (p.getId().equals(provider.get().getId()))
+				providerAvailable = true;
+
+		if (!providerAvailable)
 			return createModelProviderList(model,
 				"We are very sorry, but you cannot see the products of a supplier assigned to another manager");
 
