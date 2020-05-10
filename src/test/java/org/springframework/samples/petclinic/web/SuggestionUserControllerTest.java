@@ -87,6 +87,11 @@ public class SuggestionUserControllerTest {
 		suggestion2.setIsTrash(false);
 		suggestion2.setUser(user);
 
+		User user2 = new User();
+		user2.setEnabled(true);
+		user2.setUsername("user2");
+		user2.setPassword("user2");
+
 		Suggestion suggestion3 = new Suggestion();
 		suggestion3.setId(TEST_SUGGESTION_ID_3);
 		suggestion3.setName("Name 3");
@@ -95,6 +100,7 @@ public class SuggestionUserControllerTest {
 		suggestion3.setIsAvailable(true);
 		suggestion3.setIsRead(false);
 		suggestion3.setIsTrash(true);
+		suggestion3.setUser(user2);
 
 		BDDMockito.given(suggestionService.findAllEntitiesAvailableByUsername("pepito")).willReturn(Lists.newArrayList(suggestion1, suggestion2));
 
@@ -102,6 +108,10 @@ public class SuggestionUserControllerTest {
 
 		Optional<Suggestion> optSuggestion1 = Optional.of(suggestion1);
 		BDDMockito.given(suggestionService.findEntityById(TEST_SUGGESTION_ID_1)).willReturn(optSuggestion1);
+		Optional<Suggestion> optSuggestion2 = Optional.of(suggestion2);
+		BDDMockito.given(suggestionService.findEntityById(TEST_SUGGESTION_ID_2)).willReturn(optSuggestion2);
+		Optional<Suggestion> optSuggestion3 = Optional.of(suggestion3);
+		BDDMockito.given(suggestionService.findEntityById(TEST_SUGGESTION_ID_3)).willReturn(optSuggestion3);
 		BDDMockito.given(suggestionService.saveEntity(suggestion1)).willReturn(suggestion1);
 
 		BDDMockito.given(authoritiesService.findAuthorityByUsername("pepito")).willReturn("owner");
@@ -128,12 +138,13 @@ public class SuggestionUserControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/details/{suggestionId}", TEST_SUGGESTION_ID_99)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
-	@WithMockUser(value = "spring")
+	@WithMockUser(value = "pepito")
 	@Test
 	void testDetailValueNotAuthorized() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/details/{suggestionId}", TEST_SUGGESTION_ID_99)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/details/{suggestionId}", TEST_SUGGESTION_ID_3)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
+	//All Users can create a suggestion.
 	@WithMockUser(value = "pepito")
 	@Test
 	void testCreate() throws Exception {
@@ -170,6 +181,7 @@ public class SuggestionUserControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/delete/{suggestionId}", TEST_SUGGESTION_ID_99)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
+	//All Users can delete his/her Suggestion
 	@WithMockUser(value = "spring")
 	@Test
 	void testDeleteAll() throws Exception {

@@ -39,6 +39,7 @@ class VetControllerTests {
 
 	private static final int	TEST_VET1_ID	= 1;
 	private static final int	TEST_VET2_ID	= 2;
+	private static final int	TEST_VET99_ID	= 99;
 
 	private static final int	TEST_MANAGER_ID	= 3;
 
@@ -118,7 +119,7 @@ class VetControllerTests {
 		mockMvc.perform(get("/vets/vetsAvailable")).andExpect(status().isOk()).andExpect(model().attributeExists("vets2")).andExpect(model().attributeExists("hiredVets")).andExpect(view().name("vets/vetsAvailable"));
 	}
 
-	//Al añadir con otro tipo de usuario
+	//Al acceder con otro tipo de usuario
 	@WithMockUser(value = "vet")
 	@Test
 	void testVetsAvailableAndOwnListNegativeNotAuthorized() throws Exception {
@@ -138,6 +139,12 @@ class VetControllerTests {
 		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET2_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
+	@WithMockUser(value = "falseManager")
+	@Test
+	void testAcceptVetNegativeNotAuthorized() throws Exception {
+		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET2_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+	}
+
 	@WithMockUser(value = "pepito")
 	@Test
 	void testShowVet() throws Exception {
@@ -149,6 +156,12 @@ class VetControllerTests {
 	@Test
 	void testShowVetNegativeNotAuthorized() throws Exception {
 		mockMvc.perform(get("/vets/{vetId}", TEST_VET1_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "pepito")
+	@Test
+	void testShowVetNegativeNotExistingVet() throws Exception {
+		mockMvc.perform(get("/vets/{vetId}", TEST_VET99_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 }

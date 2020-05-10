@@ -39,6 +39,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 class StayControllerTests {
 
 	private static final int	TEST_STAY_ID	= 1;
+	private static final int	TEST_STAY_99_ID	= 99;
 
 	private static final int	TEST_VET1_ID	= 1;
 	private static final int	TEST_VET2_ID	= 1;
@@ -216,6 +217,18 @@ class StayControllerTests {
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
+	@WithMockUser(value = "pepito")
+	@Test
+	void testAcceptStayNegativeNotExistingStay() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/accept/{stayId}", StayControllerTests.TEST_STAY_99_ID)).andExpect(MockMvcResultMatchers.status().isFound()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "falsePepito")
+	@Test
+	void testAcceptStayNegativeAcceptStayOfAnotherClinic() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/accept/{stayId}", StayControllerTests.TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().isFound()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
 	//cancelStay (pasarle una stay con isAccepted a null y te la actualice a false)
 	@WithMockUser(value = "pepito")
 	@Test
@@ -235,15 +248,18 @@ class StayControllerTests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/changeDate/{stayId}", TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
-	//TODO: No Se valida en ningún caso que el usuario que está
-	//cambiando la fecha sea el mismo que del stay
-	//	@WithMockUser(value = "provider1")
-	//	@Test
-	//	void testChangeDateStayNegativeId() throws Exception {
-	//		mockMvc.perform(MockMvcRequestBuilders.get("/stays/changeDate/{stayId}", 13)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("/stays/createOrUpdateStayForm"));
-	//	}
+	@WithMockUser(value = "provider1")
+	@Test
+	void testChangeDateStayNotAuthorizedAsOtherUser() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/changeDate/{stayId}", 13)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
 
-	//TODO Negativo
+	@WithMockUser(value = "falsePepito")
+	@Test
+	void testChangeDateStayNotAuthorizedAsVet() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/changeDate/{stayId}", TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
 	//updateStay (actualizar parametros (startDate, finishDate y description) y comprobar que se ha guardado bien)
 	//startDate tiene que estar en futuro
 	//diferencia entre startdate y finishDate minimo de un dia, maximo siete
@@ -365,7 +381,7 @@ class StayControllerTests {
 
 	@WithMockUser(value = "provider")
 	@Test
-	void ListAllPendingByOwnerNegative() throws Exception {
+	void ListAllPendingByOwnerNegativeNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/listByOwner")).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 }
