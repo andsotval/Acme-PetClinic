@@ -115,8 +115,9 @@ public class ClinicController {
 		if (!clinic.isPresent())
 			return REDIRECT_OUPS;
 
-		if (!clinic.get().getId().equals(owner.getClinic().getId()))
-			return REDIRECT_OUPS;
+		if (owner.getClinic() != null)
+			if (!clinic.get().getId().equals(owner.getClinic().getId()))
+				return REDIRECT_OUPS;
 
 		modelMap.addAttribute("clinic", clinic.get());
 		modelMap.addAttribute("owner", owner);
