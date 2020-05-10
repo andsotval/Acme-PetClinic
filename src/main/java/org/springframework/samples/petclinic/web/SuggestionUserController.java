@@ -87,6 +87,9 @@ public class SuggestionUserController {
 		Suggestion suggestion = new Suggestion();
 		String username = SessionUtils.obtainUserInSession().getUsername();
 		String authority = authoritiesService.findAuthorityByUsername(username);
+		if (authority == null)
+			return REDIRECT_OUPS;
+
 		Person person = obtainPerson(authority, username);
 
 		suggestion.setCreated(LocalDateTime.now());
