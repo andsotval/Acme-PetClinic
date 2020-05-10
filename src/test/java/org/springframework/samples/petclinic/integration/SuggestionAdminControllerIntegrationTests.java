@@ -18,6 +18,7 @@ import org.springframework.samples.petclinic.model.Suggestion;
 import org.springframework.samples.petclinic.service.AuthoritiesService;
 import org.springframework.samples.petclinic.service.SuggestionService;
 import org.springframework.samples.petclinic.web.SuggestionAdminController;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.ui.ModelMap;
 
@@ -41,6 +42,9 @@ public class SuggestionAdminControllerIntegrationTests {
 
 
 	@SuppressWarnings("unchecked")
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
 	@Order(1)
 	public void TestList() {
@@ -63,6 +67,9 @@ public class SuggestionAdminControllerIntegrationTests {
 	}
 
 	@SuppressWarnings("unchecked")
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
 	@Order(2)
 	public void TestListTrash() {
@@ -84,9 +91,12 @@ public class SuggestionAdminControllerIntegrationTests {
 		assertEquals(model.get("isTrash"), true);
 	}
 
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
 	@Order(3)
-	public void TestDetail() {
+	public void TestDetailPositive() {
 		ModelMap model = new ModelMap();
 		String view = suggestionAdminController.detail(TEST_SUGGESTION_ID_1, model);
 
@@ -115,49 +125,109 @@ public class SuggestionAdminControllerIntegrationTests {
 
 	}
 
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
 	@Order(4)
-	public void TestRead() {
+	public void TestDetailValueNotPresent() {
+		ModelMap model = new ModelMap();
+		String view = suggestionAdminController.detail(99, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
+	@Test
+	@Order(5)
+	public void TestReadPositive() {
 		ModelMap model = new ModelMap();
 		String view = suggestionAdminController.read(TEST_SUGGESTION_ID_4, model);
 
-		assertEquals(view, "redirect:/suggestion/admin/list");
+		assertEquals(view, "suggestion/admin/list");
 
 		Suggestion suggestion = suggestionService.findEntityById(TEST_SUGGESTION_ID_4).get();
 		assertEquals(suggestion.getIsRead(), true);
 	}
 
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
-	@Order(5)
-	public void TestNotRead() {
+	@Order(6)
+	public void TestReadValueNotPresent() {
+		ModelMap model = new ModelMap();
+		String view = suggestionAdminController.read(99, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
+	@Test
+	@Order(7)
+	public void TestNotReadPositive() {
 		ModelMap model = new ModelMap();
 		String view = suggestionAdminController.notRead(TEST_SUGGESTION_ID_1, model);
 
-		assertEquals(view, "redirect:/suggestion/admin/list");
+		assertEquals(view, "suggestion/admin/list");
 
 		Suggestion suggestion = suggestionService.findEntityById(TEST_SUGGESTION_ID_1).get();
 		assertEquals(suggestion.getIsRead(), false);
 	}
 
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
-	@Order(6)
-	public void TestMoveTrash() {
+	@Order(8)
+	public void TestNotReadValueNotPresent() {
+		ModelMap model = new ModelMap();
+		String view = suggestionAdminController.notRead(99, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
+	@Test
+	@Order(9)
+	public void TestMoveTrashPositive() {
 		ModelMap model = new ModelMap();
 		String view = suggestionAdminController.moveTrash(TEST_SUGGESTION_ID_1, model);
 
-		assertEquals(view, "redirect:/suggestion/admin/list");
+		assertEquals(view, "suggestion/admin/list");
 
 		Suggestion suggestion = suggestionService.findEntityById(TEST_SUGGESTION_ID_1).get();
 		assertEquals(suggestion.getIsTrash(), true);
 	}
 
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
-	@Order(7)
+	@Order(10)
+	public void TestMoveTrashValueNotPresent() {
+		ModelMap model = new ModelMap();
+		String view = suggestionAdminController.moveTrash(99, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
+	@Test
+	@Order(11)
 	public void TestMoveAllTrash() {
 		ModelMap model = new ModelMap();
 		String view = suggestionAdminController.moveAllTrash(model);
 
-		assertEquals(view, "redirect:/suggestion/admin/list");
+		assertEquals(view, "suggestion/admin/list");
 
 		Collection<Suggestion> suggestions = (Collection<Suggestion>) suggestionService.findAllEntities();
 		suggestions.forEach(suggestion -> {
@@ -166,28 +236,35 @@ public class SuggestionAdminControllerIntegrationTests {
 
 	}
 
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
-	@Order(8)
+	@Order(12)
 	public void TestDelete() {
 		ModelMap model = new ModelMap();
 		String view = suggestionAdminController.delete(TEST_SUGGESTION_ID_1, model);
 
-		assertEquals(view, "redirect:/suggestion/admin/listTrash");
+		assertEquals(view, "suggestion/admin/list");
 
 		Optional<Suggestion> suggestion = suggestionService.findEntityById(TEST_SUGGESTION_ID_1);
 		assertEquals(suggestion.isPresent(), false);
 	}
 
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
-	@Order(9)
+	@Order(13)
 	public void TestDeleteAllTrash() {
 		ModelMap model = new ModelMap();
 		String view = suggestionAdminController.deleteAllTrash(model);
 
-		assertEquals(view, "redirect:/suggestion/admin/listTrash");
+		assertEquals(view, "suggestion/admin/list");
 
 		Collection<Suggestion> suggestions = (Collection<Suggestion>) suggestionService.findAllEntities();
 		assertEquals(suggestions.isEmpty(), true);
 
 	}
+
 }
