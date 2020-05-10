@@ -113,7 +113,7 @@ public class PetTypeControllerE2ETests {
 		"admin"
 	})
 	@Test
-	void testProcessUpdateFormPositive() throws Exception {
+	void testProcessUpdateForm() throws Exception {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/pettype/edit/{pettypeId}", TEST_PETTYPE_ID_1)
 				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("name", "name1").param("available", "true"))

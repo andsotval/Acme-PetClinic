@@ -80,6 +80,9 @@ public class SuggestionAdminController {
 
 		String username = suggestion.get().getUser().getUsername();
 		String authority = authoritiesService.findAuthorityByUsername(username);
+		if (authority == null)
+			return REDIRECT_OUPS;
+
 		modelMap.addAttribute("authority", authority.substring(0, 1).toUpperCase() + authority.substring(1));
 
 		Person person = obtainPerson(authority, username);

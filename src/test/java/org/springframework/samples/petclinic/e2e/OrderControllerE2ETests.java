@@ -38,12 +38,22 @@ public class OrderControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.model().attributeExists("products"))
 			.andExpect(MockMvcResultMatchers.view().name("/orders/createOrUpdateOrderForm"));
 	}
+	
+	@WithMockUser(value = "manager99", authorities = {
+			"manager"
+		})
+		@Test
+		void testInitCreationFormNotExistingManager() throws Exception {
+			mockMvc.perform(MockMvcRequestBuilders.get("/orders/new/{providerId}", TEST_PROVIDER_ID))
+				.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+				.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		}
 
 	@WithMockUser(value = "manager1", authorities = {
 		"manager"
 	})
 	@Test
-	void testProcessCreationFormPositive() throws Exception {
+	void testProcessCreationForm() throws Exception {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_ID)
 				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("productIds", "1").param("productIds", "2")
@@ -56,7 +66,7 @@ public class OrderControllerE2ETests {
 		"manager"
 	})
 	@Test
-	void testProcessCreationFormNegative() throws Exception {
+	void testProcessCreationFormNullProduct() throws Exception {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_ID)
 				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("productIds", "").param("amountNumber", ""))
@@ -70,7 +80,7 @@ public class OrderControllerE2ETests {
 		"manager"
 	})
 	@Test
-	void testShowOrderPositive() throws Exception {
+	void testShowOrder() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", TEST_ORDER_ID))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.model().attributeExists("order"))
@@ -83,7 +93,7 @@ public class OrderControllerE2ETests {
 		"manager"
 	})
 	@Test
-	void testShowOrderNegative() throws Exception {
+	void testShowOrderNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", TEST_ORDER_ID))
 			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
@@ -108,6 +118,16 @@ public class OrderControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.model().attributeExists("providers"))
 			.andExpect(MockMvcResultMatchers.view().name("/orders/providers/providerList"));
 	}
+	
+	@WithMockUser(value = "manager99", authorities = {
+			"manager"
+		})
+		@Test
+		void testListAvailableProvidersNotExistingManager() throws Exception {
+			mockMvc.perform(MockMvcRequestBuilders.get("/orders/providers/listAvailable"))
+				.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+				.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		}
 
 	@WithMockUser(value = "manager1", authorities = {
 		"manager"
@@ -118,4 +138,14 @@ public class OrderControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.model().attributeExists("orders"))
 			.andExpect(MockMvcResultMatchers.view().name("/orders/orderList"));
 	}
+	
+	@WithMockUser(value = "manager99", authorities = {
+			"manager"
+		})
+		@Test
+		void testListOrdersNotExistingManager() throws Exception {
+			mockMvc.perform(MockMvcRequestBuilders.get("/orders/list"))
+				.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+				.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		}
 }

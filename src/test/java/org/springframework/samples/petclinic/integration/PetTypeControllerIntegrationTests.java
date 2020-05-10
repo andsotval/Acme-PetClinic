@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.service.PetTypeService;
 import org.springframework.samples.petclinic.web.PetTypeController;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -41,6 +42,9 @@ public class PetTypeControllerIntegrationTests {
 
 
 	@SuppressWarnings("unchecked")
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
 	@Order(1)
 	public void TestListAvailable() {
@@ -62,6 +66,9 @@ public class PetTypeControllerIntegrationTests {
 	}
 
 	@SuppressWarnings("unchecked")
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
 	@Order(2)
 	public void TestListNotAvailable() {
@@ -82,6 +89,9 @@ public class PetTypeControllerIntegrationTests {
 		assertEquals(model.get("available"), false);
 	}
 
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
 	@Order(3)
 	public void TestInitCreationForm() {
@@ -94,6 +104,9 @@ public class PetTypeControllerIntegrationTests {
 		assertEquals(((PetType) model.get("petType")).getAvailable(), true);
 	}
 
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
 	@Order(4)
 	public void TestProcessCreationFormPositive() {
@@ -105,7 +118,7 @@ public class PetTypeControllerIntegrationTests {
 		BindingResult bindingResult = new MapBindingResult(Collections.emptyMap(), "");
 		String view = petTypeController.processCreationForm(petType, bindingResult, model);
 
-		assertEquals(view, "redirect:/pettype/listAvailable");
+		assertEquals(view, "/pettype/list");
 
 		List<PetType> petTypes = petTypeService.findAvailable().stream().filter(pt -> pt.getName().equals("PetType 1"))
 			.collect(Collectors.toList());
@@ -113,6 +126,9 @@ public class PetTypeControllerIntegrationTests {
 		assertNotNull(petTypes.get(0));
 	}
 
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
 	@Order(5)
 	public void TestProcessCreationFormNegative() {
@@ -130,6 +146,9 @@ public class PetTypeControllerIntegrationTests {
 		assertNotNull(model.get("petType"));
 	}
 
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
 	@Order(6)
 	public void TestInitUpdateForm() {
@@ -145,8 +164,23 @@ public class PetTypeControllerIntegrationTests {
 		assertEquals(((PetType) model.get("petType")).getAvailable(), petType.getAvailable());
 	}
 
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
 	@Order(7)
+	public void TestInitUpdateFormValueNotPresent() {
+		ModelMap model = new ModelMap();
+		String view = petTypeController.initUpdateForm(99, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
+	@Test
+	@Order(8)
 	public void TestProcessUpdateFormPositive() {
 		ModelMap model = new ModelMap();
 
@@ -162,11 +196,14 @@ public class PetTypeControllerIntegrationTests {
 		assertNotNull(petTypes.get(0));
 		assertEquals(petTypes.get(0).getName(), "PetType 1 update");
 
-		assertEquals(view, "redirect:/pettype/listAvailable");
+		assertEquals(view, "/pettype/list");
 	}
 
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
-	@Order(8)
+	@Order(9)
 	public void TestProcessUpdateFormNegative() {
 		ModelMap model = new ModelMap();
 
@@ -185,28 +222,58 @@ public class PetTypeControllerIntegrationTests {
 		assertEquals(((PetType) model.get("petType")).getAvailable(), petType.getAvailable());
 	}
 
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
-	@Order(9)
-	public void TestAvailable() {
+	@Order(10)
+	public void TestAvailablePositive() {
 		ModelMap model = new ModelMap();
 		String view = petTypeController.available(TEST_PETTYPE_ID_7, model);
 
-		assertEquals(view, "redirect:/pettype/listAvailable");
+		assertEquals(view, "/pettype/list");
 
 		PetType petType = petTypeService.findEntityById(TEST_PETTYPE_ID_7).get();
 		assertEquals(petType.getAvailable(), true);
 	}
 
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
 	@Test
-	@Order(10)
-	public void TestNotAvailable() {
+	@Order(11)
+	public void TestAvailableValueNotPresent() throws Exception {
+		ModelMap model = new ModelMap();
+		String view = petTypeController.available(99, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
+	@Test
+	@Order(12)
+	public void TestNotAvailablePositive() {
 		ModelMap model = new ModelMap();
 		String view = petTypeController.notAvailable(TEST_PETTYPE_ID_1, model);
 
-		assertEquals(view, "redirect:/pettype/listNotAvailable");
+		assertEquals(view, "/pettype/list");
 
 		PetType petType = petTypeService.findEntityById(TEST_PETTYPE_ID_1).get();
 		assertEquals(petType.getAvailable(), false);
+	}
+
+	@WithMockUser(username = "admin", authorities = {
+		"admin"
+	})
+	@Test
+	@Order(13)
+	public void TestNotAvailableValueNotPresent() {
+		ModelMap model = new ModelMap();
+		String view = petTypeController.notAvailable(99, model);
+
+		assertEquals(view, "redirect:/oups");
 	}
 
 }
