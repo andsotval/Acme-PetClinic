@@ -158,7 +158,6 @@ public class VisitControllerE2ETests {
 				.andExpect(MockMvcResultMatchers.view().name("redirect:/visits/listByOwner"));
 	}
 
-	// TODO: PREGUNTA DE CARLOS
 	@WithMockUser(username = "owner1", authorities = { "owner" })
 	@Test
 	void testCreateVisitWrongDate() throws Exception {

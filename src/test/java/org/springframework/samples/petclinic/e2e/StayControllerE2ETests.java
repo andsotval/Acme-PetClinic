@@ -32,7 +32,6 @@ class StayControllerE2ETests {
 	private MockMvc				mockMvc;
 
 
-	//listAllPending (todas las stays devueltas tienen que tener isAcepted a null)
 	@WithMockUser(value = "vet1", authorities = {
 		"veterinarian"
 	})
@@ -54,15 +53,13 @@ class StayControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
-	//listAllAccepted (todas las stays devueltas tienen que tener isAcepted a true)
 	@WithMockUser(value = "vet1", authorities = {
 		"veterinarian"
 	})
 	@Test
 	void testShowStaysAccept() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/listAllAccepted"))
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			/* .andExpect(MockMvcResultMatchers.model().attributeExists("stays")) */.andExpect(
+			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(
 				MockMvcResultMatchers.view().name("stays/list"));
 	}
 
@@ -77,7 +74,6 @@ class StayControllerE2ETests {
 
 	}
 
-	//acceptStay (pasarle una stay con isAccepted a null y te la actualice a true)
 	@WithMockUser(value = "vet1", authorities = {
 		"veterinarian"
 	})
@@ -95,11 +91,10 @@ class StayControllerE2ETests {
 	void testAcceptStayNotExisting() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/accept/{stayId}", TEST_STAY_ID))
 			.andExpect(MockMvcResultMatchers.status()
-				.is3xxRedirection())/* .andExpect(MockMvcResultMatchers.model().attributeExists("nonAuthorized")) */
+				.is3xxRedirection())
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
-	//cancelStay (pasarle una stay con isAccepted a null y te la actualice a false)
 	@WithMockUser(value = "vet1", authorities = {
 		"veterinarian"
 	})
@@ -120,8 +115,6 @@ class StayControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
-	//TODO: Negativo
-	//changeDateStay (la stay que entra es la misma que sale)
 	@WithMockUser(value = "vet6", authorities = {
 		"veterinarian"
 	})
@@ -176,8 +169,7 @@ class StayControllerE2ETests {
 			.perform(MockMvcRequestBuilders.post("/stays/save/{stayId}", TEST_STAY_ID)
 				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("id", "").param("description", "Description")
 				.param("startDate", "").param("finishDate", "2020/05/22").param("pet.id", String.valueOf(TEST_PET_ID))
-				.param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
-			/* .andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "startDate", "startDateNotNull")) */.andExpect(
+				.param("clinic.id", String.valueOf(TEST_CLINIC1_ID))).andExpect(
 				MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
@@ -231,8 +223,7 @@ class StayControllerE2ETests {
 				.param("id", "").param("description", "Description").param("startDate", "2020/05/22")
 				.param("finishDate", "2020/05/29").param("pet.id", String.valueOf(TEST_PET_ID + 1))
 				.param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-			/* .andExpect(MockMvcResultMatchers.model().attribute("message", "Stay succesfully updated")) */.andExpect(
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(
 				MockMvcResultMatchers.view().name("redirect:/stays/listByOwner"));
 	}
 
@@ -247,8 +238,7 @@ class StayControllerE2ETests {
 				.param("finishDate", "2020/06/23").param("pet.id", String.valueOf(TEST_PET_ID + 1))
 				.param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
 			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "finishDate",
-				"finishDateMinimumOneWeek"))
-			/* .andExpect(MockMvcResultMatchers.model().attribute("message", "Stay succesfully updated")) */.andExpect(
+				"finishDateMinimumOneWeek")).andExpect(
 				MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
@@ -304,7 +294,6 @@ class StayControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
-	// ListByOwner
 	@WithMockUser(value = "owner1", authorities = {
 		"owner"
 	})
@@ -312,9 +301,7 @@ class StayControllerE2ETests {
 	void ListAllPendingByOwner() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/listByOwner"))
 			.andExpect(MockMvcResultMatchers.status().isOk())
-			/*
-			 * .andExpect(MockMvcResultMatchers.model().attributeExists("staysPending")) * .andExpect(MockMvcResultMatchers.model().attributeExists("staysAccepted"))
-			 */.andExpect(MockMvcResultMatchers.view().name("stays/listByOwner"));
+			.andExpect(MockMvcResultMatchers.view().name("stays/listByOwner"));
 	}
 
 	@WithMockUser(value = "owner123", authorities = {
