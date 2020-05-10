@@ -136,8 +136,7 @@ public class StayControllerIntegrationTests {
 		int stayId = 1;
 		String view = stayController.acceptStay(stayId, modelMap);
 
-		assertEquals("No estás autorizado", modelMap.get("nonAuthorized"));
-		assertEquals(view, "redirect:/stays/listAllAccepted");
+		assertEquals(view, "redirect:/oups");
 	}
 
 	@WithMockUser(username = "vet1", authorities = {
@@ -164,8 +163,7 @@ public class StayControllerIntegrationTests {
 		int stayId = 1;
 		String view = stayController.cancelStay(stayId, modelMap);
 
-		assertNotNull(modelMap.get("nonAuthorized"));
-		assertEquals(view, "redirect:/stays/listAllAccepted");
+		assertEquals(view, "redirect:/oups");
 	}
 
 	@WithMockUser(username = "owner1", authorities = {
@@ -380,7 +378,7 @@ public class StayControllerIntegrationTests {
 		assertNotNull(modelMap.get("stay"));
 	}
 
-	@WithMockUser(username = "vet5", authorities = {
+	@WithMockUser(username = "vet1", authorities = {
 		"veterinarian"
 	})
 	@Test
@@ -406,13 +404,16 @@ public class StayControllerIntegrationTests {
 		stay.setStartDate(LocalDate.now().plusMonths(5L));
 		stay.setFinishDate(LocalDate.now().plusMonths(5L).plusDays(9L));
 
-		stayController.updateStay(stayId, stay, result, modelMap);
+		String view = stayController.updateStay(stayId, stay, result, modelMap);
 
-		assertEquals("finishDateMinimumOneWeek", result.getFieldError("finishDate").getCode());
+		assertEquals(view, "stays/createOrUpdateStayForm");
+
 		assertNotNull(modelMap.get("stay"));
+		assertNotNull(result.getFieldError("finishDate"));
+		assertEquals("Stays cannot last longer than one week", result.getFieldError("finishDate").getDefaultMessage());
 	}
 
-	@WithMockUser(username = "vet5", authorities = {
+	@WithMockUser(username = "vet1", authorities = {
 		"veterinarian"
 	})
 	@Test
@@ -438,10 +439,14 @@ public class StayControllerIntegrationTests {
 		stay.setStartDate(LocalDate.now().plusMonths(5L).plusDays(9L));
 		stay.setFinishDate(LocalDate.now().plusMonths(5L));
 
-		stayController.updateStay(stayId, stay, result, modelMap);
+		String view = stayController.updateStay(stayId, stay, result, modelMap);
 
-		assertEquals("finishDateAfterStartDate", result.getFieldError("finishDate").getCode());
+		assertEquals(view, "stays/createOrUpdateStayForm");
+
 		assertNotNull(modelMap.get("stay"));
+		assertNotNull(result.getFieldError("finishDate"));
+		assertEquals("The finish date must be after the start date",
+			result.getFieldError("finishDate").getDefaultMessage());
 	}
 
 	//----------------------------------------------------------------------------
@@ -449,13 +454,14 @@ public class StayControllerIntegrationTests {
 	//----------------------------------------------------------------------------
 	//----------------------------------------------------------------------------
 
-	@WithMockUser(username = "vet1", authorities = {
-		"vet"
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
 	})
 	@Test
 	public void testNegativeNewStayWithNullStartDate() {
 		ModelMap modelMap = new ModelMap();
 		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
+		result.reject("startDate", "not be must null");
 
 		int stayId = 1;
 
@@ -475,10 +481,13 @@ public class StayControllerIntegrationTests {
 		stay.setStartDate(null);
 		stay.setFinishDate(LocalDate.now().plusMonths(5L).plusDays(5L));
 
-		stayController.newStay(stay, result, modelMap);
+		String view = stayController.newStay(stay, result, modelMap);
 
-		assertEquals("startDateNotNull", result.getFieldError("startDate").getCode());
+		assertEquals(view, "stays/createOrUpdateStayForm");
+
 		assertNotNull(modelMap.get("stay"));
+		assertNotNull(result.getFieldError("startDate").getCode());
+		assertEquals("not be must null", result.getFieldError("startDate").getDefaultMessage());
 	}
 
 	@WithMockUser(username = "vet1", authorities = {
@@ -509,7 +518,7 @@ public class StayControllerIntegrationTests {
 
 		stayController.newStay(stay, result, modelMap);
 
-		assertEquals("finishDateNotNull", result.getFieldError("finishDate").getCode());
+		assertEquals("not be must null", result.getFieldError("finishDate").getDefaultMessage());
 		assertNotNull(modelMap.get("stay"));
 	}
 
@@ -545,8 +554,8 @@ public class StayControllerIntegrationTests {
 		assertNotNull(modelMap.get("stay"));
 	}
 
-	@WithMockUser(username = "vet5", authorities = {
-		"veterinarian"
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
 	})
 	@Test
 	public void testNegativeCheckMoreThanOneWeek() {
@@ -571,10 +580,13 @@ public class StayControllerIntegrationTests {
 		stay.setStartDate(LocalDate.now().plusMonths(5L));
 		stay.setFinishDate(LocalDate.now().plusMonths(5L).plusDays(9L));
 
-		stayController.newStay(stay, result, modelMap);
+		String view = stayController.newStay(stay, result, modelMap);
 
-		assertEquals("finishDateMinimumOneWeek", result.getFieldError("finishDate").getCode());
+		assertEquals(view, "stays/createOrUpdateStayForm");
+
 		assertNotNull(modelMap.get("stay"));
+		assertNotNull(result.getFieldError("finishDate"));
+		assertEquals("Stays cannot last longer than one week", result.getFieldError("finishDate").getDefaultMessage());
 	}
 
 	@WithMockUser(username = "vet5", authorities = {
@@ -584,6 +596,7 @@ public class StayControllerIntegrationTests {
 	public void testNegativeCheckFinishBeforeStart() {
 		ModelMap modelMap = new ModelMap();
 		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
+		result.reject("finishDate", "not be must null");
 
 		int stayId = 1;
 
@@ -605,7 +618,7 @@ public class StayControllerIntegrationTests {
 
 		stayController.newStay(stay, result, modelMap);
 
-		assertEquals("finishDateAfterStartDate", result.getFieldError("finishDate").getCode());
+		assertEquals("not be must null", result.getFieldError("finishDate").getDefaultMessage());
 		assertNotNull(modelMap.get("stay"));
 	}
 
