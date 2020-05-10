@@ -121,7 +121,7 @@ class VetControllerTests {
 	//Al añadir con otro tipo de usuario
 	@WithMockUser(value = "vet")
 	@Test
-	void testVetsAvailableAndOwnListNegative() throws Exception {
+	void testVetsAvailableAndOwnListNegativeNotAuthorized() throws Exception {
 		mockMvc.perform(get("/vets/vetsAvailable")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
@@ -134,7 +134,7 @@ class VetControllerTests {
 	//añadir un veterinario con clínica ya asignada
 	@WithMockUser(value = "pepito")
 	@Test
-	void testAcceptVetNegative() throws Exception {
+	void testAcceptVetNegativeAlreadyAssignedClinic() throws Exception {
 		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET2_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
@@ -147,7 +147,7 @@ class VetControllerTests {
 	//Acceder desde otro tipo usuario
 	@WithMockUser(value = "vet")
 	@Test
-	void testShowVetNegative() throws Exception {
+	void testShowVetNegativeNotAuthorized() throws Exception {
 		mockMvc.perform(get("/vets/{vetId}", TEST_VET1_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 

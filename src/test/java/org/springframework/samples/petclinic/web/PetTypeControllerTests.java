@@ -88,7 +88,7 @@ public class PetTypeControllerTests {
 
 	@WithMockUser(value = "spring")
 	@Test
-	void testProcessCreationFormNegative() throws Exception {
+	void testProcessCreationFormNegativeNameIsNull() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.post("/pettype/new").with(SecurityMockMvcRequestPostProcessors.csrf()).param("name", "")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeHasErrors("petType"))
 			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrors("petType", "available")).andExpect(MockMvcResultMatchers.model().attributeHasFieldErrors("petType", "name"))
 			.andExpect(MockMvcResultMatchers.view().name("pettype/createOrUpdatePettypeForm"));
@@ -116,7 +116,7 @@ public class PetTypeControllerTests {
 
 	@WithMockUser(value = "spring")
 	@Test
-	void testProcessUpdateFormNegative() throws Exception {
+	void testProcessUpdateFormNegativeNullValues() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.post("/pettype/edit/{pettypeId}", TEST_PETTYPE_ID_1).with(SecurityMockMvcRequestPostProcessors.csrf()).param("name", "")).andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.model().attributeHasErrors("petType")).andExpect(MockMvcResultMatchers.model().attributeHasFieldErrors("petType", "available")).andExpect(MockMvcResultMatchers.model().attributeHasFieldErrors("petType", "name"))
 			.andExpect(MockMvcResultMatchers.view().name("pettype/createOrUpdatePettypeForm"));

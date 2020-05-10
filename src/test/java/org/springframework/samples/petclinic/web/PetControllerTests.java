@@ -193,6 +193,19 @@ public class PetControllerTests {
 
 	@WithMockUser(value = "George")
 	@Test
+	void testNewPetFormPositive() throws Exception {
+		mockMvc.perform(get("/pets/new")).andExpect(status().isOk()).andExpect(model().attributeExists("pet")).andExpect(view().name("pets/createOrUpdatePetForm"));
+
+	}
+
+	@WithMockUser(value = "Falseowner")
+	@Test
+	void testNewPetNotauthorized() throws Exception {
+		mockMvc.perform(get("/pets/new")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+
+	}
+	@WithMockUser(value = "George")
+	@Test
 	void testSavePet() throws Exception {
 		mockMvc.perform(post("/pets/save").with(csrf()).param("name", "rex").param("birthDate", "2019/04/11").param("type", "dog").param("owner.id", String.valueOf(TEST_OWNER_ID))).andExpect(status().isOk())
 			/* .andExpect(model().attribute("message", "Stay succesfully updated")) */
@@ -227,12 +240,8 @@ public class PetControllerTests {
 	@WithMockUser(value = "Lucas")
 	@Test
 	void testSavePetDeniedAccess() throws Exception {
-		mockMvc.perform(post("/pets/save").with(csrf()).param("name", "rex").param("birthDate", "2019/04/11").param("type", "dog").param("owner.id", String.valueOf(TEST_OWNER_ID))).andExpect(status().is3xxRedirection())/*
-																																																							 * .andExpect(model().
-																																																							 * attributeExists("exception"))
-																																																							 */
+		mockMvc.perform(post("/pets/save").with(csrf()).param("name", "rex").param("birthDate", "2019/04/11").param("type", "dog").param("owner.id", String.valueOf(TEST_OWNER_ID))).andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/oups"));
-
 	}
 
 	@WithMockUser(value = "George")

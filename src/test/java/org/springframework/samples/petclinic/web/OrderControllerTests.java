@@ -38,15 +38,19 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @WebMvcTest(controllers = OrderController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
 public class OrderControllerTests {
 
-	private static final int	TEST_MANAGER_ID		= 1;
+	private static final int	TEST_MANAGER_ID					= 1;
 
-	private static final int	TEST_PROVIDER_ID	= 1;
+	private static final int	TEST_PROVIDER_ID				= 1;
 
-	private static final int	TEST_ORDER_ID		= 1;
+	private static final int	TEST_PROVIDER_2_ID				= 2;
 
-	private static final int	TEST_PRODUCT_ID_1	= 1;
+	private static final int	TEST_PROVIDER_NOT_EXISTING_ID	= 99;
 
-	private static final int	TEST_PRODUCT_ID_2	= 2;
+	private static final int	TEST_ORDER_ID					= 1;
+
+	private static final int	TEST_PRODUCT_ID_1				= 1;
+
+	private static final int	TEST_PRODUCT_ID_2				= 2;
 
 	@Autowired
 	private MockMvc				mockMvc;
@@ -209,6 +213,18 @@ public class OrderControllerTests {
 
 	@WithMockUser(value = "juan")
 	@Test
+	void testInitCreationFormNegativeNotAuthorized() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/new/{providerId}", TEST_PROVIDER_2_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "juan")
+	@Test
+	void testInitCreationFormNegativeNotExistingProvider() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/new/{providerId}", TEST_PROVIDER_NOT_EXISTING_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "juan")
+	@Test
 	void testProcessCreationFormPositive() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("productIds", "1").param("productIds", "2").param("amountNumber", "3").param("amountNumber", "4"))
 			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("/orders/orderList"));
@@ -216,7 +232,7 @@ public class OrderControllerTests {
 
 	@WithMockUser(value = "juan")
 	@Test
-	void testProcessCreationFormNegative() throws Exception {
+	void testProcessCreationFormNegativeNoProductsInOrder() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("productIds", "").param("amountNumber", "")).andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.model().attributeExists("products")).andExpect(MockMvcResultMatchers.model().attributeExists("notProductsOrder")).andExpect(MockMvcResultMatchers.view().name("/orders/createOrUpdateOrderForm"));
 	}
@@ -230,7 +246,7 @@ public class OrderControllerTests {
 
 	@WithMockUser(value = "fran")
 	@Test
-	void testShowOrderNegative() throws Exception {
+	void testShowOrderNegativeNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", TEST_ORDER_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
@@ -245,6 +261,12 @@ public class OrderControllerTests {
 	void testListAvailableProviders() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/orders/providers/listAvailable")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("providers"))
 			.andExpect(MockMvcResultMatchers.view().name("/orders/providers/providerList"));
+	}
+
+	@WithMockUser(value = "falseManager")
+	@Test
+	void testListAvailableProvidersNegativeNotAuthorized() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/providers/listAvailable")).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "juan")

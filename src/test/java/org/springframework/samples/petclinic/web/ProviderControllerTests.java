@@ -126,7 +126,7 @@ class ProviderControllerTests {
 
 	@WithMockUser(value = "provider")
 	@Test
-	void testInitAddProviderToManagerNegative() throws Exception {
+	void testInitAddProviderToManagerNegativeNotAuthorized() throws Exception {
 		mockMvc.perform(get("/providers/addProvider/{providerId}", TEST_PROVIDER1_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
@@ -140,7 +140,7 @@ class ProviderControllerTests {
 	}
 	@WithMockUser(value = "provider")
 	@Test
-	void testListProductsByProviderNegative() throws Exception {
+	void testListProductsByProviderNegativeNotExistingProvider() throws Exception {
 		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}", 99)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 }
