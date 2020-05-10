@@ -42,9 +42,10 @@ class StayControllerTests {
 	private static final int	TEST_STAY_99_ID	= 99;
 
 	private static final int	TEST_VET1_ID	= 1;
-	private static final int	TEST_VET2_ID	= 1;
+	private static final int	TEST_VET2_ID	= 2;
 
 	private static final int	TEST_OWNER_ID	= 1;
+	private static final int	TEST_OWNER_2_ID	= 2;
 
 	private static final int	TEST_CLINIC1_ID	= 1;
 	private static final int	TEST_CLINIC2_ID	= 2;
@@ -78,7 +79,7 @@ class StayControllerTests {
 		clinic.setId(TEST_CLINIC1_ID);
 
 		Clinic clinic2 = new Clinic();
-		clinic.setId(TEST_CLINIC2_ID);
+		clinic2.setId(TEST_CLINIC2_ID);
 
 		User userOwner = new User();
 		userOwner.setEnabled(true);
@@ -99,14 +100,33 @@ class StayControllerTests {
 		owner.setTelephone("6085551023");
 		owner.setClinic(clinic);
 
+		User userOwner2 = new User();
+		userOwner2.setEnabled(true);
+		userOwner2.setUsername("owner2");
+		userOwner2.setPassword("owner2");
+
+		Authorities authorityOwner2 = new Authorities();
+		authorityOwner2.setAuthority("Owner");
+		authorityOwner2.setUsername("Owner2");
+
+		Owner owner2 = new Owner();
+		owner2.setUser(userOwner2);
+		owner2.setId(TEST_OWNER_2_ID);
+		owner2.setFirstName("Owner");
+		owner2.setLastName("Leary");
+		owner2.setAddress("110 W. Liberty St.");
+		owner2.setCity("Madison");
+		owner2.setTelephone("6085551023");
+		owner2.setClinic(clinic2);
+
 		User user = new User();
 		user.setEnabled(true);
-		user.setUsername("pepito");
-		user.setPassword("pepito");
+		user.setUsername("vet1");
+		user.setPassword("vet1");
 
 		Authorities authority = new Authorities();
 		authority.setAuthority("Vet");
-		authority.setUsername("pepito");
+		authority.setUsername("vet1");
 		Vet pepe = new Vet();
 		pepe.setUser(user);
 		pepe.setId(TEST_VET1_ID);
@@ -117,19 +137,20 @@ class StayControllerTests {
 		pepe.setTelephone("6085551023");
 		pepe.setClinic(clinic);
 
-		//FakeUser ------------------------------------
+		//FakeVet ------------------------------------
 		User falseUser = new User();
 		falseUser.setEnabled(true);
-		falseUser.setUsername("falsePepito");
-		falseUser.setPassword("falsePepito");
+		falseUser.setUsername("falseVet");
+		falseUser.setPassword("falseVet");
 
 		Authorities falseAuthority = new Authorities();
 		falseAuthority.setAuthority("Vet");
-		falseAuthority.setUsername("falsePepito");
+		falseAuthority.setUsername("falseVet");
+
 		Vet falsePepe = new Vet();
 		falsePepe.setUser(user);
 		falsePepe.setId(TEST_VET2_ID);
-		falsePepe.setFirstName("falsePepito");
+		falsePepe.setFirstName("falseVet");
 		falsePepe.setLastName("Leary");
 		falsePepe.setAddress("110 W. Liberty St.");
 		falsePepe.setCity("Madison");
@@ -157,39 +178,44 @@ class StayControllerTests {
 		Optional<Stay> optionalStay = Optional.of(stay);
 
 		Optional<Owner> optionalOwner = Optional.of(owner);
+		Optional<Owner> optionalOwner2 = Optional.of(owner2);
 
 		BDDMockito.given(stayService.findEntityById(StayControllerTests.TEST_STAY_ID)).willReturn(optionalStay);
 		BDDMockito.given(stayService.findAllAcceptedByVet(StayControllerTests.TEST_VET1_ID)).willReturn(stays);
 		BDDMockito.given(stayService.findAllAcceptedByVet(StayControllerTests.TEST_VET2_ID)).willReturn(stays);
 
-		BDDMockito.given(vetService.findPersonByUsername("pepito")).willReturn(pepe);
-		BDDMockito.given(vetService.findPersonByUsername("falsePepito")).willReturn(falsePepe);
+		BDDMockito.given(vetService.findPersonByUsername("vet1")).willReturn(pepe);
+		BDDMockito.given(vetService.findPersonByUsername("falseVet")).willReturn(falsePepe);
 
-		BDDMockito.given(authoritiesService.findAuthorityByUsername("pepito")).willReturn("vet");
-		BDDMockito.given(authoritiesService.findAuthorityByUsername("falsePepito")).willReturn("vet");
+		BDDMockito.given(authoritiesService.findAuthorityByUsername("vet1")).willReturn("veterinarian");
+		BDDMockito.given(authoritiesService.findAuthorityByUsername("falseVet")).willReturn("veterinarian");
+		BDDMockito.given(authoritiesService.findAuthorityByUsername("falseVet2")).willReturn("veterinarian");
+		BDDMockito.given(authoritiesService.findAuthorityByUsername("owner")).willReturn("owner");
+		BDDMockito.given(authoritiesService.findAuthorityByUsername("owner2")).willReturn("owner");
+		BDDMockito.given(authoritiesService.findAuthorityByUsername("falseOwner")).willReturn("owner");
 
 		BDDMockito.given(ownerService.findEntityById(TEST_OWNER_ID)).willReturn(optionalOwner);
+		BDDMockito.given(ownerService.findEntityById(TEST_OWNER_2_ID)).willReturn(optionalOwner2);
 		BDDMockito.given(ownerService.findPersonByUsername(owner.getUser().getUsername())).willReturn(owner);
-		//.given(stayService.findAllStayByPet(Integer.class)).willReturn(stays);
+		BDDMockito.given(ownerService.findPersonByUsername(owner2.getUser().getUsername())).willReturn(owner2);
 	}
 
-	//TODO: Negativo ¿?¿?
 	//listAllPending (todas las stays devueltas tienen que tener isAcepted a null)
-	@WithMockUser(value = "pepito")
+	@WithMockUser(value = "vet1")
 	@Test
 	void testShowStaysPending() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/listAllPending")).andExpect(MockMvcResultMatchers.status().isOk())
 			/* .andExpect(MockMvcResultMatchers.model().attributeExists("stays")) */.andExpect(MockMvcResultMatchers.view().name("stays/list"));
 	}
 
-	@WithMockUser(value = "manager")
+	@WithMockUser(value = "FalseVet")
 	@Test
 	void testShowStaysPendingNegativeUserNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/listAllPending")).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	//listAllAccepted (todas las stays devueltas tienen que tener isAcepted a true)
-	@WithMockUser(value = "pepito")
+	@WithMockUser(value = "vet1")
 	@Test
 	void testShowStaysAccept() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/listAllAccepted")).andExpect(MockMvcResultMatchers.status().isOk())
@@ -204,45 +230,75 @@ class StayControllerTests {
 	}
 
 	//acceptStay (pasarle una stay con isAccepted a null y te la actualice a true)
-	@WithMockUser(value = "pepito")
+	@WithMockUser(value = "vet1")
 	@Test
 	void testAcceptStayPositive() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/accept/{stayId}", StayControllerTests.TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().isFound()).andExpect(MockMvcResultMatchers.view().name("redirect:/stays/listAllAccepted"));
 	}
 
-	@WithMockUser(value = "falsePepito")
+	@WithMockUser(value = "falseVet")
 	@Test
 	void testAcceptStayNegativeNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/accept/{stayId}", StayControllerTests.TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().isFound())/* .andExpect(MockMvcResultMatchers.model().attributeExists("nonAuthorized")) */
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
-	@WithMockUser(value = "pepito")
+	@WithMockUser(value = "vet1")
 	@Test
 	void testAcceptStayNegativeNotExistingStay() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/accept/{stayId}", StayControllerTests.TEST_STAY_99_ID)).andExpect(MockMvcResultMatchers.status().isFound()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
-	@WithMockUser(value = "falsePepito")
+	@WithMockUser(value = "falseVet")
 	@Test
 	void testAcceptStayNegativeAcceptStayOfAnotherClinic() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/accept/{stayId}", StayControllerTests.TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().isFound()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	//cancelStay (pasarle una stay con isAccepted a null y te la actualice a false)
-	@WithMockUser(value = "pepito")
+	@WithMockUser(value = "vet1")
 	@Test
-	void testCancelStay() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/stays/cancel/{stayId}", StayControllerTests.TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().isFound()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	void testCancelStayAsVet() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/cancel/{stayId}", StayControllerTests.TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/stays/listAllAccepted"));
 	}
 
-	@WithMockUser(value = "falsePepito")
+	@WithMockUser(value = "vet1")
 	@Test
 	void testCancelStayNotExisting() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/stays/cancel/{stayId}", TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/cancel/{stayId}", TEST_STAY_99_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
-	@WithMockUser(value = "pepito")
+	@WithMockUser(value = "falseVet")
+	@Test
+	void testCancelStayAsVetNegativeCancelStayOfOtherClinic() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/cancel/{stayId}", StayControllerTests.TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "falseVet2")
+	@Test
+	void testCancelStaytAsVetNegativeVeterinarianNotInSystem() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/cancel/{stayId}", StayControllerTests.TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "owner")
+	@Test
+	void testCancelStayAsOwner() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/cancel/{stayId}", StayControllerTests.TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/stays/listByOwner"));
+	}
+
+	@WithMockUser(value = "falseOwner")
+	@Test
+	void testCancelStaytAsOwnerNegativeOwnerNotInSystem() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/cancel/{stayId}", StayControllerTests.TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "owner2")
+	@Test
+	void testCancelStayAsOwnerNegativeCancelStayOfOtherClinic() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/cancel/{stayId}", StayControllerTests.TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "vet1")
 	@Test
 	void testChangeDateStay() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/changeDate/{stayId}", TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
@@ -254,7 +310,13 @@ class StayControllerTests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/changeDate/{stayId}", 13)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
-	@WithMockUser(value = "falsePepito")
+	@WithMockUser(value = "vet1")
+	@Test
+	void testChangeDateStayNegativeUnexistingStay() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/stays/changeDate/{stayId}", 99)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "falseVet")
 	@Test
 	void testChangeDateStayNotAuthorizedAsVet() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/changeDate/{stayId}", TEST_STAY_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
@@ -263,16 +325,37 @@ class StayControllerTests {
 	//updateStay (actualizar parametros (startDate, finishDate y description) y comprobar que se ha guardado bien)
 	//startDate tiene que estar en futuro
 	//diferencia entre startdate y finishDate minimo de un dia, maximo siete
-	@WithMockUser(value = "pepito")
+	@WithMockUser(value = "vet1")
 	@Test
-	void testStaySuccesfull() throws Exception {
+	void testUpdateStaySuccesfull() throws Exception {
 		mockMvc
 			.perform(
 				MockMvcRequestBuilders.post("/stays/save/{stayId}", StayControllerTests.TEST_STAY_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("description", "Description").param("startDate", "2020/06/09").param("finishDate", "2020/06/10"))
 			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("stays/list"));
 	}
 
-	@WithMockUser(value = "pepito")
+	@WithMockUser(value = "vet1")
+	@Test
+	void testUpdateStayNegativeUnexistingStay() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.post("/stays/save/{stayId}", TEST_STAY_99_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("description", "Description").param("startDate", "2020/06/09").param("finishDate", "2020/06/10"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "falseVet2")
+	@Test
+	void testUpdateStayNegativeVetNotInSystem() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.post("/stays/save/{stayId}", TEST_STAY_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("description", "Description").param("startDate", "2020/06/09").param("finishDate", "2020/06/10"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "falseVet")
+	@Test
+	void testUpdateStayNegativeNotAuthorizedAsVet() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.post("/stays/save/{stayId}", TEST_STAY_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("description", "Description").param("startDate", "2020/06/09").param("finishDate", "2020/06/10"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "vet1")
 	@Test
 	void testSuccesfullStayNegativeNoLongerThan7Days() throws Exception {
 		mockMvc
@@ -281,17 +364,16 @@ class StayControllerTests {
 			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "finishDate", "finishDateMinimumOneWeek")).andExpect(MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
-	//TODO: No entiendo por que da error
-	@WithMockUser(value = "pepito")
+	@WithMockUser(value = "vet1")
 	@Test
 	void testSuccesfullStayNegativeDateNotNull() throws Exception {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/stays/save/{stayId}", StayControllerTests.TEST_STAY_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("id", "").param("description", "Description").param("startDate", "")
 				.param("finishDate", "2020/05/22").param("pet.id", String.valueOf(TEST_PET_ID + 1)).param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
-			/* .andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "startDate", "startDateNotNull")) */.andExpect(MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
+			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrorCode("stay", "startDate", "NotNull")).andExpect(MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
-	@WithMockUser(value = "pepito")
+	@WithMockUser(value = "vet1")
 	@Test
 	void testSuccesfullStayNegativeFinishDateBeforeStart() throws Exception {
 		mockMvc
@@ -323,6 +405,15 @@ class StayControllerTests {
 			.perform(MockMvcRequestBuilders.post("/stays/save").with(SecurityMockMvcRequestPostProcessors.csrf()).param("id", "").param("description", "Description").param("startDate", "2020/05/22").param("finishDate", "2020/05/29")
 				.param("pet.id", String.valueOf(TEST_PET_ID + 1)).param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
 			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())/* .andExpect(MockMvcResultMatchers.model().attribute("message", "Stay succesfully updated")) */.andExpect(MockMvcResultMatchers.view().name("redirect:/stays/listByOwner"));
+	}
+
+	@WithMockUser(value = "falseOwner")
+	@Test
+	void testNewStayNegativeNotAuthorized() throws Exception {
+		mockMvc
+			.perform(MockMvcRequestBuilders.post("/stays/save").with(SecurityMockMvcRequestPostProcessors.csrf()).param("id", "").param("description", "Description").param("startDate", "2020/05/22").param("finishDate", "2020/05/29")
+				.param("pet.id", String.valueOf(TEST_PET_ID + 1)).param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())/* .andExpect(MockMvcResultMatchers.model().attribute("message", "Stay succesfully updated")) */.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "owner")
@@ -379,7 +470,7 @@ class StayControllerTests {
 			 */.andExpect(MockMvcResultMatchers.view().name("stays/listByOwner"));
 	}
 
-	@WithMockUser(value = "provider")
+	@WithMockUser(value = "otherUser")
 	@Test
 	void ListAllPendingByOwnerNegativeNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/listByOwner")).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));

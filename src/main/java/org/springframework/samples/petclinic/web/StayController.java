@@ -51,8 +51,7 @@ public class StayController {
 
 
 	@Autowired
-	public StayController(StayService stayService, VetService vetService, OwnerService ownerService,
-		AuthoritiesService authoritiesService) {
+	public StayController(StayService stayService, VetService vetService, OwnerService ownerService, AuthoritiesService authoritiesService) {
 		this.stayService = stayService;
 		this.vetService = vetService;
 		this.ownerService = ownerService;
@@ -152,8 +151,7 @@ public class StayController {
 
 	// Only vet
 	@PostMapping(path = "/save/{stayId}")
-	public String updateStay(@PathVariable("stayId") int stayId, @Valid Stay entity, BindingResult result,
-		ModelMap model) {
+	public String updateStay(@PathVariable("stayId") int stayId, @Valid Stay entity, BindingResult result, ModelMap model) {
 		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (vet == null)
 			return REDIRECT_OUPS;
@@ -231,8 +229,7 @@ public class StayController {
 		if (vet == null)
 			return REDIRECT_OUPS;
 
-		Collection<Stay> stays = status ? stayService.findAllAcceptedByVet(vet.getId())
-			: stayService.findAllPendingByVet(vet.getId());
+		Collection<Stay> stays = status ? stayService.findAllAcceptedByVet(vet.getId()) : stayService.findAllPendingByVet(vet.getId());
 
 		model.addAttribute("stays", stays);
 		model.addAttribute("accepted", status);
@@ -253,11 +250,9 @@ public class StayController {
 		if (finishDate != null)
 			if (startDate != null) {
 				if (finishDate.isAfter(startDate.plusDays(7L)))
-					result.rejectValue("finishDate", "finishDateMinimumOneWeek",
-						"Stays cannot last longer than one week");
+					result.rejectValue("finishDate", "finishDateMinimumOneWeek", "Stays cannot last longer than one week");
 				if (finishDate.isBefore(startDate.plusDays(1L)))
-					result.rejectValue("finishDate", "finishDateAfterStartDate",
-						"The finish date must be after the start date");
+					result.rejectValue("finishDate", "finishDateAfterStartDate", "The finish date must be after the start date");
 			}
 
 		return result;

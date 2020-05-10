@@ -1,3 +1,4 @@
+
 /**
  * DP2 - Grupo 8
  * LAB F1.33
@@ -52,8 +53,7 @@ public class VisitController {
 
 
 	@Autowired
-	public VisitController(final VisitService visitService, final VetService vetService,
-		final OwnerService ownerService, final AuthoritiesService authoritiesService) {
+	public VisitController(final VisitService visitService, final VetService vetService, final OwnerService ownerService, final AuthoritiesService authoritiesService) {
 		this.visitService = visitService;
 		this.vetService = vetService;
 		this.ownerService = ownerService;
@@ -153,8 +153,7 @@ public class VisitController {
 	}
 
 	@PostMapping(path = "/save/{visitId}")
-	public String updateVisit(@PathVariable("visitId") int visitId, @Valid Visit entity, BindingResult result,
-		ModelMap modelMap) {
+	public String updateVisit(@PathVariable("visitId") int visitId, @Valid Visit entity, BindingResult result, ModelMap modelMap) {
 		Vet vet = vetService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (vet == null)
 			return REDIRECT_OUPS;
@@ -181,7 +180,7 @@ public class VisitController {
 		visitService.saveEntity(visit.get());
 		modelMap.addAttribute("messageSuccesful", "Visit succesfully updated");
 		modelMap.remove("visit", entity);
-		modelMap.addAttribute("message", "Visit succesfully updated");
+		modelMap.addAttribute("message", "visit succesfully updated");
 		return createModelVisitsList(modelMap, true, "Visit succesfully updated");
 	}
 
@@ -204,7 +203,7 @@ public class VisitController {
 		}
 
 		visitService.saveEntity(entity);
-		model.addAttribute("message", "Visit succesfully created");
+		model.addAttribute("message", "Visit succesfully updated");
 		return REDIRECT_VISIT_LIST_BY_OWNER;
 	}
 
@@ -228,8 +227,7 @@ public class VisitController {
 		if (vet == null)
 			return REDIRECT_OUPS;
 
-		Collection<Visit> visits = status ? visitService.findAllAcceptedByVetId(vet.getId())
-			: visitService.findAllPendingByVetId(vet.getId());
+		Collection<Visit> visits = status ? visitService.findAllAcceptedByVetId(vet.getId()) : visitService.findAllPendingByVetId(vet.getId());
 
 		model.addAttribute("visits", visits);
 		model.addAttribute("accepted", status);
@@ -238,8 +236,7 @@ public class VisitController {
 		return "visits/list";
 	}
 
-	private BindingResult checkDate(LocalDateTime newDateTime, LocalDateTime oldDateTime, int clinicId,
-		BindingResult result) {
+	private BindingResult checkDate(LocalDateTime newDateTime, LocalDateTime oldDateTime, int clinicId, BindingResult result) {
 		if (newDateTime != null)
 			if (newDateTime.isBefore(LocalDateTime.now().plusDays(2L)))
 				result.rejectValue("dateTime", "dateInFuture", "Minimum 2 days after today");
@@ -257,4 +254,4 @@ public class VisitController {
 		return result;
 	}
 
-}
+}>>>>>>>develop-jose-spring3
