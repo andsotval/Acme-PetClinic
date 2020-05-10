@@ -254,4 +254,4 @@ public class VisitController {
 		return result;
 	}
 
-}>>>>>>>develop-jose-spring3
+}
