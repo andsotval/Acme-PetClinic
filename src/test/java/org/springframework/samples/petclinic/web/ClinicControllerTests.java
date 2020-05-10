@@ -306,14 +306,14 @@ public class ClinicControllerTests {
 
 	@WithMockUser(value = "Falseowner")
 	@Test
-	void testSubscribeToClinicAsOwnerNegativeNotAuthorized() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/subscribeToClinic/{clinicId}", TEST_NOT_EXISTING_CLINIC_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	void testSubscribeToClinicAsNotExistingOwnerNegative() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/subscribeToClinic/{clinicId}", TEST_CLINIC_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "joselito")
 	@Test
 	void testSubscribeToClinicAsOwnerNegativeOwnerAlreadyInClinic() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/subscribeToClinic/{clinicId}", TEST_NOT_EXISTING_CLINIC_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/subscribeToClinic/{clinicId}", TEST_CLINIC_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 }
