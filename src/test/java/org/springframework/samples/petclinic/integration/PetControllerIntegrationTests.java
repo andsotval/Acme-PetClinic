@@ -298,7 +298,7 @@ public class PetControllerIntegrationTests {
 		"owner"
 	})
 	@Test
-	public void testDeletePetNotPresent() throws Exception {
+	public void TestDeletePetNotPresent() throws Exception {
 		ModelMap model = new ModelMap();
 		String view = petController.deletePet(TEST_PET_ID_WRONG, model);
 
@@ -309,7 +309,7 @@ public class PetControllerIntegrationTests {
 		"provider"
 	})
 	@Test
-	public void testDeletePetAsRoleNotAuthorizated() throws Exception {
+	public void TestDeletePetAsRoleNotAuthorizated() throws Exception {
 		ModelMap model = new ModelMap();
 		String view = petController.deletePet(TEST_PET_ID, model);
 
