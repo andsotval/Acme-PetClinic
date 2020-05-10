@@ -58,8 +58,11 @@ public class OrderControllerIntegrationTests {
 
 
 	@SuppressWarnings("unchecked")
+	@WithMockUser(username = "manager1", authorities = {
+		"manager"
+	})
 	@Test
-	public void TestInitCreationForm() {
+	public void TestInitCreationFormPositive() {
 		ModelMap model = new ModelMap();
 		String view = orderController.initCreationForm(TEST_PROVIDER_ID, model);
 
@@ -74,6 +77,39 @@ public class OrderControllerIntegrationTests {
 
 		assertNotNull(model.get("notProductsOrder"));
 		assertEquals(model.get("notProductsOrder"), "");
+	}
+
+	@WithMockUser(username = "manager99", authorities = {
+		"manager"
+	})
+	@Test
+	public void TestInitCreationFormAsManagerNotExisting() {
+		ModelMap model = new ModelMap();
+		String view = orderController.initCreationForm(TEST_PROVIDER_ID, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "manager2", authorities = {
+		"manager"
+	})
+	@Test
+	public void TestInitCreationFormAsManagerNotAuthorized() {
+		ModelMap model = new ModelMap();
+		String view = orderController.initCreationForm(TEST_PROVIDER_ID, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "manager1", authorities = {
+		"manager"
+	})
+	@Test
+	public void TestInitCreationFormAsProviderNotExisting() {
+		ModelMap model = new ModelMap();
+		String view = orderController.initCreationForm(99, model);
+
+		assertEquals(view, "redirect:/oups");
 	}
 
 	@WithMockUser(username = "manager1", authorities = {
@@ -103,33 +139,59 @@ public class OrderControllerIntegrationTests {
 			assertTrue(po.getAmount().equals(3) || po.getAmount().equals(5));
 		});
 
-		assertEquals(view, "redirect:/orders/list");
+		assertEquals(view, "/orders/orderList");
 
 	}
 
-	@SuppressWarnings("unchecked")
+	@WithMockUser(username = "manager2", authorities = {
+		"manager"
+	})
+	@Test
+	public void TestProcessCreationFormAsManagerNotAuthorized() {
+		String[] productIds = {
+			"1", "2"
+		};
+		String[] amountNumber = {
+			"3", "5"
+		};
+		ModelMap model = new ModelMap();
+		String view = orderController.processCreationForm(TEST_PROVIDER_ID, model, productIds, amountNumber);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "manager99", authorities = {
+		"manager"
+	})
+	@Test
+	public void TestProcessCreationFormAsManagerNotExisting() {
+		String[] productIds = {
+			"1", "2"
+		};
+		String[] amountNumber = {
+			"3", "5"
+		};
+		ModelMap model = new ModelMap();
+		String view = orderController.processCreationForm(TEST_PROVIDER_ID, model, productIds, amountNumber);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
 	@WithMockUser(username = "manager1", authorities = {
 		"manager"
 	})
 	@Test
-	public void TestProcessCreationFormNegative() {
-		String[] productIds = {};
-		String[] amountNumber = {};
-
+	public void TestProcessCreationFormAsProviderNotExisting() {
+		String[] productIds = {
+			"1", "2"
+		};
+		String[] amountNumber = {
+			"3", "5"
+		};
 		ModelMap model = new ModelMap();
-		String view = orderController.processCreationForm(TEST_PROVIDER_ID, model, productIds, amountNumber);
+		String view = orderController.processCreationForm(99, model, productIds, amountNumber);
 
-		assertEquals(view, "/orders/createOrUpdateOrderForm");
-
-		Collection<Product> list = productService.findProductsAvailableByProviderId(TEST_PROVIDER_ID);
-		assertNotNull(model.get("products"));
-		assertEquals(((Collection<Product>) model.get("products")).size(), list.size());
-		((Collection<Product>) model.get("products")).forEach(product -> {
-			list.contains(product);
-		});
-
-		assertNotNull(model.get("notProductsOrder"));
-		assertEquals(model.get("notProductsOrder"), "You have not added any quantity for the products");
+		assertEquals(view, "redirect:/oups");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -166,9 +228,28 @@ public class OrderControllerIntegrationTests {
 		String view = orderController.showOrder(TEST_ORDER_ID, model);
 
 		assertEquals(view, "redirect:/oups");
+	}
 
-		assertNotNull(model.get("message"));
-		assertEquals(model.get("message"), "Se esta intentando acceder a un pedido que no pertenece al manager actual");
+	@WithMockUser(username = "manager99", authorities = {
+		"manager"
+	})
+	@Test
+	public void TestShowOrderAsManagerNotExisting() {
+		ModelMap model = new ModelMap();
+		String view = orderController.showOrder(TEST_ORDER_ID, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "manager2", authorities = {
+		"manager"
+	})
+	@Test
+	public void TestShowOrderNotPresent() {
+		ModelMap model = new ModelMap();
+		String view = orderController.showOrder(99, model);
+
+		assertEquals(view, "redirect:/oups");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -176,7 +257,7 @@ public class OrderControllerIntegrationTests {
 		"manager"
 	})
 	@Test
-	public void TestListAvailableProviders() {
+	public void TestListAvailableProvidersPositive() {
 		ModelMap model = new ModelMap();
 		String view = orderController.listAvailableProviders(model);
 
@@ -191,12 +272,23 @@ public class OrderControllerIntegrationTests {
 		});
 	}
 
+	@WithMockUser(username = "manager99", authorities = {
+		"manager"
+	})
+	@Test
+	public void TestListAvailableProvidersAsManagerNotExisting() {
+		ModelMap model = new ModelMap();
+		String view = orderController.listAvailableProviders(model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
 	@SuppressWarnings("unchecked")
 	@WithMockUser(username = "manager1", authorities = {
 		"manager"
 	})
 	@Test
-	public void TestListOrders() {
+	public void TestListOrdersPositive() {
 		ModelMap model = new ModelMap();
 		String view = orderController.listOrders(model);
 
@@ -209,6 +301,17 @@ public class OrderControllerIntegrationTests {
 		((Collection<Order>) model.get("orders")).forEach(order -> {
 			list.contains(order);
 		});
+	}
+
+	@WithMockUser(username = "manager99", authorities = {
+		"manager"
+	})
+	@Test
+	public void TestListOrdersAsManagerNotExisting() {
+		ModelMap model = new ModelMap();
+		String view = orderController.listOrders(model);
+
+		assertEquals(view, "redirect:/oups");
 	}
 
 }
