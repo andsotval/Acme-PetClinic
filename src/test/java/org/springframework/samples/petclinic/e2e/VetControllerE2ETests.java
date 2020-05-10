@@ -54,7 +54,6 @@ class VetControllerE2ETests {
 		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET_UNACCEPTED_ID)).andExpect(status().isOk()).andExpect(view().name("vets/vetsAvailable"));
 	}
 
-	//añadir un veterinario con clínica ya asignada
 	@WithMockUser(value = "manager1", authorities = {
 		"manager"
 	})
@@ -71,7 +70,6 @@ class VetControllerE2ETests {
 		mockMvc.perform(get("/vets/{vetId}", TEST_VET1_ID)).andExpect(status().isOk()).andExpect(model().attributeExists("vet")).andExpect(view().name("vets/vetDetails"));
 	}
 
-	//Acceder desde otro tipo usuario
 	@WithMockUser(value = "manager123", authorities = {
 		"manager"
 	})

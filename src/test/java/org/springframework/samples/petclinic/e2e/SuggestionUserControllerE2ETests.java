@@ -22,10 +22,6 @@ public class SuggestionUserControllerE2ETests {
 
 	private static final int	TEST_SUGGESTION_ID_1	= 1;
 
-	private static final int	TEST_SUGGESTION_ID_2	= 2;
-
-	private static final int	TEST_SUGGESTION_ID_3	= 3;
-
 	private static final int	TEST_SUGGESTION_ID_99	= 99;
 
 	@Autowired
@@ -42,12 +38,22 @@ public class SuggestionUserControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.model().attributeExists("suggestions"))
 			.andExpect(MockMvcResultMatchers.view().name("suggestion/user/list"));
 	}
+	
+	@WithMockUser(value = "owner99", authorities = {
+			"owner"
+		})
+		@Test
+		void testListOwnerNotPresent() throws Exception {
+			mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/list"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/user/list"));
+		}
 
 	@WithMockUser(value = "owner1", authorities = {
 		"owner"
 	})
 	@Test
-	void testDetailPositive() throws Exception {
+	void testDetail() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/details/{suggestionId}", TEST_SUGGESTION_ID_1))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.model().attributeExists("suggestion"))
@@ -74,12 +80,23 @@ public class SuggestionUserControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.model().attributeExists("suggestion"))
 			.andExpect(MockMvcResultMatchers.view().name("suggestion/user/createSuggestionForm"));
 	}
+	
+	@WithMockUser(value = "owner99", authorities = {
+			"owner"
+		})
+		@Test
+		void testCreateOwnerNotExisting() throws Exception {
+			mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/new"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.model().attributeDoesNotExist("suggestion"))
+				.andExpect(MockMvcResultMatchers.view().name("exception"));
+		}
 
 	@WithMockUser(value = "owner1", authorities = {
 		"owner"
 	})
 	@Test
-	void testSavePositive() throws Exception {
+	void testSave() throws Exception {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/suggestion/user/save")
 				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("name", "name1")
@@ -93,12 +110,12 @@ public class SuggestionUserControllerE2ETests {
 		"owner"
 	})
 	@Test
-	void testSaveNegative() throws Exception {
+	void testSaveNullSuggestion() throws Exception {
 		mockMvc
 			.perform(
 				MockMvcRequestBuilders.post("/suggestion/user/save").with(SecurityMockMvcRequestPostProcessors.csrf())
 					.param("name", "").param("description", "").param("created", "2020/02/26").param("isRead", "false")
-					.param("isTrash", "false").param("isAvailable", "true")/* .param("user", "true") */)
+					.param("isTrash", "false").param("isAvailable", "true"))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.model().attributeHasErrors("suggestion"))
 			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrors("suggestion", "name"))
@@ -115,6 +132,16 @@ public class SuggestionUserControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.view().name("suggestion/user/list"));
 	}
+	
+	@WithMockUser(value = "owner1", authorities = {
+			"owner"
+		})
+		@Test
+		void testDeleteNotPresent() throws Exception {
+			mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/delete/{suggestionId}", 99))
+				.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+				.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		}
 
 	@WithMockUser(value = "owner1", authorities = {
 		"owner"
@@ -125,4 +152,14 @@ public class SuggestionUserControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.view().name("suggestion/user/list"));
 	}
+	
+	@WithMockUser(value = "owner99", authorities = {
+			"owner"
+		})
+		@Test
+		void testDeleteAllOwnerNotPresent() throws Exception {
+			mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/deleteAll"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.view().name("suggestion/user/list"));
+		}
 }
