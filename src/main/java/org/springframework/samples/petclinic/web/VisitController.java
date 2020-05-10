@@ -98,6 +98,8 @@ public class VisitController {
 
 		String username = SessionUtils.obtainUserInSession().getUsername();
 		String authority = authoritiesService.findAuthorityByUsername(username);
+		if (authority == null)
+			return REDIRECT_OUPS;
 
 		if (authority.equals("veterinarian")) {
 			Vet vet = vetService.findPersonByUsername(username);

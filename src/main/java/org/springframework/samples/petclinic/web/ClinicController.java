@@ -41,7 +41,7 @@ public class ClinicController {
 
 
 	@Autowired
-	public ClinicController(final ClinicService clinicService, OwnerService ownerService, VetService vetService,
+	public ClinicController(ClinicService clinicService, OwnerService ownerService, VetService vetService,
 		VisitService visitService, StayService stayService, AuthoritiesService authoritiesService) {
 		this.clinicService = clinicService;
 		this.ownerService = ownerService;
@@ -52,9 +52,12 @@ public class ClinicController {
 	}
 
 	@GetMapping(value = "/getDetail")
-	public String getDetail(final ModelMap modelMap) {
+	public String getDetail(ModelMap modelMap) {
 		String username = SessionUtils.obtainUserInSession().getUsername();
 		String authority = authoritiesService.findAuthorityByUsername(username);
+		if (authority == null)
+			return REDIRECT_OUPS;
+
 		Clinic clinic = null;
 
 		if (authority.equals("veterinarian")) {
@@ -86,13 +89,16 @@ public class ClinicController {
 
 		}
 
+		else
+			return REDIRECT_OUPS;
+
 		modelMap.addAttribute("clinic", clinic);
 		return "/clinics/clinicDetails";
 
 	}
 
 	@GetMapping(path = "/owner")
-	public String initClinicView(final ModelMap modelMap) {
+	public String initClinicView(ModelMap modelMap) {
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (owner == null)
 			return REDIRECT_OUPS;
@@ -106,7 +112,7 @@ public class ClinicController {
 	}
 
 	@GetMapping(path = "/owner/{clinicId}")
-	public String showClinic(@PathVariable("clinicId") final Integer clinicId, final ModelMap modelMap) {
+	public String showClinic(@PathVariable("clinicId") Integer clinicId, ModelMap modelMap) {
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (owner == null)
 			return REDIRECT_OUPS;
@@ -126,7 +132,7 @@ public class ClinicController {
 	}
 
 	@GetMapping(path = "/owner/unsubscribeFromClinic")
-	public String unsubscribeOwnerFromClinic(final ModelMap modelMap) {
+	public String unsubscribeOwnerFromClinic(ModelMap modelMap) {
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (owner == null)
 			return REDIRECT_OUPS;
@@ -151,7 +157,7 @@ public class ClinicController {
 	}
 
 	@GetMapping(path = "/owner/subscribeToClinic/{clinicId}")
-	public String subscribeToClinic(@PathVariable("clinicId") final Integer clinicId, final ModelMap modelMap) {
+	public String subscribeToClinic(@PathVariable("clinicId") Integer clinicId, ModelMap modelMap) {
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (owner == null)
 			return REDIRECT_OUPS;
