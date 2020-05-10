@@ -70,7 +70,7 @@ class StayControllerE2ETests {
 		"veterinarian"
 	})
 	@Test
-	void testShowStaysAcceptNegativeUserNotInSystem() throws Exception {
+	void testShowStaysAcceptUserNotInSystem() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/stays/listAllAccepted"))
 			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
@@ -131,19 +131,14 @@ class StayControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("exception"));
 	}
 
-	//TODO: No Se valida en ningún caso que el usuario que está
-	//cambiando la fecha sea el mismo que del stay
-	//	@WithMockUser(value = "owner1", authorities = {
-	//		"owner"
-	//	})
-	//	@Test
-	//	void testChangeDateStayNegativeId() throws Exception {
-	//		mockMvc.perform(MockMvcRequestBuilders.get("/stays/changeDate/{stayId}", )).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("/stays/createOrUpdateStayForm"));
-	//	}
-
-	//updateStay (actualizar parametros (startDate, finishDate y description) y comprobar que se ha guardado bien)
-	//startDate tiene que estar en futuro
-	//diferencia entre startdate y finishDate minimo de un dia, maximo siete
+	@WithMockUser(value = "owner1", authorities = {
+		"owner"
+	})
+	@Test
+	void testChangeDateStayNotPresent() throws Exception {
+	mockMvc.perform(MockMvcRequestBuilders.get("/stays/changeDate/{stayId}",99 )).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+	
 	@WithMockUser(value = "vet1", authorities = {
 		"veterinarian"
 	})

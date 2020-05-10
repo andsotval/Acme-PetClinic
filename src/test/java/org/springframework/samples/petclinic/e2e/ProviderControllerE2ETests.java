@@ -25,11 +25,6 @@ class ProviderControllerE2ETests {
 
 	//Provider with no Manager associated
 	private static final int	TEST_PROVIDER1_ID	= 1;
-	//Provider with a Manager associated
-	private static final int	TEST_PROVIDER2_ID	= 2;
-
-	private static final int	TEST_MANAGER_ID		= 3;
-
 	@Autowired
 	private MockMvc				mockMvc;
 
@@ -43,6 +38,16 @@ class ProviderControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.view().name("providers/providersList"));
 	}
+	
+	@WithMockUser(value = "manager99", authorities = {
+			"manager"
+		})
+		@Test
+		void testListAvailableManagerNotPresent() throws Exception {
+			mockMvc.perform(MockMvcRequestBuilders.get("/providers/listAvailable"))
+				.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+				.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		}
 
 	@WithMockUser(value = "manager1", authorities = {
 		"manager"

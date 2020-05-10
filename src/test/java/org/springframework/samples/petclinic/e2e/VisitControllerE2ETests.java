@@ -39,7 +39,7 @@ public class VisitControllerE2ETests {
 
 	@WithMockUser(username = "vet1", authorities = { "veterinarian" })
 	@Test
-	void testListAllPendingNoVA() throws Exception {
+	void testListAllPending() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listAllPending"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.model().attributeExists("visits"))

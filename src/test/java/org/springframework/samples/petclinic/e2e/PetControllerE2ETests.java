@@ -43,6 +43,15 @@ public class PetControllerE2ETests {
 			.andExpect(model().attributeExists("pets"))
 			.andExpect(view().name("pets/list"));
 	}
+	@WithMockUser(value = "owner99", authorities = {
+			"owner"
+		})
+		@Test
+		void testListMyPetsOwnerNotExisting() throws Exception {
+			mockMvc.perform(get("/pets/listMyPets")).andExpect(status().is3xxRedirection()).andExpect(model().attributeDoesNotExist("types"))
+				.andExpect(model().attributeDoesNotExist("pets"))
+				.andExpect(view().name("redirect:/oups"));
+		}
 
 	@WithMockUser(value = "owner1", authorities = {
 		"owner"
