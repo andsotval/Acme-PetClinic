@@ -181,8 +181,8 @@ public class VisitController {
 		visitService.saveEntity(visit.get());
 		modelMap.addAttribute("messageSuccesful", "Visit succesfully updated");
 		modelMap.remove("visit", entity);
-		modelMap.addAttribute("message", "Stay succesfully updated");
-		return createModelVisitsList(modelMap, true, "Stay succesfully updated");
+		modelMap.addAttribute("message", "Visit succesfully updated");
+		return createModelVisitsList(modelMap, true, "Visit succesfully updated");
 	}
 
 	// Only owner
@@ -204,7 +204,7 @@ public class VisitController {
 		}
 
 		visitService.saveEntity(entity);
-		model.addAttribute("message", "Stay succesfully updated");
+		model.addAttribute("message", "Visit succesfully created");
 		return REDIRECT_VISIT_LIST_BY_OWNER;
 	}
 
