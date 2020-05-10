@@ -36,26 +36,17 @@ class PetTypeFormatterTests {
 	@BeforeEach
 	void setup() {
 		petTypeFormatter = new PetTypeFormatter(petTypeService);
-	}
-
-	@Test
-	void testPrint() {
-		PetType petType = new PetType();
-		petType.setName("Hamster");
-		String petTypeName = petTypeFormatter.print(petType, Locale.ENGLISH);
-		assertEquals("Hamster", petTypeName);
-	}
-
-	@Test
-	void shouldParse() throws ParseException {
 		Mockito.when(petTypeService.findAvailable()).thenReturn(makePetTypes());
+	}
+
+	@Test
+	void testParsePositive() throws ParseException {
 		PetType petType = petTypeFormatter.parse("Bird", Locale.ENGLISH);
 		assertEquals("Bird", petType.getName());
 	}
 
 	@Test
-	void shouldThrowParseException() throws ParseException {
-		Mockito.when(petTypeService.findAvailable()).thenReturn(makePetTypes());
+	void TestThrowParseException() throws ParseException {
 		Assertions.assertThrows(ParseException.class, () -> {
 			petTypeFormatter.parse("Fish", Locale.ENGLISH);
 		});

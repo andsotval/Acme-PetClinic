@@ -124,7 +124,7 @@ public class PetTypeControllerTests {
 
 	@WithMockUser(value = "spring")
 	@Test
-	void testProcessUpdateFormValueNotPresent() throws Exception {
+	void testProcessUpdateFormValuePetTypeNotPresent() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.post("/pettype/edit/{pettypeId}", TEST_PETTYPE_ID_99).with(SecurityMockMvcRequestPostProcessors.csrf()).param("name", "name1").param("available", "true"))
 			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name(VIEW_REDIRECT_OUPS));
 	}
