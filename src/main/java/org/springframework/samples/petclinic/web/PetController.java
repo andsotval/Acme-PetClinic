@@ -142,12 +142,19 @@ public class PetController {
 
 	@GetMapping(value = "/newVisit/{petId}")
 	public String newVisit(@PathVariable("petId") int petId, ModelMap model) {
+		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		if (owner == null)
+			return REDIRECT_OUPS;
+
 		Optional<Pet> pet = petService.findEntityById(petId);
 		if (!pet.isPresent())
 			return REDIRECT_OUPS;
 
+		if (!owner.getId().equals(pet.get().getOwner().getId()))
+			return REDIRECT_OUPS;
+
 		Visit visit = new Visit();
-		Clinic clinic = pet.get().getOwner().getClinic();
+		Clinic clinic = owner.getClinic();
 		if (clinic != null) {
 			visit.setClinic(clinic);
 			model.addAttribute("clinicId", clinic.getId());
@@ -165,12 +172,19 @@ public class PetController {
 
 	@GetMapping(value = "/newStay/{petId}")
 	public String newStay(@PathVariable("petId") int petId, ModelMap model) {
+		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		if (owner == null)
+			return REDIRECT_OUPS;
+
 		Optional<Pet> pet = petService.findEntityById(petId);
 		if (!pet.isPresent())
 			return REDIRECT_OUPS;
 
+		if (!owner.getId().equals(pet.get().getOwner().getId()))
+			return REDIRECT_OUPS;
+
 		Stay stay = new Stay();
-		Clinic clinic = pet.get().getOwner().getClinic();
+		Clinic clinic = owner.getClinic();
 		if (clinic != null) {
 			stay.setClinic(clinic);
 			model.addAttribute("hasClinic", true);

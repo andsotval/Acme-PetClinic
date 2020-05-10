@@ -79,11 +79,22 @@ public class PetControllerIntegrationTests {
 		Owner owner = ownerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		Collection<Pet> list = petService.findPetsByOwnerId(owner.getId());
 		assertNotNull(model.get("pets"));
-		assertNotNull(model.get("ownerId"));
 		assertEquals(((Collection<Pet>) model.get("pets")).size(), list.size());
 		((Collection<Pet>) model.get("pets")).forEach(pet -> {
 			list.contains(pet);
 		});
+	}
+
+	@WithMockUser(username = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	@Order(1)
+	public void TestListMyPetsAsRoleNotAuthorizated() {
+		ModelMap model = new ModelMap();
+		String view = petController.listMyPets(model);
+
+		assertEquals(view, "redirect:/oups");
 	}
 
 	@WithMockUser(username = "owner1", authorities = {
@@ -97,6 +108,18 @@ public class PetControllerIntegrationTests {
 
 		assertEquals("pets/createOrUpdatePetForm", view);
 		assertNotNull(model.get("pet"));
+	}
+
+	@WithMockUser(username = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	@Order(5)
+	public void TestNewPetAsRoleNotAuthorizated() {
+		ModelMap model = new ModelMap();
+		String view = petController.newPet(model);
+
+		assertEquals(view, "redirect:/oups");
 	}
 
 	@WithMockUser(username = "owner1", authorities = {
@@ -120,7 +143,7 @@ public class PetControllerIntegrationTests {
 		BindingResult bindingResult = new MapBindingResult(Collections.emptyMap(), "");
 		String view = petController.savePet(newPet, bindingResult, model);
 
-		assertEquals(view, "redirect:/pets/listMyPets");
+		assertEquals(view, "pets/list");
 
 		List<Pet> pets = petService.findPetsByOwnerId(TEST_OWNER_ID).stream().filter(p -> p.getName().equals("newPet"))
 			.collect(Collectors.toList());
@@ -256,7 +279,7 @@ public class PetControllerIntegrationTests {
 		Optional<Pet> empty = Optional.empty();
 
 		assertEquals(empty, petService.findEntityById(TEST_PET_ID));
-		assertEquals(view, "redirect:/pets/listMyPets");
+		assertEquals(view, "pets/list");
 	}
 
 	@WithMockUser(username = "owner1", authorities = {
@@ -264,13 +287,33 @@ public class PetControllerIntegrationTests {
 	})
 	@Test
 	@Order(12)
-	public void TestDeletePetNegative() {
+	public void TestDeletePetNegativeNotAuthorizated() {
 		ModelMap model = new ModelMap();
 		String view = petController.deletePet(TEST_PET_ID_2, model);
 
-		assertEquals("No estás autorizado", model.get("nonAuthorized"));
-		assertNotNull(petService.findEntityById(TEST_PET_ID));
-		assertEquals(view, "redirect:/pets/listMyPets");
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
+	})
+	@Test
+	public void testDeletePetNotPresent() throws Exception {
+		ModelMap model = new ModelMap();
+		String view = petController.deletePet(TEST_PET_ID_WRONG, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	public void testDeletePetAsRoleNotAuthorizated() throws Exception {
+		ModelMap model = new ModelMap();
+		String view = petController.deletePet(TEST_PET_ID, model);
+
+		assertEquals(view, "redirect:/oups");
 	}
 
 	@WithMockUser(username = "owner1", authorities = {
@@ -282,12 +325,35 @@ public class PetControllerIntegrationTests {
 		ModelMap model = new ModelMap();
 		String view = petController.newVisit(TEST_PET_ID, model);
 
-		Owner owner = ownerService.findEntityById(TEST_OWNER_ID).get();
-		assertEquals(owner.getClinic().getId(), model.get("clinicId"));
+		assertEquals(model.get("hasClinic"), true);
 		assertNotNull(model.get("visit"));
 		assertNotNull(model.get("visits"));
 		assertEquals("visits/createOrUpdateVisitForm", view);
 
+	}
+
+	@WithMockUser(username = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	@Order(2)
+	public void TestNewVisitAsRoleNotAuthorizated() {
+		ModelMap model = new ModelMap();
+		String view = petController.newVisit(TEST_PET_ID, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
+	})
+	@Test
+	@Order(2)
+	public void TestNewVisitPetNotPresent() {
+		ModelMap model = new ModelMap();
+		String view = petController.newVisit(TEST_PET_ID_WRONG, model);
+
+		assertEquals(view, "redirect:/oups");
 	}
 
 	@WithMockUser(username = "owner1", authorities = {
@@ -299,12 +365,35 @@ public class PetControllerIntegrationTests {
 		ModelMap model = new ModelMap();
 		String view = petController.newStay(TEST_PET_ID, model);
 
-		Owner owner = ownerService.findEntityById(TEST_OWNER_ID).get();
-		assertEquals(owner.getClinic().getId(), model.get("clinicId"));
+		assertEquals(model.get("hasClinic"), true);
 		assertNotNull(model.get("stay"));
 		assertNotNull(model.get("stays"));
 		assertEquals("stays/createOrUpdateStayForm", view);
 
+	}
+
+	@WithMockUser(username = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	@Order(3)
+	public void TestNewStayAsRoleNotAuthorizated() {
+		ModelMap model = new ModelMap();
+		String view = petController.newStay(TEST_PET_ID, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
+	})
+	@Test
+	@Order(3)
+	public void TestNewStayPetNotPresent() {
+		ModelMap model = new ModelMap();
+		String view = petController.newStay(TEST_PET_ID_WRONG, model);
+
+		assertEquals(view, "redirect:/oups");
 	}
 
 	@WithMockUser(username = "owner1", authorities = {
@@ -312,13 +401,49 @@ public class PetControllerIntegrationTests {
 	})
 	@Test
 	@Order(4)
-	public void TestInitUpdateForm() {
+	public void TestInitUpdateFormPositive() {
 		ModelMap model = new ModelMap();
 		String view = petController.initUpdateForm(TEST_PET_ID, model);
 
 		Pet pet = petService.findEntityById(TEST_PET_ID).get();
 		assertEquals(pet.getName(), ((Pet) model.get("pet")).getName());
 		assertEquals("pets/createOrUpdatePetForm", view);
+	}
+
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
+	})
+	@Test
+	@Order(4)
+	public void TestInitUpdateFormPetNotAuthorizated() {
+		ModelMap model = new ModelMap();
+		String view = petController.initUpdateForm(TEST_PET_ID_2, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
+	})
+	@Test
+	@Order(4)
+	public void TestInitUpdateFormPetNotPresent() {
+		ModelMap model = new ModelMap();
+		String view = petController.initUpdateForm(TEST_PET_ID_WRONG, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	@Order(4)
+	public void TestInitUpdateFormAsRoleNotAuthorizated() {
+		ModelMap model = new ModelMap();
+		String view = petController.initUpdateForm(TEST_PET_ID, model);
+
+		assertEquals(view, "redirect:/oups");
 	}
 
 }
