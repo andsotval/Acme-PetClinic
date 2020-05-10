@@ -67,14 +67,14 @@ public class SuggestionUserControllerIntegrationTests {
 		((Collection<Suggestion>) model.get("suggestions")).forEach(suggestion -> {
 			list.contains(suggestion);
 		});
-
-		assertNotNull(model.get("isTrash"));
-		assertEquals(model.get("isTrash"), false);
 	}
 
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
+	})
 	@Test
 	@Order(2)
-	public void TestDetail() {
+	public void TestDetailPositive() {
 		ModelMap model = new ModelMap();
 		String view = suggestionUserController.detail(TEST_SUGGESTION_ID_1, model);
 
@@ -97,6 +97,18 @@ public class SuggestionUserControllerIntegrationTests {
 	})
 	@Test
 	@Order(3)
+	public void TestDetailNotAuthorizated() {
+		ModelMap model = new ModelMap();
+		String view = suggestionUserController.detail(2, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
+	})
+	@Test
+	@Order(4)
 	public void TestCreate() {
 		ModelMap model = new ModelMap();
 		String view = suggestionUserController.create(model);
@@ -114,7 +126,7 @@ public class SuggestionUserControllerIntegrationTests {
 		"owner"
 	})
 	@Test
-	@Order(4)
+	@Order(5)
 	public void TestSavePositive() {
 		ModelMap model = new ModelMap();
 
@@ -132,7 +144,7 @@ public class SuggestionUserControllerIntegrationTests {
 		BindingResult bindingResult = new MapBindingResult(Collections.emptyMap(), "");
 		String view = suggestionUserController.save(suggestion, bindingResult, model);
 
-		assertEquals(view, "redirect:/suggestion/user/list");
+		assertEquals(view, "suggestion/user/list");
 
 		List<Suggestion> suggestions = suggestionService.findAllEntitiesAvailableByUsername("owner1").stream()
 			.filter(s -> s.getName().equals("Title Suggestion Integration Test 1")).collect(Collectors.toList());
@@ -144,8 +156,8 @@ public class SuggestionUserControllerIntegrationTests {
 		"owner"
 	})
 	@Test
-	@Order(5)
-	public void TestSaveNegative() {
+	@Order(6)
+	public void TestSaveNegativeNameAndDescriptionNull() {
 		ModelMap model = new ModelMap();
 
 		Owner owner = ownerService.findByOwnerByUsername(SessionUtils.obtainUserInSession().getUsername());
@@ -173,14 +185,17 @@ public class SuggestionUserControllerIntegrationTests {
 		assertEquals(((Suggestion) model.get("suggestion")).getUser().getUsername(), "owner1");
 	}
 
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
+	})
 	@Test
-	@Order(6)
-	public void TestDelete() {
+	@Order(7)
+	public void TestDeletePositive() {
 		ModelMap model = new ModelMap();
 
 		String view = suggestionUserController.delete(TEST_SUGGESTION_ID_1, model);
 
-		assertEquals(view, "redirect:/suggestion/user/list");
+		assertEquals(view, "suggestion/user/list");
 
 		Suggestion suggestion = suggestionService.findEntityById(TEST_SUGGESTION_ID_1).get();
 		assertEquals(suggestion.getIsAvailable(), false);
@@ -190,13 +205,26 @@ public class SuggestionUserControllerIntegrationTests {
 		"owner"
 	})
 	@Test
-	@Order(7)
+	@Order(8)
+	public void TestDeleteNotAuthorizated() {
+		ModelMap model = new ModelMap();
+
+		String view = suggestionUserController.delete(2, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
+	})
+	@Test
+	@Order(9)
 	public void TestDeleteAll() {
 		ModelMap model = new ModelMap();
 
 		String view = suggestionUserController.deleteAll(model);
 
-		assertEquals(view, "redirect:/suggestion/user/list");
+		assertEquals(view, "suggestion/user/list");
 
 		Collection<Suggestion> suggestions = suggestionService.findAllEntitiesAvailableByUsername("owner1");
 		suggestions.forEach(suggestion -> {

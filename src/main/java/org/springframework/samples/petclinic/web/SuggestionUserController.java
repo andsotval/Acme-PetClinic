@@ -120,6 +120,9 @@ public class SuggestionUserController {
 		if (!suggestion.isPresent())
 			return REDIRECT_OUPS;
 
+		if (!suggestion.get().getUser().getUsername().equals(SessionUtils.obtainUserInSession().getUsername()))
+			return REDIRECT_OUPS;
+
 		suggestion.get().setIsAvailable(false);
 		suggestionService.saveEntity(suggestion.get());
 
