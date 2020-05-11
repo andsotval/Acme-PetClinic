@@ -29,6 +29,8 @@ public class VisitControllerE2ETests {
 	private int TEST_PENDING_VISIT_ID_NOT_AUTHORIZED = 8;
 	
 	private int TEST_VISIT_ID_NOT_FOUND = 90;
+
+	private int	TEST_ACCEPTED_VISIT_ID	= 1;
 	
 	private int TEST_CLINIC_ID = 1;
 	
@@ -77,11 +79,25 @@ public class VisitControllerE2ETests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", TEST_PENDING_VISIT_ID))
 				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listAllAccepted"));
 	}
+	
+	@WithMockUser(username = "owner1", authorities = { "owner" })
+	@Test
+	void testAcceptVisitAsOwnerNotAuthorized() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED))
+				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+	}
 
 	@WithMockUser(username = "vet1", authorities = { "veterinarian" })
 	@Test
 	void testAcceptVisitNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED))
+				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+	}
+	
+	@WithMockUser(username = "vet1", authorities = { "veterinarian" })
+	@Test
+	void testAcceptVisitNotFound() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", TEST_VISIT_ID_NOT_FOUND))
 				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
@@ -128,6 +144,20 @@ public class VisitControllerE2ETests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/changeDate/{visitId}", TEST_VISIT_ID_NOT_FOUND))
 				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
+	
+	@WithMockUser(username = "vet4", authorities = { "veterinarian" })
+	@Test
+	void testInitUpdateVisitAsVetNotAuthorized() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/changeDate/{visitId}", TEST_ACCEPTED_VISIT_ID))
+				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+	}
+	
+	@WithMockUser(username = "owner1", authorities = { "owner" })
+	@Test
+	void testInitUpdateVisitAsOwnerNotAuthorized() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/changeDate/{visitId}", TEST_ACCEPTED_VISIT_ID))
+				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+	}
 
 	@WithMockUser(username = "vet4", authorities = { "veterinarian" })
 	@Test
@@ -147,6 +177,33 @@ public class VisitControllerE2ETests {
 				.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(model().attributeExists("visit"))
 				.andExpect(model().attributeHasFieldErrorCode("visit", "dateTime", "dateInFuture"))
 				.andExpect(MockMvcResultMatchers.view().name("visits/createOrUpdateVisitForm"));
+	}
+	
+	@WithMockUser(username = "vet4", authorities = { "veterinarian" })
+	@Test
+	void testUpdateVisitAsVetNotAuthorized() throws Exception {
+		mockMvc.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID).with(csrf())
+				.param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00"))
+				.andExpect(status().isOk()).andExpect(view().name("visits/list"));
+				
+	}
+	
+	@WithMockUser(username = "owner1", authorities = { "owner" })
+	@Test
+	void testUpdateVisitAsOwnerNotAuthorized() throws Exception {
+		mockMvc.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID).with(csrf())
+				.param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00"))
+				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+				
+	}
+	
+	@WithMockUser(username = "vet4", authorities = { "veterinarian" })
+	@Test
+	void testUpdateVisitNotFound() throws Exception {
+		mockMvc.perform(post("/visits/save/{visitId}", TEST_VISIT_ID_NOT_FOUND).with(csrf())
+				.param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00"))
+				.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+				.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(username = "owner1", authorities = { "owner" })
@@ -168,6 +225,15 @@ public class VisitControllerE2ETests {
 				.andExpect(model().attributeHasFieldErrorCode("visit", "dateTime", "dateInFuture"))
 				.andExpect(MockMvcResultMatchers.view().name("visits/createOrUpdateVisitForm"));
 	}
+	
+	@WithMockUser(username = "vet4", authorities = { "veterinarian" })
+	@Test
+	void testCreateVisitAsVetNotAuthorized() throws Exception {
+		mockMvc.perform(post("/visits/save").with(csrf()).param("description", "description of the visit")
+				.param("dateTime", "2020/08/11 08:30:00").param("clinic.id", String.valueOf(TEST_CLINIC_ID))
+				.param("pet.id", String.valueOf(TEST_PET_ID))).andExpect(status().is3xxRedirection())
+				.andExpect(view().name("redirect:/oups"));
+	}
 
 	@WithMockUser(username = "owner1", authorities = { "owner" })
 	@Test
@@ -178,11 +244,13 @@ public class VisitControllerE2ETests {
 				.andExpect(MockMvcResultMatchers.model().attributeExists("visitsAccepted"))
 				.andExpect(MockMvcResultMatchers.view().name("visits/listByOwner"));
 	}
-
+	
 	@WithMockUser(username = "vet4", authorities = { "veterinarian" })
 	@Test
-	void testListAllPendingAndAcceptedByOwnerWithVet() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listByOwner")).andExpect(status().is3xxRedirection())
-				.andExpect(view().name("redirect:/oups"));
+	void testListAllPendingAndAcceptedByOwnerNotAuthorized() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listByOwner"))
+		.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
+
+	
 }

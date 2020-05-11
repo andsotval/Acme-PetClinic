@@ -38,18 +38,6 @@ public class SuggestionAdminControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.model().attribute("isTrash", false))
 			.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
 	}
-	
-	@WithMockUser(value = "admin1", authorities = {
-			"admin"
-		})
-		@Test
-		void testListAdminNotPresent() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/list"))
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.model().attributeExists("suggestions"))
-				.andExpect(MockMvcResultMatchers.model().attribute("isTrash", false))
-				.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
-		}
 
 	@WithMockUser(value = "admin", authorities = {
 		"admin"
@@ -62,18 +50,6 @@ public class SuggestionAdminControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.model().attribute("isTrash", true))
 			.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
 	}
-	
-	@WithMockUser(value = "admin1", authorities = {
-			"admin"
-		})
-		@Test
-		void testListTrashAdminNotPresent() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/listTrash"))
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.model().attributeExists("suggestions"))
-				.andExpect(MockMvcResultMatchers.model().attribute("isTrash", true))
-				.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
-		}
 
 	@WithMockUser(value = "admin", authorities = {
 		"admin"

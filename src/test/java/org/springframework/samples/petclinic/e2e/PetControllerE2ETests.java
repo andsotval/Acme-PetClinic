@@ -150,7 +150,7 @@ public class PetControllerE2ETests {
 	})
 	@Test
 	void testNewVisit() throws Exception {
-		mockMvc.perform(get("/pets/newVisit/{petId}", TEST_PET_ID_2)).andExpect(status().isOk())
+		mockMvc.perform(get("/pets/newVisit/{petId}", TEST_PET_ID)).andExpect(status().isOk())
 			.andExpect(model().attributeExists("clinicId")).andExpect(model().attributeExists("visit"))
 			.andExpect(model().attributeExists("visits")).andExpect(view().name("visits/createOrUpdateVisitForm"));
 	}
