@@ -40,35 +40,33 @@ public class PetControllerE2ETests {
 	@Test
 	void testListMyPetsPositive() throws Exception {
 		mockMvc.perform(get("/pets/listMyPets")).andExpect(status().isOk()).andExpect(model().attributeExists("types"))
-			.andExpect(model().attributeExists("pets"))
-			.andExpect(view().name("pets/list"));
+			.andExpect(model().attributeExists("pets")).andExpect(view().name("pets/list"));
 	}
-	
+
 	@WithMockUser(value = "provider1", authorities = {
-			"provider"
-		})
-		@Test
-		void TestListMyPetsAsRoleNotAuthorizated() throws Exception {
-			mockMvc.perform(get("/pets/listMyPets")).andExpect(status().isForbidden());
-		}
+		"provider"
+	})
+	@Test
+	void TestListMyPetsAsRoleNotAuthorizated() throws Exception {
+		mockMvc.perform(get("/pets/listMyPets")).andExpect(status().isForbidden());
+	}
 
 	@WithMockUser(value = "owner1", authorities = {
-			"owner"
-		})
-		@Test
-		void testNewPetPositive() throws Exception {
-			mockMvc.perform(get("/pets/new")).andExpect(status().isOk())
-				.andExpect(model().attributeExists("pet")).andExpect(model().attributeExists("types"))
-				.andExpect(view().name("pets/createOrUpdatePetForm"));
-		}
-	
+		"owner"
+	})
+	@Test
+	void testNewPetPositive() throws Exception {
+		mockMvc.perform(get("/pets/new")).andExpect(status().isOk()).andExpect(model().attributeExists("pet"))
+			.andExpect(model().attributeExists("types")).andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+
 	@WithMockUser(value = "provider1", authorities = {
-			"provider"
-		})
-		@Test
-		void testNewPetAsRoleNotAuthorizated() throws Exception {
-			mockMvc.perform(get("/pets/new")).andExpect(status().isForbidden());
-		}
+		"provider"
+	})
+	@Test
+	void testNewPetAsRoleNotAuthorizated() throws Exception {
+		mockMvc.perform(get("/pets/new")).andExpect(status().isForbidden());
+	}
 
 	@WithMockUser(value = "owner1", authorities = {
 		"owner"
@@ -95,19 +93,19 @@ public class PetControllerE2ETests {
 			.andExpect(view().name("pets/createOrUpdatePetForm"));
 
 	}
-	
-	@WithMockUser(value = "owner1", authorities = {
-			"owner"
-		})
-		@Test
-		void TestSavePetNegativeBadName() throws Exception {
-			mockMvc
-				.perform(post("/pets/save").with(csrf()).param("name", "wn").param("birthDate", "2019/04/11")
-					.param("type", "dog").param("owner.id", String.valueOf(TEST_OWNER_ID)))
-				.andExpect(status().isOk()).andExpect(model().attributeHasFieldErrors("pet", "name"))
-				.andExpect(view().name("pets/createOrUpdatePetForm"));
 
-		}
+	@WithMockUser(value = "owner1", authorities = {
+		"owner"
+	})
+	@Test
+	void TestSavePetNegativeBadName() throws Exception {
+		mockMvc
+			.perform(post("/pets/save").with(csrf()).param("name", "wn").param("birthDate", "2019/04/11")
+				.param("type", "dog").param("owner.id", String.valueOf(TEST_OWNER_ID)))
+			.andExpect(status().isOk()).andExpect(model().attributeHasFieldErrors("pet", "name"))
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+
+	}
 
 	@WithMockUser(value = "owner1", authorities = {
 		"owner"
@@ -133,39 +131,41 @@ public class PetControllerE2ETests {
 			.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 
 	}
-	
+
 	@WithMockUser(value = "owner1", authorities = {
-			"owner"
-		})
+		"owner"
+	})
 	@Test
 	void testDeletePetPositive() throws Exception {
-		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID)).andExpect(status().isOk()).andExpect(view().name("pets/list"));
-	}
-	
-	@WithMockUser(value = "owner1", authorities = {
-			"owner"
-		})
-	@Test
-	void TestDeletePetNegativeNotAuthorizated() throws Exception {
-		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID_2)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID)).andExpect(status().isOk())
+			.andExpect(view().name("pets/list"));
 	}
 
 	@WithMockUser(value = "owner1", authorities = {
-			"owner"
-		})
+		"owner"
+	})
+	@Test
+	void TestDeletePetNegativeNotAuthorizated() throws Exception {
+		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID_2)).andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "owner1", authorities = {
+		"owner"
+	})
 	@Test
 	void testDeletePetNotPresent() throws Exception {
-		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID_WRONG)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID_WRONG)).andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "provider1", authorities = {
-			"provider"
-		})
+		"provider"
+	})
 	@Test
 	void TestDeletePetAsRoleNotAuthorizated() throws Exception {
 		mockMvc.perform(get("/pets/delete/{petId}", TEST_PET_ID)).andExpect(status().isForbidden());
 	}
-
 
 	@WithMockUser(value = "owner1", authorities = {
 		"owner"
@@ -176,14 +176,14 @@ public class PetControllerE2ETests {
 			.andExpect(model().attributeExists("clinicId")).andExpect(model().attributeExists("visit"))
 			.andExpect(model().attributeExists("visits")).andExpect(view().name("visits/createOrUpdateVisitForm"));
 	}
-	
+
 	@WithMockUser(value = "provider1", authorities = {
-			"provider"
-		})
-		@Test
-		void TestNewVisitAsRoleNotAuthorizated() throws Exception {
-			mockMvc.perform(get("/pets/newVisit/{petId}", TEST_PET_ID)).andExpect(status().isForbidden());
-		}
+		"provider"
+	})
+	@Test
+	void TestNewVisitAsRoleNotAuthorizated() throws Exception {
+		mockMvc.perform(get("/pets/newVisit/{petId}", TEST_PET_ID)).andExpect(status().isForbidden());
+	}
 
 	@WithMockUser(value = "owner1", authorities = {
 		"owner"
@@ -201,17 +201,17 @@ public class PetControllerE2ETests {
 	@Test
 	void testNewStayPositive() throws Exception {
 		mockMvc.perform(get("/pets/newStay/{petId}", TEST_PET_ID)).andExpect(status().isOk())
-			.andExpect(model().attributeExists("stay"))
-			.andExpect(model().attributeExists("stays")).andExpect(view().name("stays/createOrUpdateStayForm"));
+			.andExpect(model().attributeExists("stay")).andExpect(model().attributeExists("stays"))
+			.andExpect(view().name("stays/createOrUpdateStayForm"));
 	}
-	
+
 	@WithMockUser(value = "provider1", authorities = {
-			"provider"
-		})
-		@Test
-		void TestNewStayAsRoleNotAuthorizated() throws Exception {
-			mockMvc.perform(get("/pets/newStay/{petId}", TEST_PET_ID_WRONG)).andExpect(status().isForbidden());
-		}
+		"provider"
+	})
+	@Test
+	void TestNewStayAsRoleNotAuthorizated() throws Exception {
+		mockMvc.perform(get("/pets/newStay/{petId}", TEST_PET_ID_WRONG)).andExpect(status().isForbidden());
+	}
 
 	@WithMockUser(value = "owner1", authorities = {
 		"owner"
@@ -249,9 +249,9 @@ public class PetControllerE2ETests {
 		mockMvc.perform(get("/pets/{petId}/edit", TEST_PET_ID_WRONG)).andExpect(status().is3xxRedirection())
 			.andExpect(model().attributeDoesNotExist("pet")).andExpect(view().name("redirect:/oups"));
 	}
-	
+
 	@WithMockUser(value = "provider1", authorities = {
-			"provider"
+		"provider"
 	})
 	@Test
 	void TestInitUpdateFormAsRoleNotAuthorizated() throws Exception {

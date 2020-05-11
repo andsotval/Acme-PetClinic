@@ -20,13 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class OrderControllerE2ETests {
 
-	private static final int	TEST_PROVIDER_ID	= 1;
-	
+	private static final int	TEST_PROVIDER_ID				= 1;
+
 	private static final int	TEST_PROVIDER_2_ID				= 2;
 
 	private static final int	TEST_PROVIDER_NOT_EXISTING_ID	= 99;
 
-	private static final int	TEST_ORDER_ID		= 1;
+	private static final int	TEST_ORDER_ID					= 1;
 
 	@Autowired
 	private MockMvc				mockMvc;
@@ -42,39 +42,44 @@ public class OrderControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.model().attributeExists("products"))
 			.andExpect(MockMvcResultMatchers.view().name("/orders/createOrUpdateOrderForm"));
 	}
-	
+
 	@WithMockUser(value = "manager99", authorities = {
-			"manager"
-		})
-		@Test
-		void TestInitCreationFormAsManagerNotExisting() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/orders/new/{providerId}", TEST_PROVIDER_ID))
-				.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-				.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
-		}
-	
-	@WithMockUser(value = "manager1", authorities = {
-			"manager"
-		})
+		"manager"
+	})
 	@Test
-	void testInitCreationFormNegativeNotAuthorized() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/new/{providerId}", TEST_PROVIDER_2_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	void TestInitCreationFormAsManagerNotExisting() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/new/{providerId}", TEST_PROVIDER_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "manager1", authorities = {
-			"manager"
-		})
+		"manager"
+	})
+	@Test
+	void testInitCreationFormNegativeNotAuthorized() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/new/{providerId}", TEST_PROVIDER_2_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "manager1", authorities = {
+		"manager"
+	})
 	@Test
 	void TestInitCreationFormAsProviderNotExisting() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/new/{providerId}", TEST_PROVIDER_NOT_EXISTING_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/new/{providerId}", TEST_PROVIDER_NOT_EXISTING_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
-	
+
 	@WithMockUser(value = "owner1", authorities = {
-			"owner"
-		})
+		"owner"
+	})
 	@Test
 	void TestInitCreationFormAsRoleNotAuthorizated() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/new/{providerId}", TEST_PROVIDER_NOT_EXISTING_ID)).andExpect(MockMvcResultMatchers.status().isForbidden());
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/new/{providerId}", TEST_PROVIDER_NOT_EXISTING_ID))
+			.andExpect(MockMvcResultMatchers.status().isForbidden());
 	}
 
 	@WithMockUser(value = "manager1", authorities = {
@@ -89,47 +94,42 @@ public class OrderControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.view().name("/orders/orderList"));
 	}
-	
+
 	@WithMockUser(value = "manager2", authorities = {
-			"manager"
-		})
+		"manager"
+	})
 	@Test
 	void TestProcessCreationFormAsManagerNotAuthorized() throws Exception {
-		mockMvc
-			.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_ID))
-			.andExpect(MockMvcResultMatchers.status().isForbidden());
-	}
-	
-	@WithMockUser(value = "manager99", authorities = {
-			"manager"
-		})
-	@Test
-	void TestProcessCreationFormAsManagerNotExisting() throws Exception {
-		mockMvc
-			.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_ID))
-			.andExpect(MockMvcResultMatchers.status().isForbidden());
-	}
-	
-	@WithMockUser(value = "manager99", authorities = {
-			"manager"
-		})
-	@Test
-	void TestProcessCreationFormAsProviderNotExisting() throws Exception {
-		mockMvc
-			.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", 99))
-			.andExpect(MockMvcResultMatchers.status().isForbidden());
-	}
-	
-	@WithMockUser(value = "manager99", authorities = {
-			"manager"
-		})
-	@Test
-	void TestProcessCreationFormAsRoleNotAuthorizated() throws Exception {
-		mockMvc
-			.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_ID))
+		mockMvc.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_ID))
 			.andExpect(MockMvcResultMatchers.status().isForbidden());
 	}
 
+	@WithMockUser(value = "manager99", authorities = {
+		"manager"
+	})
+	@Test
+	void TestProcessCreationFormAsManagerNotExisting() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_ID))
+			.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
+
+	@WithMockUser(value = "manager99", authorities = {
+		"manager"
+	})
+	@Test
+	void TestProcessCreationFormAsProviderNotExisting() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", 99))
+			.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
+
+	@WithMockUser(value = "manager99", authorities = {
+		"manager"
+	})
+	@Test
+	void TestProcessCreationFormAsRoleNotAuthorizated() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_ID))
+			.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
 
 	@WithMockUser(value = "manager1", authorities = {
 		"manager"
@@ -153,16 +153,16 @@ public class OrderControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
-	
+
 	@WithMockUser(value = "manager99", authorities = {
-			"manager"
-		})
-		@Test
-		void testShowOrderAsManagerNotExisting() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", TEST_ORDER_ID))
-				.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-				.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
-		}
+		"manager"
+	})
+	@Test
+	void testShowOrderAsManagerNotExisting() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", TEST_ORDER_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
 
 	@WithMockUser(value = "manager1", authorities = {
 		"manager"
@@ -170,17 +170,18 @@ public class OrderControllerE2ETests {
 	@Test
 	void testShowOrderNotPresent() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", 99))
-			.andExpect(MockMvcResultMatchers.status().isFound()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+			.andExpect(MockMvcResultMatchers.status().isFound())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
-	
+
 	@WithMockUser(value = "owner1", authorities = {
-			"owner"
-		})
-		@Test
-		void TestShowOrderAsRoleNotAuthorizated() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", TEST_ORDER_ID))
-				.andExpect(MockMvcResultMatchers.status().isForbidden());
-		}
+		"owner"
+	})
+	@Test
+	void TestShowOrderAsRoleNotAuthorizated() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", TEST_ORDER_ID))
+			.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
 
 	@WithMockUser(value = "manager1", authorities = {
 		"manager"
@@ -192,25 +193,25 @@ public class OrderControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.model().attributeExists("providers"))
 			.andExpect(MockMvcResultMatchers.view().name("/orders/providers/providerList"));
 	}
-	
+
 	@WithMockUser(value = "manager99", authorities = {
-			"manager"
-		})
-		@Test
-		void testListAvailableProvidersAsManagerNotExisting() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/orders/providers/listAvailable"))
-				.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-				.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
-		}
-	
+		"manager"
+	})
+	@Test
+	void testListAvailableProvidersAsManagerNotExisting() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/providers/listAvailable"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
 	@WithMockUser(value = "owner1", authorities = {
-			"owner"
-		})
-		@Test
-		void TestListAvailableProvidersAsRoleNotAuthorizated() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/orders/providers/listAvailable"))
-				.andExpect(MockMvcResultMatchers.status().isForbidden());
-		}
+		"owner"
+	})
+	@Test
+	void TestListAvailableProvidersAsRoleNotAuthorizated() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/providers/listAvailable"))
+			.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
 
 	@WithMockUser(value = "manager1", authorities = {
 		"manager"
@@ -221,23 +222,23 @@ public class OrderControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.model().attributeExists("orders"))
 			.andExpect(MockMvcResultMatchers.view().name("/orders/orderList"));
 	}
-	
+
 	@WithMockUser(value = "manager99", authorities = {
-			"manager"
-		})
-		@Test
-		void TestListOrdersAsManagerNotExisting() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/orders/list"))
-				.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-				.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
-		}
-	
+		"manager"
+	})
+	@Test
+	void TestListOrdersAsManagerNotExisting() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/list"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
 	@WithMockUser(value = "owner1", authorities = {
-			"owner"
-		})
-		@Test
-		void TestListOrdersAsRoleNotAuthorizated() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/orders/list"))
-				.andExpect(MockMvcResultMatchers.status().isForbidden());
-		}
+		"owner"
+	})
+	@Test
+	void TestListOrdersAsRoleNotAuthorizated() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/list"))
+			.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
 }

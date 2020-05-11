@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 class ProviderControllerE2ETests {
 
-	//Provider with no Manager associated
 	private static final int	TEST_PROVIDER1_ID	= 1;
 	@Autowired
 	private MockMvc				mockMvc;
@@ -38,12 +37,11 @@ class ProviderControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.view().name("providers/providersList"));
 	}
-	
+
 	@WithMockUser(username = "provider1")
 	@Test
 	void TestListAvailableAsRoleNotAuthorizated() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/providers/listAvailable"))
-		.andExpect(status().isForbidden());
+		mockMvc.perform(MockMvcRequestBuilders.get("/providers/listAvailable")).andExpect(status().isForbidden());
 	}
 
 	@WithMockUser(value = "manager99", authorities = {
@@ -55,16 +53,16 @@ class ProviderControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
-	
+
 	@WithMockUser(value = "manager99", authorities = {
-			"manager"
-		})
-		@Test
-		void TestInitAddProviderToManagerAsManagerNotPresent() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/providers/addProvider/{providerId}", TEST_PROVIDER1_ID))
+		"manager"
+	})
+	@Test
+	void TestInitAddProviderToManagerAsManagerNotPresent() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/providers/addProvider/{providerId}", TEST_PROVIDER1_ID))
 			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
-		}
+	}
 
 	@WithMockUser(value = "manager1", authorities = {
 		"manager"
@@ -72,17 +70,16 @@ class ProviderControllerE2ETests {
 	@Test
 	void testInitAddProviderToManager() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/providers/addProvider/{providerId}", TEST_PROVIDER1_ID))
-			.andExpect(status().isOk())
-			.andExpect(MockMvcResultMatchers.view().name("providers/providersList"));
+			.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.view().name("providers/providersList"));
 	}
-	
+
 	@WithMockUser(value = "manager1", authorities = {
-			"manager"
+		"manager"
 	})
 	@Test
 	void TestInitAddProviderToManagerNegativeNotExistingProvider() throws Exception {
-		mockMvc.perform(get("/providers/addProvider/{providerId}", 99))
-			.andExpect(status().isOk()).andExpect(view().name("providers/providersList"));
+		mockMvc.perform(get("/providers/addProvider/{providerId}", 99)).andExpect(status().isOk())
+			.andExpect(view().name("providers/providersList"));
 	}
 
 	@WithMockUser(value = "manager1", authorities = {
@@ -90,8 +87,8 @@ class ProviderControllerE2ETests {
 	})
 	@Test
 	void TestInitAddProviderToManagerNegativeAlreadyAddedProvider() throws Exception {
-		mockMvc.perform(get("/providers/addProvider/{providerId}", TEST_PROVIDER1_ID))
-			.andExpect(status().isOk()).andExpect(view().name("providers/providersList"));
+		mockMvc.perform(get("/providers/addProvider/{providerId}", TEST_PROVIDER1_ID)).andExpect(status().isOk())
+			.andExpect(view().name("providers/providersList"));
 	}
 
 	@WithMockUser(value = "manager1", authorities = {
@@ -102,19 +99,19 @@ class ProviderControllerE2ETests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/providers/listProductsByProvider/{providerId}", TEST_PROVIDER1_ID))
 			.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.view().name("providers/providersList"));
 	}
-	
+
 	@WithMockUser(value = "manager99", authorities = {
-			"manager"
+		"manager"
 	})
 	@Test
 	void TestListProductsByProviderAsManagerNotPresent() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/providers/listProductsByProvider/{providerId}", TEST_PROVIDER1_ID))
-		.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-		.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
-	
+
 	@WithMockUser(value = "provider1", authorities = {
-			"provider"
+		"provider"
 	})
 	@Test
 	void TestListProductsByProviderAsRoleNotAuthorizated() throws Exception {
@@ -127,7 +124,7 @@ class ProviderControllerE2ETests {
 	})
 	@Test
 	void TestListProductsByProviderNotExistingProvider() throws Exception {
-		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}", 99))
-			.andExpect(status().isOk()).andExpect(view().name("providers/providersList"));
+		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}", 99)).andExpect(status().isOk())
+			.andExpect(view().name("providers/providersList"));
 	}
 }

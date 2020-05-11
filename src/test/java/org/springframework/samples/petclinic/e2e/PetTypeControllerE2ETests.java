@@ -106,7 +106,8 @@ public class PetTypeControllerE2ETests {
 	@Test
 	void testInitUpdateFormValueNotPresent() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/pettype/edit/{pettypeId}", TEST_PETTYPE_ID_99))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "admin", authorities = {
@@ -136,7 +137,6 @@ public class PetTypeControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.view().name("pettype/createOrUpdatePettypeForm"));
 	}
 
-
 	@WithMockUser(value = "admin", authorities = {
 		"admin"
 	})
@@ -153,7 +153,8 @@ public class PetTypeControllerE2ETests {
 	@Test
 	void testAvailableValueNotPresent() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/pettype/available/{pettypeId}", TEST_PETTYPE_ID_99))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "admin", authorities = {
@@ -172,7 +173,8 @@ public class PetTypeControllerE2ETests {
 	@Test
 	void testNotAvailableValueNotPresent() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/pettype/notAvailable/{pettypeId}", TEST_PETTYPE_ID_99))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 }

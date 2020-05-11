@@ -22,7 +22,7 @@ public class SuggestionUserControllerE2ETests {
 
 	private static final int	TEST_SUGGESTION_ID_1	= 1;
 
-	private static final int	TEST_SUGGESTION_ID_99	= 99;
+	private static final int	TEST_SUGGESTION_ID_3	= 3;
 
 	@Autowired
 	private MockMvc				mockMvc;
@@ -38,13 +38,12 @@ public class SuggestionUserControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.model().attributeExists("suggestions"))
 			.andExpect(MockMvcResultMatchers.view().name("suggestion/user/list"));
 	}
-	
 
 	@WithMockUser(value = "owner1", authorities = {
 		"owner"
 	})
 	@Test
-	void testDetail() throws Exception {
+	void TestDetailPositive() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/details/{suggestionId}", TEST_SUGGESTION_ID_1))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.model().attributeExists("suggestion"))
@@ -55,8 +54,8 @@ public class SuggestionUserControllerE2ETests {
 		"owner"
 	})
 	@Test
-	void testDetailValueNotPresent() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/details/{suggestionId}", TEST_SUGGESTION_ID_99))
+	void TestDetailNotAuthorizated() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/details/{suggestionId}", TEST_SUGGESTION_ID_3))
 			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
@@ -71,17 +70,6 @@ public class SuggestionUserControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.model().attributeExists("suggestion"))
 			.andExpect(MockMvcResultMatchers.view().name("suggestion/user/createSuggestionForm"));
 	}
-	
-	@WithMockUser(value = "owner99", authorities = {
-			"owner"
-		})
-		@Test
-		void testCreateOwnerNotExisting() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/new"))
-				.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-				.andExpect(MockMvcResultMatchers.model().attributeDoesNotExist("suggestion"))
-				.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
-		}
 
 	@WithMockUser(value = "owner1", authorities = {
 		"owner"
@@ -101,7 +89,7 @@ public class SuggestionUserControllerE2ETests {
 		"owner"
 	})
 	@Test
-	void testSaveNullSuggestion() throws Exception {
+	void TestSaveNegativeNameAndDescriptionNull() throws Exception {
 		mockMvc
 			.perform(
 				MockMvcRequestBuilders.post("/suggestion/user/save").with(SecurityMockMvcRequestPostProcessors.csrf())
@@ -118,21 +106,21 @@ public class SuggestionUserControllerE2ETests {
 		"owner"
 	})
 	@Test
-	void testDelete() throws Exception {
+	void TestDeletePositive() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/delete/{suggestionId}", TEST_SUGGESTION_ID_1))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.view().name("suggestion/user/list"));
 	}
-	
+
 	@WithMockUser(value = "owner1", authorities = {
-			"owner"
-		})
-		@Test
-		void testDeleteNotPresent() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/delete/{suggestionId}", 99))
-				.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-				.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
-		}
+		"owner"
+	})
+	@Test
+	void TestDeleteNotAuthorizated() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/delete/{suggestionId}", TEST_SUGGESTION_ID_3))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
 
 	@WithMockUser(value = "owner1", authorities = {
 		"owner"
@@ -143,14 +131,4 @@ public class SuggestionUserControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.view().name("suggestion/user/list"));
 	}
-	
-	@WithMockUser(value = "owner99", authorities = {
-			"owner"
-		})
-		@Test
-		void testDeleteAllOwnerNotPresent() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/deleteAll"))
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.view().name("suggestion/user/list"));
-		}
 }
