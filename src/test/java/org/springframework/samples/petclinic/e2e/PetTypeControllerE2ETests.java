@@ -78,7 +78,7 @@ public class PetTypeControllerE2ETests {
 		"admin"
 	})
 	@Test
-	void testProcessCreationFormNotName() throws Exception {
+	void testProcessCreationFormNegative() throws Exception {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/pettype/new").with(SecurityMockMvcRequestPostProcessors.csrf())
 				.param("name", ""))
@@ -113,7 +113,7 @@ public class PetTypeControllerE2ETests {
 		"admin"
 	})
 	@Test
-	void testProcessUpdateForm() throws Exception {
+	void testProcessUpdateFormPositive() throws Exception {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/pettype/edit/{pettypeId}", TEST_PETTYPE_ID_1)
 				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("name", "name1").param("available", "true"))
@@ -125,7 +125,7 @@ public class PetTypeControllerE2ETests {
 		"admin"
 	})
 	@Test
-	void testProcessUpdateNotName() throws Exception {
+	void testProcessUpdateNegative() throws Exception {
 		mockMvc
 			.perform(MockMvcRequestBuilders.post("/pettype/edit/{pettypeId}", TEST_PETTYPE_ID_1)
 				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("name", ""))
@@ -136,22 +136,12 @@ public class PetTypeControllerE2ETests {
 			.andExpect(MockMvcResultMatchers.view().name("pettype/createOrUpdatePettypeForm"));
 	}
 
-	@WithMockUser(value = "admin", authorities = {
-		"admin"
-	})
-	@Test
-	void testProcessUpdateFormValueNotPresent() throws Exception {
-		mockMvc
-			.perform(MockMvcRequestBuilders.post("/pettype/edit/{pettypeId}", TEST_PETTYPE_ID_99)
-				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("name", "name1").param("available", "true"))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
-	}
 
 	@WithMockUser(value = "admin", authorities = {
 		"admin"
 	})
 	@Test
-	void testAvailable() throws Exception {
+	void testAvailablePositive() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/pettype/available/{pettypeId}", TEST_PETTYPE_ID_1))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.view().name("/pettype/list"));
@@ -170,7 +160,7 @@ public class PetTypeControllerE2ETests {
 		"admin"
 	})
 	@Test
-	void testNotAvailable() throws Exception {
+	void testNotAvailablePositive() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/pettype/notAvailable/{pettypeId}", TEST_PETTYPE_ID_1))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.view().name("/pettype/list"));
