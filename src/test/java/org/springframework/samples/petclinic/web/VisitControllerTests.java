@@ -251,7 +251,7 @@ class VisitControllerTests {
 			.andExpect(MockMvcResultMatchers.model().attribute("accepted", false)).andExpect(MockMvcResultMatchers.view().name("visits/list"));
 	}
 
-	@WithMockUser(value = "Owner")
+	@WithMockUser(value = "AnyUser")
 	@Test
 	void testListAllPendingNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listAllPending")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
@@ -264,7 +264,7 @@ class VisitControllerTests {
 			.andExpect(MockMvcResultMatchers.view().name("visits/list"));
 	}
 
-	@WithMockUser(value = "Owner")
+	@WithMockUser(value = "AnyUser")
 	@Test
 	void testListAllAcceptedNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listAllAccepted")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
@@ -286,6 +286,11 @@ class VisitControllerTests {
 	@Test
 	void testAcceptVisitNullVet() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", TEST_PENDING_VISIT_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+	}
+	@WithMockUser(value = "Vet")
+	@Test
+	void testAcceptVisitNegativeNoValueInSystem() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", TEST_VISIT_ID_NOT_FOUND)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "Vet")
@@ -325,11 +330,31 @@ class VisitControllerTests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/changeDate/{visitId}", TEST_VISIT_ID_NOT_FOUND)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
+	@WithMockUser(value = "AnyUser")
+	@Test
+	void testInitUpdateVisitNegativeUserNotInSystem() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/changeDate/{visitId}", TEST_VISIT_ID_NOT_FOUND)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+	}
+
 	@WithMockUser(value = "Vet")
 	@Test
 	void testUpdateVisit() throws Exception {
 		mockMvc.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID).with(csrf()).param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00")).andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.model().attributeExists("messageSuccesful")).andExpect(MockMvcResultMatchers.view().name("visits/list"));
+	}
+
+	@WithMockUser(value = "AnyUser")
+	@Test
+	void testUpdateVisitNegativeUserNotInSystem() throws Exception {
+		mockMvc.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID).with(csrf()).param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00")).andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "Vet")
+	@Test
+	void testUpdateVisitNegative() throws Exception {
+		mockMvc.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED).with(csrf()).param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "Vet")
@@ -362,9 +387,9 @@ class VisitControllerTests {
 			.andExpect(MockMvcResultMatchers.model().attributeExists("visitsAccepted")).andExpect(MockMvcResultMatchers.view().name("visits/listByOwner"));
 	}
 
-	@WithMockUser(value = "Vet")
+	@WithMockUser(value = "AnyUser")
 	@Test
-	void testListAllPendingAndAcceptedByOwnerWithVet() throws Exception {
+	void testListAllPendingAndAcceptedNegativeNotAuthorized() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listByOwner")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 

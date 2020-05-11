@@ -63,12 +63,12 @@ class ProviderControllerTests {
 
 		User user = new User();
 		user.setEnabled(true);
-		user.setUsername("pepito");
-		user.setPassword("pepito");
+		user.setUsername("manager1");
+		user.setPassword("manager1");
 
 		Authorities authority = new Authorities();
 		authority.setAuthority("manager");
-		authority.setUsername("pepito");
+		authority.setUsername("manager1");
 		Manager pepe = new Manager();
 		pepe.setUser(user);
 		pepe.setId(ProviderControllerTests.TEST_MANAGER_ID);
@@ -78,7 +78,25 @@ class ProviderControllerTests {
 		pepe.setCity("Madison");
 		pepe.setTelephone("6085551023");
 
-		BDDMockito.given(managerService.findPersonByUsername("pepito")).willReturn(pepe);
+		User user2 = new User();
+		user2.setEnabled(true);
+		user2.setUsername("manager2");
+		user2.setPassword("manager2");
+
+		Authorities authority2 = new Authorities();
+		authority2.setAuthority("manager");
+		authority2.setUsername("manager2");
+		Manager pepe2 = new Manager();
+		pepe2.setUser(user);
+		pepe2.setId(ProviderControllerTests.TEST_MANAGER_ID);
+		pepe2.setFirstName("Pepe2");
+		pepe2.setLastName("Leary");
+		pepe2.setAddress("110 W. Liberty St.");
+		pepe2.setCity("Madison");
+		pepe2.setTelephone("6085551023");
+
+		BDDMockito.given(managerService.findPersonByUsername("manager1")).willReturn(pepe);
+		BDDMockito.given(managerService.findPersonByUsername("manager2")).willReturn(pepe2);
 
 		Provider james = new Provider();
 		james.setId(ProviderControllerTests.TEST_PROVIDER1_ID);
@@ -102,11 +120,11 @@ class ProviderControllerTests {
 		Optional<Provider> opt2 = Optional.of(helen);
 		BDDMockito.given(providerService.findEntityById(ProviderControllerTests.TEST_PROVIDER2_ID)).willReturn(opt2);
 
-		BDDMockito.given(providerService.findAvailableProviders()).willReturn(Lists.newArrayList(james, helen));
+		BDDMockito.given(providerService.findAvailableProviders()).willReturn(Lists.newArrayList(helen));
 
 	}
 
-	@WithMockUser(value = "pepito", authorities = {
+	@WithMockUser(value = "manager1", authorities = {
 		"manager"
 	})
 	@Test
@@ -120,7 +138,7 @@ class ProviderControllerTests {
 		mockMvc.perform(get("/providers/listAvailable")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
-	@WithMockUser(value = "pepito")
+	@WithMockUser(value = "manager1")
 	@Test
 	void testInitAddProviderToManager() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/providers/addProvider/{providerId}", TEST_PROVIDER2_ID)).andExpect(status().isOk()).andExpect(MockMvcResultMatchers.model().attribute("message", "Provider succesfully added"))
@@ -133,32 +151,45 @@ class ProviderControllerTests {
 		mockMvc.perform(get("/providers/addProvider/{providerId}", TEST_PROVIDER1_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
-	@WithMockUser(value = "pepito")
+	@WithMockUser(value = "manager1")
 	@Test
 	void testInitAddProviderToManagerNegativeNotExistingProvider() throws Exception {
 		mockMvc.perform(get("/providers/addProvider/{providerId}", TEST_PROVIDER99_ID)).andExpect(status().isOk()).andExpect(MockMvcResultMatchers.model().attribute("message", "We are very sorry, but the selected provider does not exist"))
 			.andExpect(view().name("providers/providersList"));
 	}
 
-	@WithMockUser(value = "pepito")
+	@WithMockUser(value = "manager1")
 	@Test
 	void testInitAddProviderToManagerNegativeAlreadyAddedProvider() throws Exception {
 		mockMvc.perform(get("/providers/addProvider/{providerId}", TEST_PROVIDER1_ID)).andExpect(status().isOk())
 			.andExpect(MockMvcResultMatchers.model().attribute("message", "We are very sorry, it is not possible to add a Provider that is already assigned to another Manager")).andExpect(view().name("providers/providersList"));
 	}
 
-	@WithMockUser(value = "pepito", authorities = {
-		"manager"
-	})
+	@WithMockUser(value = "manager1")
 	@Test
 	void testListProductsByProvider() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/providers/listProductsByProvider/{providerId}", TEST_PROVIDER1_ID)).andExpect(status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("products"))
+		mockMvc.perform(MockMvcRequestBuilders.get("/providers/listProductsByProvider/{providerId}", TEST_PROVIDER2_ID)).andExpect(status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("products"))
 			.andExpect(MockMvcResultMatchers.view().name("providers/providerProductsList"));
 	}
 
-	@WithMockUser(value = "provider")
+	@WithMockUser(value = "FalseManager")
+	@Test
+	void testListProductsByProviderNegativeNotExistingManager() throws Exception {
+		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}", TEST_PROVIDER1_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "manager1")
 	@Test
 	void testListProductsByProviderNegativeNotExistingProvider() throws Exception {
-		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}", TEST_PROVIDER99_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}", TEST_PROVIDER99_ID)).andExpect(MockMvcResultMatchers.model().attribute("message", "We are very sorry, but the selected provider does not exist")).andExpect(status().isOk())
+			.andExpect(view().name("providers/providersList"));
 	}
+
+	@WithMockUser(value = "manager2")
+	@Test
+	void testListProductsByProviderNegativeListOtherManagersProviders() throws Exception {
+		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}", TEST_PROVIDER1_ID)).andExpect(status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attribute("message", "We are very sorry, but you cannot see the products of a supplier assigned to another manager")).andExpect(view().name("providers/providersList"));
+	}
+
 }

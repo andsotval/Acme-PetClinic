@@ -152,11 +152,17 @@ public class SuggestionUserControllerTest {
 			.andExpect(MockMvcResultMatchers.view().name("suggestion/user/createSuggestionForm"));
 	}
 
+	@WithMockUser(value = "withoutAuthority")
+	@Test
+	void testCreateNegativeUserWithoutAuthority() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/new")).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
 	@WithMockUser(value = "spring")
 	@Test
 	void testSavePositive() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.post("/suggestion/user/save").with(SecurityMockMvcRequestPostProcessors.csrf()).param("name", "name1").param("description", "description1").param("created", "2020/05/26 12:00:00").param("isRead", "false")
-			.param("isTrash", "false").param("isAvailable", "true")/* .param("user", "26") */).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("suggestion/user/list"));
+			.param("isTrash", "false").param("isAvailable", "true")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("suggestion/user/list"));
 	}
 
 	@WithMockUser(value = "spring")
@@ -169,7 +175,7 @@ public class SuggestionUserControllerTest {
 			.andExpect(MockMvcResultMatchers.model().attributeHasFieldErrors("suggestion", "description")).andExpect(MockMvcResultMatchers.view().name("suggestion/user/createSuggestionForm"));
 	}
 
-	@WithMockUser(value = "spring")
+	@WithMockUser(value = "pepito")
 	@Test
 	void testDelete() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/user/delete/{suggestionId}", TEST_SUGGESTION_ID_1)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("suggestion/user/list"));

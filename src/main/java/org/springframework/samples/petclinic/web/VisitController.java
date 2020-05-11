@@ -1,3 +1,4 @@
+
 /**
  * DP2 - Grupo 8
  * LAB F1.33
@@ -181,7 +182,7 @@ public class VisitController {
 		visitService.saveEntity(visit.get());
 		modelMap.addAttribute("messageSuccesful", "Visit succesfully updated");
 		modelMap.remove("visit", entity);
-		modelMap.addAttribute("message", "Visit succesfully updated");
+		modelMap.addAttribute("message", "visit succesfully updated");
 		return createModelVisitsList(modelMap, true, "Visit succesfully updated");
 	}
 

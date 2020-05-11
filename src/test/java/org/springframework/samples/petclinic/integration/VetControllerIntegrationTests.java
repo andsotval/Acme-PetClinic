@@ -65,12 +65,12 @@ public class VetControllerIntegrationTests {
 		"veterinarian"
 	})
 	@Test
-	public void testNegativeVetsAvailableAndOwnListNonAuthorized() {
+	public void testVetsAvailableAndOwnListNotAuthorized() {
 		ModelMap modelMap = new ModelMap();
 
 		String view = vetController.vetsAvailableAndOwnList(modelMap);
 
-		assertEquals(view, "redirect:/oups");
+		assertEquals("redirect:/oups", view);
 	}
 
 	@WithMockUser(username = "manager1", authorities = {
@@ -83,20 +83,33 @@ public class VetControllerIntegrationTests {
 
 		String view = vetController.acceptVet(vetId, modelMap);
 
-		assertEquals(view, "redirect:/vets/vetsAvailable");
+		assertEquals("vets/vetsAvailable", view);
 	}
 
 	@WithMockUser(username = "manager1", authorities = {
 		"manager"
 	})
 	@Test
-	public void testNegativeAcceptVetAcceptedAsManager() {
+	public void testAcceptVetAlreadyAcceptedAsManager() {
 		ModelMap modelMap = new ModelMap();
 		int vetId = 1;
 
 		String view = vetController.acceptVet(vetId, modelMap);
 
-		assertEquals(view, "redirect:/oups");
+		assertEquals("redirect:/oups", view);
+	}
+
+	@WithMockUser(username = "manager1", authorities = {
+		"manager"
+	})
+	@Test
+	public void testAcceptVetNotFoundAsManager() {
+		ModelMap modelMap = new ModelMap();
+		int vetId = 100;
+
+		String view = vetController.acceptVet(vetId, modelMap);
+
+		assertEquals("redirect:/oups", view);
 	}
 
 	@WithMockUser(username = "manager1", authorities = {
@@ -110,20 +123,20 @@ public class VetControllerIntegrationTests {
 		String view = vetController.showVet(vetId, modelMap);
 
 		assertNotNull(modelMap.get("vet"));
-		assertEquals(view, "vets/vetDetails");
+		assertEquals("vets/vetDetails", view);
 	}
 
-	@WithMockUser(username = "vet1", authorities = {
-		"veterinarian"
+	@WithMockUser(username = "manager1", authorities = {
+		"manager"
 	})
 	@Test
-	public void testNegativeShowVetAsVet() {
+	public void testShowVetNotFoundAsManager() {
 		ModelMap modelMap = new ModelMap();
-		int vetId = 1;
+		int vetId = 100;
 
 		String view = vetController.showVet(vetId, modelMap);
 
-		assertEquals(view, "redirect:/oups");
+		assertEquals("redirect:/oups", view);
 	}
 
 }
