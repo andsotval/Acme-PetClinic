@@ -29,6 +29,8 @@ import org.springframework.samples.petclinic.service.VisitService;
 import org.springframework.samples.petclinic.util.SessionUtils;
 import org.springframework.samples.petclinic.web.PetController;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -37,6 +39,7 @@ import org.springframework.validation.MapBindingResult;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(OrderAnnotation.class)
+@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 public class PetControllerIntegrationTests {
 
 	private static final int	TEST_OWNER_ID		= 1;

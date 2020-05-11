@@ -27,11 +27,14 @@ import org.springframework.samples.petclinic.service.ProviderService;
 import org.springframework.samples.petclinic.util.SessionUtils;
 import org.springframework.samples.petclinic.web.OrderController;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.ui.ModelMap;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 public class OrderControllerIntegrationTests {
 
 	private static final int	TEST_PROVIDER_ID	= 1;

@@ -26,16 +26,17 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 public class ProductServiceTest {
 
-	private int TEST_PRODUCT_ID = 1;
+	private int					TEST_PRODUCT_ID					= 1;
 
-	private int TEST_PRODUCT_ID_NOT_PRESENT = 100;
+	private int					TEST_PRODUCT_ID_NOT_PRESENT		= 100;
 
-	private int TEST_PROVIDER_ID = 1;
+	private int					TEST_PROVIDER_ID				= 1;
 
-	private int TEST_PROVIDER_ID_NOT_PRESENT = 100;
+	private int					TEST_PROVIDER_ID_NOT_PRESENT	= 100;
 
 	@Autowired
-	protected ProductService productService;
+	protected ProductService	productService;
+
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -78,7 +79,7 @@ public class ProductServiceTest {
 	public void testSaveProduct() {
 		Collection<Product> collection = (Collection<Product>) productService.findAllEntities();
 		int collectionSize = collection.size();
-		
+
 		Product entity = new Product();
 		entity.setName("Comida para perros castrados");
 		entity.setPrice(15.95);
@@ -86,14 +87,14 @@ public class ProductServiceTest {
 		entity.setTax(1.20);
 
 		productService.saveEntity(entity);
-		
+
 		Collection<Product> newCollection = (Collection<Product>) productService.findAllEntities();
 		int newCollectionSize = newCollection.size();
-		
-		assertEquals(collectionSize+1, newCollectionSize);
+
+		assertEquals(collectionSize + 1, newCollectionSize);
 
 		Assert.assertEquals("Comida para perros castrados",
-				productService.findEntityById(newCollectionSize).get().getName());
+			productService.findEntityById(newCollectionSize).get().getName());
 	}
 
 	@Test

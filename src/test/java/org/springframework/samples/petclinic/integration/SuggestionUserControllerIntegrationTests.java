@@ -24,6 +24,8 @@ import org.springframework.samples.petclinic.service.SuggestionService;
 import org.springframework.samples.petclinic.util.SessionUtils;
 import org.springframework.samples.petclinic.web.SuggestionUserController;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -32,9 +34,12 @@ import org.springframework.validation.MapBindingResult;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(OrderAnnotation.class)
+@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 public class SuggestionUserControllerIntegrationTests {
 
 	private static final int			TEST_SUGGESTION_ID_1	= 1;
+
+	private static Suggestion			suggestion;
 
 	@Autowired
 	private SuggestionUserController	suggestionUserController;
@@ -51,7 +56,7 @@ public class SuggestionUserControllerIntegrationTests {
 		"owner"
 	})
 	@Test
-	@Order(1)
+	@Order(4)
 	public void TestList() {
 		ModelMap model = new ModelMap();
 		String view = suggestionUserController.list(model);
@@ -73,14 +78,15 @@ public class SuggestionUserControllerIntegrationTests {
 		"owner"
 	})
 	@Test
-	@Order(2)
+	@Order(5)
 	public void TestDetailPositive() {
 		ModelMap model = new ModelMap();
-		String view = suggestionUserController.detail(TEST_SUGGESTION_ID_1, model);
+		String view = suggestionUserController.detail(suggestion.getId(), model);
 
 		assertEquals(view, "suggestion/user/details");
 
-		Suggestion suggestion = suggestionService.findEntityById(TEST_SUGGESTION_ID_1).get();
+		Suggestion suggestion = suggestionService
+			.findEntityById(SuggestionUserControllerIntegrationTests.suggestion.getId()).get();
 		assertNotNull(model.get("suggestion"));
 		assertEquals(((Suggestion) model.get("suggestion")).getCreated(), suggestion.getCreated());
 		assertEquals(((Suggestion) model.get("suggestion")).getDescription(), suggestion.getDescription());
@@ -96,7 +102,7 @@ public class SuggestionUserControllerIntegrationTests {
 		"owner"
 	})
 	@Test
-	@Order(3)
+	@Order(6)
 	public void TestDetailNotAuthorizated() {
 		ModelMap model = new ModelMap();
 		String view = suggestionUserController.detail(2, model);
@@ -108,7 +114,7 @@ public class SuggestionUserControllerIntegrationTests {
 		"owner"
 	})
 	@Test
-	@Order(4)
+	@Order(1)
 	public void TestCreate() {
 		ModelMap model = new ModelMap();
 		String view = suggestionUserController.create(model);
@@ -126,23 +132,23 @@ public class SuggestionUserControllerIntegrationTests {
 		"owner"
 	})
 	@Test
-	@Order(5)
+	@Order(2)
 	public void TestSavePositive() {
 		ModelMap model = new ModelMap();
 
 		Owner owner = ownerService.findByOwnerByUsername(SessionUtils.obtainUserInSession().getUsername());
 
-		Suggestion suggestion = new Suggestion();
-		suggestion.setCreated(LocalDateTime.now());
-		suggestion.setUser(owner.getUser());
-		suggestion.setIsAvailable(true);
-		suggestion.setIsRead(false);
-		suggestion.setIsTrash(false);
-		suggestion.setName("Title Suggestion Integration Test 1");
-		suggestion.setDescription("Description 1");
+		Suggestion newSuggestion = new Suggestion();
+		newSuggestion.setCreated(LocalDateTime.now());
+		newSuggestion.setUser(owner.getUser());
+		newSuggestion.setIsAvailable(true);
+		newSuggestion.setIsRead(false);
+		newSuggestion.setIsTrash(false);
+		newSuggestion.setName("Title Suggestion Integration Test 1");
+		newSuggestion.setDescription("Description 1");
 
 		BindingResult bindingResult = new MapBindingResult(Collections.emptyMap(), "");
-		String view = suggestionUserController.save(suggestion, bindingResult, model);
+		String view = suggestionUserController.save(newSuggestion, bindingResult, model);
 
 		assertEquals(view, "suggestion/user/list");
 
@@ -150,13 +156,14 @@ public class SuggestionUserControllerIntegrationTests {
 			.filter(s -> s.getName().equals("Title Suggestion Integration Test 1")).collect(Collectors.toList());
 
 		assertNotNull(suggestions.get(0));
+		suggestion = suggestions.get(0);
 	}
 
 	@WithMockUser(username = "owner1", authorities = {
 		"owner"
 	})
 	@Test
-	@Order(6)
+	@Order(3)
 	public void TestSaveNegativeNameAndDescriptionNull() {
 		ModelMap model = new ModelMap();
 
@@ -193,11 +200,12 @@ public class SuggestionUserControllerIntegrationTests {
 	public void TestDeletePositive() {
 		ModelMap model = new ModelMap();
 
-		String view = suggestionUserController.delete(TEST_SUGGESTION_ID_1, model);
+		String view = suggestionUserController.delete(suggestion.getId(), model);
 
 		assertEquals(view, "suggestion/user/list");
 
-		Suggestion suggestion = suggestionService.findEntityById(TEST_SUGGESTION_ID_1).get();
+		Suggestion suggestion = suggestionService
+			.findEntityById(SuggestionUserControllerIntegrationTests.suggestion.getId()).get();
 		assertEquals(suggestion.getIsAvailable(), false);
 	}
 

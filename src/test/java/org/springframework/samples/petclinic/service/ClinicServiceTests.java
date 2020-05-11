@@ -1,3 +1,4 @@
+
 package org.springframework.samples.petclinic.service;
 
 import static org.junit.Assert.assertFalse;
@@ -29,19 +30,20 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 public class ClinicServiceTests {
 
 	@Autowired
-	protected ClinicService clinicService;
+	protected ClinicService	clinicService;
 
-	private int TEST_CLINIC_ID = 1;
+	private int				TEST_CLINIC_ID					= 1;
 
-	private int TEST_CLINIC_ID_NOT_PRESENT = 100;
+	private int				TEST_CLINIC_ID_NOT_PRESENT		= 100;
 
-	private String TEST_CLINIC_NAME = "Clinic1";
+	private String			TEST_CLINIC_NAME				= "Clinic1";
 
-	private String TEST_CLINIC_NAME_NOT_PRESENT = "ClinicNotPresent";
+	private String			TEST_CLINIC_NAME_NOT_PRESENT	= "ClinicNotPresent";
 
-	private int TEST_MANAGER_ID = 1;
+	private int				TEST_MANAGER_ID					= 1;
 
-	private int TEST_MANAGER_ID_NOT_PRESENT = 100;
+	private int				TEST_MANAGER_ID_NOT_PRESENT		= 100;
+
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -174,7 +176,7 @@ public class ClinicServiceTests {
 		Optional<Clinic> deleteEntity = clinicService.findEntityById(TEST_CLINIC_ID);
 		assertTrue(!deleteEntity.isPresent());
 	}
-	
+
 	@Test
 	public void testDeleteClinicNotPresent() {
 		Collection<Clinic> collection = (Collection<Clinic>) clinicService.findAllEntities();
@@ -195,7 +197,7 @@ public class ClinicServiceTests {
 		Optional<Clinic> entity = clinicService.findEntityById(TEST_CLINIC_ID);
 		assertTrue(!entity.isPresent());
 	}
-	
+
 	@Test
 	public void testDeleteClinicByIdNotPresent() {
 		boolean deleted = true;

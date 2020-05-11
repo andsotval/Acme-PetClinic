@@ -1,8 +1,9 @@
+
 package org.springframework.samples.petclinic.service;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -28,23 +29,24 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 class StayServiceTests {
 
 	@Autowired
-	protected StayService stayService;
+	protected StayService	stayService;
 
-	private int TEST_STAY_ID = 1;
+	private int				TEST_STAY_ID					= 1;
 
-	private int TEST_STAY_ID_NOT_PRESENT = 100;
+	private int				TEST_STAY_ID_NOT_PRESENT		= 100;
 
-	private int TEST_OWNER_ID = 1;
+	private int				TEST_OWNER_ID					= 1;
 
-	private int TEST_OWNER_ID_CAN_UNSUBSCRIBE = 4;
+	private int				TEST_OWNER_ID_CAN_UNSUBSCRIBE	= 4;
 
-	private int TEST_PET_ID = 1;
+	private int				TEST_PET_ID						= 1;
 
-	private int TEST_PET_ID_NOT_PRESENT = 100;
+	private int				TEST_PET_ID_NOT_PRESENT			= 100;
 
-	private int TEST_VET_ID = 1;
+	private int				TEST_VET_ID						= 1;
 
-	private int TEST_VET_ID_NOT_PRESENT = 100;
+	private int				TEST_VET_ID_NOT_PRESENT			= 100;
+
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -79,7 +81,7 @@ class StayServiceTests {
 	public void testDeleteByPetId() {
 		stayService.deleteByPetId(TEST_PET_ID);
 
-		Collection<Stay> stays = (Collection<Stay>) stayService.findAllStayByPet(TEST_PET_ID);
+		Collection<Stay> stays = stayService.findAllStayByPet(TEST_PET_ID);
 		assertEquals(stays.size(), 0);
 	}
 
@@ -97,14 +99,14 @@ class StayServiceTests {
 
 	@Test
 	public void testFindAllStayByPet() {
-		Collection<Stay> stays = (Collection<Stay>) stayService.findAllStayByPet(TEST_PET_ID);
+		Collection<Stay> stays = stayService.findAllStayByPet(TEST_PET_ID);
 		stays.forEach(s -> assertEquals(s.getPet().getId(), TEST_PET_ID));
 
 	}
 
 	@Test
 	public void testFindAllStayByPetIdNotPresent() {
-		Collection<Stay> stays = (Collection<Stay>) stayService.findAllStayByPet(TEST_PET_ID_NOT_PRESENT);
+		Collection<Stay> stays = stayService.findAllStayByPet(TEST_PET_ID_NOT_PRESENT);
 		assertEquals(stays.size(), 0);
 	}
 

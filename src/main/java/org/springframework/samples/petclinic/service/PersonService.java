@@ -33,7 +33,7 @@ public abstract class PersonService<T extends BaseEntity> extends BaseService<T>
 	@Transactional(readOnly = true)
 	public T findPersonByUsername(String username) {
 		String sql = "SELECT * FROM " + clazz.getSimpleName()
-			+ " WHERE USER_ID = (SELECT ID FROM USER WHERE USERNAME = ?)";
+			+ " WHERE USER_ID = (SELECT ID FROM USER_ACCOUNT WHERE USERNAME = ?)";
 
 		T entity = null;
 

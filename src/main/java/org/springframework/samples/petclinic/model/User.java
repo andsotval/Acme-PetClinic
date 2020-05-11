@@ -16,13 +16,15 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "user")
+@Table(name = "user_account")
 public class User extends BaseEntity {
 
-	@Column(unique = true)
+	@Column(name = "username")
 	String	username;
 
+	@Column(name = "password")
 	String	password;
 
-	boolean	enabled;
+	@Column(name = "enabled")
+	Boolean	enabled;
 }

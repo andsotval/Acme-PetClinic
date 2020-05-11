@@ -1,3 +1,4 @@
+
 package org.springframework.samples.petclinic.service;
 
 import static org.junit.Assert.assertFalse;
@@ -13,13 +14,13 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
-import org.springframework.samples.petclinic.model.Manager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.samples.petclinic.model.Manager;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
@@ -27,11 +28,12 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 public class ManagerServiceTest {
 
 	@Autowired
-	protected ManagerService managerService;
+	protected ManagerService	managerService;
 
-	private int TEST_MANAGER_ID = 1;
+	private int					TEST_MANAGER_ID				= 1;
 
-	private int TEST_MANAGER_ID_NOT_PRESENT = 100;
+	private int					TEST_MANAGER_ID_NOT_PRESENT	= 100;
+
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();

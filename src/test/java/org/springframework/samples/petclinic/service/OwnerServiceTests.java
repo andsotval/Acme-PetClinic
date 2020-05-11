@@ -1,3 +1,4 @@
+
 package org.springframework.samples.petclinic.service;
 
 import static org.junit.Assert.assertFalse;
@@ -27,26 +28,27 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 class OwnerServiceTests {
 
 	@Autowired
-	protected OwnerService ownerService;
+	protected OwnerService	ownerService;
 
 	@Autowired
-	protected ClinicService clinicService;
+	protected ClinicService	clinicService;
 
-	private String TEST_OWNER_LAST_NAME = "Padilla";
+	private String			TEST_OWNER_LAST_NAME				= "Padilla";
 
-	private String TEST_OWNER_LAST_NAME_NOT_PRESENT = "Last Name Not Present";
+	private String			TEST_OWNER_LAST_NAME_NOT_PRESENT	= "Last Name Not Present";
 
-	private String TEST_USERNAME = "owner1";
+	private String			TEST_USERNAME						= "owner1";
 
-	private String TEST_USERNAME_NOT_PRESENT = "owner user name not present";
+	private String			TEST_USERNAME_NOT_PRESENT			= "owner user name not present";
 
-	private int TEST_CLINIC_ID = 1;
+	private int				TEST_CLINIC_ID						= 1;
 
-	private int TEST_CLINIC_ID_NOT_PRESENT = 100;
+	private int				TEST_CLINIC_ID_NOT_PRESENT			= 100;
 
-	private int TEST_OWNER_ID = 1;
+	private int				TEST_OWNER_ID						= 1;
 
-	private int TEST_OWNER_ID_NOT_PRESENT = 100;
+	private int				TEST_OWNER_ID_NOT_PRESENT			= 100;
+
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -86,7 +88,7 @@ class OwnerServiceTests {
 
 	@Test
 	public void testFindOwnersByClinicIdNotPresent() {
-		Collection<Owner> owners = (Collection<Owner>) ownerService.findOwnersByClinicId(TEST_CLINIC_ID_NOT_PRESENT);
+		Collection<Owner> owners = ownerService.findOwnersByClinicId(TEST_CLINIC_ID_NOT_PRESENT);
 		assertEquals(0, owners.size());
 	}
 

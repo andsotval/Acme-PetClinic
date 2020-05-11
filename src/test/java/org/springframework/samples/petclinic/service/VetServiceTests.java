@@ -1,3 +1,4 @@
+
 package org.springframework.samples.petclinic.service;
 
 import static org.junit.Assert.assertFalse;
@@ -26,19 +27,20 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 class VetServiceTests {
 
 	@Autowired
-	protected VetService vetService;
+	protected VetService	vetService;
 
-	private int TEST_VET_ID = 1;
+	private int				TEST_VET_ID					= 1;
 
-	private int TEST_VET_ID_NOT_PRESENT = 100;
+	private int				TEST_VET_ID_NOT_PRESENT		= 100;
 
-	private int TEST_MANAGER_ID = 1;
+	private int				TEST_MANAGER_ID				= 1;
 
-	private int TEST_MANAGER_ID_NOT_PRESENT = 100;
+	private int				TEST_MANAGER_ID_NOT_PRESENT	= 100;
 
-	private int TEST_CLINIC_ID = 1;
+	private int				TEST_CLINIC_ID				= 1;
 
-	private int TEST_CLINIC_ID_NOT_PRESENT = 100;
+	private int				TEST_CLINIC_ID_NOT_PRESENT	= 100;
+
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -116,7 +118,7 @@ class VetServiceTests {
 
 		assertEquals(collectionSize + 1, newCollectionSize);
 
-		Assert.assertEquals("James", this.vetService.findEntityById(newCollectionSize).get().getFirstName());
+		Assert.assertEquals("James", vetService.findEntityById(newCollectionSize).get().getFirstName());
 	}
 
 	@Test

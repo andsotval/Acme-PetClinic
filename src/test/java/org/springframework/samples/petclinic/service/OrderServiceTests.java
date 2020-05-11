@@ -1,3 +1,4 @@
+
 package org.springframework.samples.petclinic.service;
 
 import static org.junit.Assert.assertFalse;
@@ -29,15 +30,16 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 public class OrderServiceTests {
 
 	@Autowired
-	protected OrderService orderService;
+	protected OrderService	orderService;
 
-	private int TEST_MANAGER_ID = 1;
+	private int				TEST_MANAGER_ID				= 1;
 
-	private int TEST_MANAGER_ID_NOT_PRESENT = 100;
+	private int				TEST_MANAGER_ID_NOT_PRESENT	= 100;
 
-	private int TEST_ORDER_ID = 1;
+	private int				TEST_ORDER_ID				= 1;
 
-	private int TEST_ORDER_ID_NOT_PRESENT = 100;
+	private int				TEST_ORDER_ID_NOT_PRESENT	= 100;
+
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();

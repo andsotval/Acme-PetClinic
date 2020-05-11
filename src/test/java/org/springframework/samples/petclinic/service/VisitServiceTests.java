@@ -1,3 +1,4 @@
+
 package org.springframework.samples.petclinic.service;
 
 import static org.junit.Assert.assertNull;
@@ -28,27 +29,28 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 class VisitServiceTests {
 
 	@Autowired
-	protected VisitService visitService;
+	protected VisitService	visitService;
 
-	private int TEST_VISIT_ID = 1;
+	private int				TEST_VISIT_ID					= 1;
 
-	private int TEST_VISIT_ID_NOT_PRESENT = 100;
+	private int				TEST_VISIT_ID_NOT_PRESENT		= 100;
 
-	private int TEST_VET_ID = 1;
+	private int				TEST_VET_ID						= 1;
 
-	private int TEST_VET_ID_NOT_PRESENT = 100;
+	private int				TEST_VET_ID_NOT_PRESENT			= 100;
 
-	private int TEST_PET_ID = 1;
+	private int				TEST_PET_ID						= 1;
 
-	private int TEST_PET_ID_NOT_PRESENT = 100;
+	private int				TEST_PET_ID_NOT_PRESENT			= 100;
 
-	private int TEST_OWNER_ID = 1;
+	private int				TEST_OWNER_ID					= 1;
 
-	private int TEST_OWNER_ID_CAN_UNSUBSCRIBE = 2;
+	private int				TEST_OWNER_ID_CAN_UNSUBSCRIBE	= 2;
 
-	private int TEST_OWNER_ID_NOT_PRESENT = 100;
+	private int				TEST_OWNER_ID_NOT_PRESENT		= 100;
 
-	private LocalDateTime TEST_DATE_TIME = LocalDateTime.of(2020, 8, 9, 9, 30, 00);
+	private LocalDateTime	TEST_DATE_TIME					= LocalDateTime.of(2020, 8, 9, 9, 30, 00);
+
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -64,7 +66,7 @@ class VisitServiceTests {
 
 	@Test
 	public void testFindAllVisitsPendingByVetIdNotPresent() {
-		Collection<Visit> visits = (Collection<Visit>) visitService.findAllPendingByVetId(TEST_VET_ID_NOT_PRESENT);
+		Collection<Visit> visits = visitService.findAllPendingByVetId(TEST_VET_ID_NOT_PRESENT);
 		assertEquals(visits.size(), 0);
 	}
 
@@ -76,7 +78,7 @@ class VisitServiceTests {
 
 	@Test
 	public void testFindAllVisitsAcceptedByVetIdNotPresent() {
-		Collection<Visit> visits = (Collection<Visit>) visitService.findAllAcceptedByVetId(TEST_VET_ID_NOT_PRESENT);
+		Collection<Visit> visits = visitService.findAllAcceptedByVetId(TEST_VET_ID_NOT_PRESENT);
 		assertEquals(visits.size(), 0);
 	}
 

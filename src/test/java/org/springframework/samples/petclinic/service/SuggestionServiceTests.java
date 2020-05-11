@@ -1,3 +1,4 @@
+
 package org.springframework.samples.petclinic.service;
 
 import static org.junit.Assert.assertTrue;
@@ -29,22 +30,23 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 public class SuggestionServiceTests {
 
 	@Autowired
-	private SuggestionService suggestionService;
+	private SuggestionService	suggestionService;
 
-	private String TEST_USERNAME = "owner1";
+	private String				TEST_USERNAME					= "owner1";
 
-	private String TEST_USERNAME_NOT_PRESENT = "username that is not present";
+	private String				TEST_USERNAME_NOT_PRESENT		= "username that is not present";
 
-	private int TEST_SUGGESTION_ID = 1;
+	private int					TEST_SUGGESTION_ID				= 1;
 
-	private int TEST_SUGGESTION_ID_NOT_PRESENT = 100;
+	private int					TEST_SUGGESTION_ID_NOT_PRESENT	= 100;
+
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
 		localValidatorFactoryBean.afterPropertiesSet();
 		return localValidatorFactoryBean;
 	}
-	
+
 	//A suggestion can be in the TRASH or not
 	//Once a suggestion is in the TRASH, it can be deleted
 	//Furthermore, a suggestion can be readed
@@ -99,7 +101,7 @@ public class SuggestionServiceTests {
 	@Test
 	public void testFindAllSuggestionsAvailableByUsernameNotPresent() {
 		Collection<Suggestion> suggestions = suggestionService
-				.findAllEntitiesAvailableByUsername(TEST_USERNAME_NOT_PRESENT);
+			.findAllEntitiesAvailableByUsername(TEST_USERNAME_NOT_PRESENT);
 		assertEquals(suggestions.size(), 0);
 	}
 
@@ -119,7 +121,7 @@ public class SuggestionServiceTests {
 	@Test
 	public void testUpdateAllSuggestionsToNotAvailableOfUserNotPresent() {
 		Collection<Suggestion> suggestions = suggestionService
-				.findAllEntitiesAvailableByUsername(TEST_USERNAME_NOT_PRESENT);
+			.findAllEntitiesAvailableByUsername(TEST_USERNAME_NOT_PRESENT);
 		assertEquals(suggestions.size(), 0);
 
 		suggestionService.updateAllIsAvailableFalse(TEST_USERNAME_NOT_PRESENT);

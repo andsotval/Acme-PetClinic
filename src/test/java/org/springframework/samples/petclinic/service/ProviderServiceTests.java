@@ -1,3 +1,4 @@
+
 package org.springframework.samples.petclinic.service;
 
 import static org.junit.Assert.assertFalse;
@@ -25,16 +26,17 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 public class ProviderServiceTests {
 
-	private int TEST_MANAGER_ID = 1;
+	private int				TEST_MANAGER_ID					= 1;
 
-	private int TEST_MANAGER_ID_NOT_PRESENT = 100;
+	private int				TEST_MANAGER_ID_NOT_PRESENT		= 100;
 
-	private int TEST_PROVIDER_ID = 1;
+	private int				TEST_PROVIDER_ID				= 1;
 
-	private int TEST_PROVIDER_ID_NOT_PRESENT = 100;
+	private int				TEST_PROVIDER_ID_NOT_PRESENT	= 100;
 
 	@Autowired
-	private ProviderService providerService;
+	private ProviderService	providerService;
+
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -100,7 +102,7 @@ public class ProviderServiceTests {
 
 		assertEquals(collectionSize + 1, newCollectionSize);
 
-		Assert.assertEquals("James", this.providerService.findEntityById(newCollectionSize).get().getFirstName());
+		Assert.assertEquals("James", providerService.findEntityById(newCollectionSize).get().getFirstName());
 	}
 
 	@Test

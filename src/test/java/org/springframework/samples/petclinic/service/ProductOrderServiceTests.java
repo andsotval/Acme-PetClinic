@@ -1,3 +1,4 @@
+
 package org.springframework.samples.petclinic.service;
 
 import static org.junit.Assert.assertFalse;
@@ -32,18 +33,19 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 public class ProductOrderServiceTests {
 
 	@Autowired
-	protected ProductOrderService productOrderService;
+	protected ProductOrderService	productOrderService;
 
 	@Autowired
-	protected OrderService orderService;
+	protected OrderService			orderService;
 
-	private int TEST_ORDER_ID = 1;
+	private int						TEST_ORDER_ID						= 1;
 
-	private int TEST_ORDER_ID_NOT_PRESENT = 100;
+	private int						TEST_ORDER_ID_NOT_PRESENT			= 100;
 
-	private int TEST_PRODUCT_ORDER_ID = 1;
+	private int						TEST_PRODUCT_ORDER_ID				= 1;
 
-	private int TEST_PRODUCT_ORDER_ID_NOT_PRESENT = 100;
+	private int						TEST_PRODUCT_ORDER_ID_NOT_PRESENT	= 100;
+
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -188,7 +190,7 @@ public class ProductOrderServiceTests {
 
 		assertEquals(collectionSize, newCollectionSize);
 	}
-	
+
 	@Test
 	public void testDeleteProductOrderById() {
 		productOrderService.deleteEntityById(TEST_PRODUCT_ORDER_ID);
@@ -196,7 +198,7 @@ public class ProductOrderServiceTests {
 		Optional<ProductOrder> entity = productOrderService.findEntityById(TEST_PRODUCT_ORDER_ID);
 		assertTrue(!entity.isPresent());
 	}
-	
+
 	@Test
 	public void testDeleteProductOrderByIdNotPresent() {
 		boolean deleted = true;
