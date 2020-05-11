@@ -17,12 +17,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.service.PetTypeService;
+import org.springframework.test.context.ActiveProfiles;
 
-/**
- * Test class for {@link PetTypeFormatter}
- *
- * @author Colin But
- */
+@ActiveProfiles("hsqldb")
 @ExtendWith(MockitoExtension.class)
 class PetTypeFormatterTests {
 

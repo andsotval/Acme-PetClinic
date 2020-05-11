@@ -29,12 +29,13 @@ import org.springframework.samples.petclinic.service.ManagerService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-/**
- * Test class for the {@link VetController}
- */
-@WebMvcTest(controllers = VetController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
+@ActiveProfiles("hsqldb")
+@WebMvcTest(controllers = VetController.class,
+	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
+	excludeAutoConfiguration = SecurityConfiguration.class)
 class VetControllerTests {
 
 	private static final int	TEST_VET1_ID	= 1;
@@ -116,52 +117,61 @@ class VetControllerTests {
 	@WithMockUser(value = "pepito")
 	@Test
 	void testVetsAvailableAndOwnList() throws Exception {
-		mockMvc.perform(get("/vets/vetsAvailable")).andExpect(status().isOk()).andExpect(model().attributeExists("vets2")).andExpect(model().attributeExists("hiredVets")).andExpect(view().name("vets/vetsAvailable"));
+		mockMvc.perform(get("/vets/vetsAvailable")).andExpect(status().isOk())
+			.andExpect(model().attributeExists("vets2")).andExpect(model().attributeExists("hiredVets"))
+			.andExpect(view().name("vets/vetsAvailable"));
 	}
 
 	//Al acceder con otro tipo de usuario
 	@WithMockUser(value = "vet")
 	@Test
 	void testVetsAvailableAndOwnListNegativeNotAuthorized() throws Exception {
-		mockMvc.perform(get("/vets/vetsAvailable")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(get("/vets/vetsAvailable")).andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "pepito")
 	@Test
 	void testAcceptVet() throws Exception {
-		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET1_ID)).andExpect(status().isOk()).andExpect(view().name("vets/vetsAvailable"));
+		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET1_ID)).andExpect(status().isOk())
+			.andExpect(view().name("vets/vetsAvailable"));
 	}
 
 	//añadir un veterinario con clínica ya asignada
 	@WithMockUser(value = "pepito")
 	@Test
 	void testAcceptVetNegativeAlreadyAssignedClinic() throws Exception {
-		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET2_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET2_ID)).andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "falseManager")
 	@Test
 	void testAcceptVetNegativeNotAuthorized() throws Exception {
-		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET2_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(get("/vets/accept/{vetId}", TEST_VET2_ID)).andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "pepito")
 	@Test
 	void testShowVet() throws Exception {
-		mockMvc.perform(get("/vets/{vetId}", TEST_VET1_ID)).andExpect(status().isOk()).andExpect(model().attributeExists("vet")).andExpect(view().name("vets/vetDetails"));
+		mockMvc.perform(get("/vets/{vetId}", TEST_VET1_ID)).andExpect(status().isOk())
+			.andExpect(model().attributeExists("vet")).andExpect(view().name("vets/vetDetails"));
 	}
 
 	//Acceder desde otro tipo usuario
 	@WithMockUser(value = "vet")
 	@Test
 	void testShowVetNegativeNotAuthorized() throws Exception {
-		mockMvc.perform(get("/vets/{vetId}", TEST_VET1_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(get("/vets/{vetId}", TEST_VET1_ID)).andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "pepito")
 	@Test
 	void testShowVetNegativeNotExistingVet() throws Exception {
-		mockMvc.perform(get("/vets/{vetId}", TEST_VET99_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(get("/vets/{vetId}", TEST_VET99_ID)).andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/oups"));
 	}
 
 }

@@ -36,11 +36,15 @@ import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.samples.petclinic.service.VisitService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-@WebMvcTest(value = VisitController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
+@ActiveProfiles("hsqldb")
+@WebMvcTest(value = VisitController.class,
+	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
+	excludeAutoConfiguration = SecurityConfiguration.class)
 class VisitControllerTests {
 
 	private static final int			TEST_CLINIC_ID_1						= 1;
@@ -57,9 +61,11 @@ class VisitControllerTests {
 
 	private static final int			TEST_ACCEPTED_VISIT_ID					= 2;
 
-	private static final LocalDateTime	TEST_DATE_AVAILABLE						= LocalDateTime.of(LocalDate.now().plusMonths(3L), LocalTime.now());
+	private static final LocalDateTime	TEST_DATE_AVAILABLE						= LocalDateTime
+		.of(LocalDate.now().plusMonths(3L), LocalTime.now());
 
-	private static final LocalDateTime	TEST_DATE_UNAVAILABLE					= LocalDateTime.of(LocalDate.now().plusMonths(2L), LocalTime.now());
+	private static final LocalDateTime	TEST_DATE_UNAVAILABLE					= LocalDateTime
+		.of(LocalDate.now().plusMonths(2L), LocalTime.now());
 
 	private static final int			TEST_PET_ID_1							= 1;
 
@@ -206,7 +212,8 @@ class VisitControllerTests {
 		pendingVisitNotAuthorized.setPet(pet2);
 
 		Optional<Visit> optionalPendingVisitNotAuthorized = Optional.of(pendingVisitNotAuthorized);
-		BDDMockito.given(visitService.findEntityById(TEST_PENDING_VISIT_ID_NOT_AUTHORIZED)).willReturn(optionalPendingVisitNotAuthorized);
+		BDDMockito.given(visitService.findEntityById(TEST_PENDING_VISIT_ID_NOT_AUTHORIZED))
+			.willReturn(optionalPendingVisitNotAuthorized);
 
 		Visit acceptedVisit = new Visit();
 		acceptedVisit.setId(TEST_ACCEPTED_VISIT_ID);
@@ -222,19 +229,24 @@ class VisitControllerTests {
 		Optional<Visit> optionalNotFoundVisit = Optional.empty();
 		BDDMockito.given(visitService.findEntityById(TEST_VISIT_ID_NOT_FOUND)).willReturn(optionalNotFoundVisit);
 
-		BDDMockito.given(visitService.findAllAcceptedByVetId(TEST_VET_ID)).willReturn(Lists.newArrayList(acceptedVisit));
+		BDDMockito.given(visitService.findAllAcceptedByVetId(TEST_VET_ID))
+			.willReturn(Lists.newArrayList(acceptedVisit));
 
 		BDDMockito.given(visitService.findAllByDateTime(TEST_DATE_AVAILABLE)).willReturn(Lists.newArrayList());
 
-		BDDMockito.given(visitService.findAllByDateTime(TEST_DATE_UNAVAILABLE)).willReturn(Lists.newArrayList(acceptedVisit));
+		BDDMockito.given(visitService.findAllByDateTime(TEST_DATE_UNAVAILABLE))
+			.willReturn(Lists.newArrayList(acceptedVisit));
 
 		BDDMockito.given(vetService.findVetsByClinicId(TEST_CLINIC_ID_1)).willReturn(Lists.newArrayList(vet));
 
-		BDDMockito.given(visitService.findAllByPetId(TEST_PET_ID_1)).willReturn(Lists.newArrayList(acceptedVisit, pendingVisit));
+		BDDMockito.given(visitService.findAllByPetId(TEST_PET_ID_1))
+			.willReturn(Lists.newArrayList(acceptedVisit, pendingVisit));
 
-		BDDMockito.given(visitService.findAllAcceptedByOwnerId(TEST_OWNER_ID)).willReturn(Lists.newArrayList(acceptedVisit));
+		BDDMockito.given(visitService.findAllAcceptedByOwnerId(TEST_OWNER_ID))
+			.willReturn(Lists.newArrayList(acceptedVisit));
 
-		BDDMockito.given(visitService.findAllPendingByOwnerId(TEST_OWNER_ID)).willReturn(Lists.newArrayList(pendingVisit));
+		BDDMockito.given(visitService.findAllPendingByOwnerId(TEST_OWNER_ID))
+			.willReturn(Lists.newArrayList(pendingVisit));
 
 		BDDMockito.given(authoritiesService.findAuthorityByUsername("Owner")).willReturn("owner");
 
@@ -247,150 +259,195 @@ class VisitControllerTests {
 	@WithMockUser(value = "Vet")
 	@Test
 	void testListAllPending() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listAllPending")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("visits"))
-			.andExpect(MockMvcResultMatchers.model().attribute("accepted", false)).andExpect(MockMvcResultMatchers.view().name("visits/list"));
-	}
-
-	@WithMockUser(value = "AnyUser")
-	@Test
-	void testListAllPendingNotAuthorized() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listAllPending")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
-	}
-
-	@WithMockUser(value = "Vet")
-	@Test
-	void testListAllAccepted() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listAllAccepted")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("visits")).andExpect(model().attribute("accepted", true))
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listAllPending"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("visits"))
+			.andExpect(MockMvcResultMatchers.model().attribute("accepted", false))
 			.andExpect(MockMvcResultMatchers.view().name("visits/list"));
 	}
 
 	@WithMockUser(value = "AnyUser")
 	@Test
+	void testListAllPendingNotAuthorized() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listAllPending")).andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "Vet")
+	@Test
+	void testListAllAccepted() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listAllAccepted"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("visits"))
+			.andExpect(model().attribute("accepted", true)).andExpect(MockMvcResultMatchers.view().name("visits/list"));
+	}
+
+	@WithMockUser(value = "AnyUser")
+	@Test
 	void testListAllAcceptedNotAuthorized() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listAllAccepted")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listAllAccepted")).andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "Vet")
 	@Test
 	void testAcceptVisit() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", TEST_PENDING_VISIT_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listAllAccepted"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", TEST_PENDING_VISIT_ID))
+			.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listAllAccepted"));
 	}
 
 	@WithMockUser(value = "Vet")
 	@Test
 	void testAcceptVisitNotAuthorized() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED))
+			.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "falseVet")
 	@Test
 	void testAcceptVisitNullVet() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", TEST_PENDING_VISIT_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", TEST_PENDING_VISIT_ID))
+			.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 	@WithMockUser(value = "Vet")
 	@Test
 	void testAcceptVisitNegativeNoValueInSystem() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", TEST_VISIT_ID_NOT_FOUND)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/accept/{visitId}", TEST_VISIT_ID_NOT_FOUND))
+			.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "Vet")
 	@Test
 	void testCancelVisitAsVet() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/cancel/{visitId}", TEST_PENDING_VISIT_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listAllAccepted"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/cancel/{visitId}", TEST_PENDING_VISIT_ID))
+			.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listAllAccepted"));
 	}
 
 	@WithMockUser(value = "Vet")
 	@Test
 	void testCancelVisitAsVetNotAuthorized() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/cancel/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/cancel/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED))
+			.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "Owner")
 	@Test
 	void testCancelVisitAsOwner() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/cancel/{visitId}", TEST_PENDING_VISIT_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listByOwner"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/cancel/{visitId}", TEST_PENDING_VISIT_ID))
+			.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/visits/listByOwner"));
 	}
 
 	@WithMockUser(value = "Owner")
 	@Test
 	void testCancelVisitAsOwnerNotAuthorized() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/cancel/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/cancel/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED))
+			.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "Vet")
 	@Test
 	void testInitUpdateVisit() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/changeDate/{visitId}", TEST_PENDING_VISIT_ID)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("visit"))
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/changeDate/{visitId}", TEST_PENDING_VISIT_ID))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("visit"))
 			.andExpect(MockMvcResultMatchers.view().name("visits/createOrUpdateVisitForm"));
 	}
 
 	@WithMockUser(value = "Vet")
 	@Test
 	void testInitUpdateVisitNotFound() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/changeDate/{visitId}", TEST_VISIT_ID_NOT_FOUND)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/changeDate/{visitId}", TEST_VISIT_ID_NOT_FOUND))
+			.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "AnyUser")
 	@Test
 	void testInitUpdateVisitNegativeUserNotInSystem() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/changeDate/{visitId}", TEST_VISIT_ID_NOT_FOUND)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/changeDate/{visitId}", TEST_VISIT_ID_NOT_FOUND))
+			.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "Vet")
 	@Test
 	void testUpdateVisit() throws Exception {
-		mockMvc.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID).with(csrf()).param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00")).andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.model().attributeExists("messageSuccesful")).andExpect(MockMvcResultMatchers.view().name("visits/list"));
+		mockMvc
+			.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID).with(csrf())
+				.param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("messageSuccesful"))
+			.andExpect(MockMvcResultMatchers.view().name("visits/list"));
 	}
 
 	@WithMockUser(value = "AnyUser")
 	@Test
 	void testUpdateVisitNegativeUserNotInSystem() throws Exception {
-		mockMvc.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID).with(csrf()).param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00")).andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+		mockMvc
+			.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID).with(csrf())
+				.param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "Vet")
 	@Test
 	void testUpdateVisitNegative() throws Exception {
-		mockMvc.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED).with(csrf()).param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00"))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc
+			.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED).with(csrf())
+				.param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "Vet")
 	@Test
 	void testUpdateVisitWrongDate() throws Exception {
-		mockMvc.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID).with(csrf()).param("description", "description of the visit").param("dateTime", "2019/08/11 08:30:00")).andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(model().attributeExists("visit")).andExpect(model().attributeHasFieldErrorCode("visit", "dateTime", "dateInFuture")).andExpect(MockMvcResultMatchers.view().name("visits/createOrUpdateVisitForm"));
+		mockMvc
+			.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID).with(csrf())
+				.param("description", "description of the visit").param("dateTime", "2019/08/11 08:30:00"))
+			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(model().attributeExists("visit"))
+			.andExpect(model().attributeHasFieldErrorCode("visit", "dateTime", "dateInFuture"))
+			.andExpect(MockMvcResultMatchers.view().name("visits/createOrUpdateVisitForm"));
 	}
 
 	@WithMockUser(value = "Owner")
 	@Test
 	void testCreateVisit() throws Exception {
-		mockMvc.perform(post("/visits/save").with(csrf()).param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00").param("clinic.id", String.valueOf(TEST_CLINIC_ID_1)).param("pet.id", String.valueOf(TEST_PET_ID_1)))
-			.andExpect(status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/visits/listByOwner"));
+		mockMvc
+			.perform(post("/visits/save").with(csrf()).param("description", "description of the visit")
+				.param("dateTime", "2020/08/11 08:30:00").param("clinic.id", String.valueOf(TEST_CLINIC_ID_1))
+				.param("pet.id", String.valueOf(TEST_PET_ID_1)))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/visits/listByOwner"));
 	}
 
 	// TODO: PREGUNTA DE CARLOS
 	@WithMockUser(value = "Owner")
 	@Test
 	void testCreateVisitWrongDate() throws Exception {
-		mockMvc.perform(post("/visits/save").with(csrf()).param("description", "description of the visit").param("dateTime", "2019/08/11 08:30:00").param("clinic.id", String.valueOf(TEST_CLINIC_ID_1)).param("pet.id", String.valueOf(TEST_PET_ID_1)))
-			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(model().attributeExists("visit")).andExpect(model().attributeHasFieldErrorCode("visit", "dateTime", "dateInFuture"))
+		mockMvc
+			.perform(post("/visits/save").with(csrf()).param("description", "description of the visit")
+				.param("dateTime", "2019/08/11 08:30:00").param("clinic.id", String.valueOf(TEST_CLINIC_ID_1))
+				.param("pet.id", String.valueOf(TEST_PET_ID_1)))
+			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(model().attributeExists("visit"))
+			.andExpect(model().attributeHasFieldErrorCode("visit", "dateTime", "dateInFuture"))
 			.andExpect(MockMvcResultMatchers.view().name("visits/createOrUpdateVisitForm"));
 	}
 
 	@WithMockUser(value = "Owner")
 	@Test
 	void testListAllPendingAndAcceptedByOwner() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listByOwner")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("visitsPending"))
-			.andExpect(MockMvcResultMatchers.model().attributeExists("visitsAccepted")).andExpect(MockMvcResultMatchers.view().name("visits/listByOwner"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listByOwner"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("visitsPending"))
+			.andExpect(MockMvcResultMatchers.model().attributeExists("visitsAccepted"))
+			.andExpect(MockMvcResultMatchers.view().name("visits/listByOwner"));
 	}
 
 	@WithMockUser(value = "AnyUser")
 	@Test
 	void testListAllPendingAndAcceptedNegativeNotAuthorized() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listByOwner")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/visits/listByOwner")).andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/oups"));
 	}
 
 }

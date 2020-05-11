@@ -26,14 +26,15 @@ import org.springframework.samples.petclinic.service.ProductService;
 import org.springframework.samples.petclinic.service.ProviderService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-/**
- * Test class for the {@link VetController}
- */
-@WebMvcTest(controllers = ProviderController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
+@ActiveProfiles("hsqldb")
+@WebMvcTest(controllers = ProviderController.class,
+	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
+	excludeAutoConfiguration = SecurityConfiguration.class)
 class ProviderControllerTests {
 
 	//Provider with no Manager associated
@@ -129,32 +130,42 @@ class ProviderControllerTests {
 	})
 	@Test
 	void testListAvailable() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/providers/listAvailable")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("providers/providersList"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/providers/listAvailable"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("providers/providersList"));
 	}
 
 	@WithMockUser(value = "provider")
 	@Test
 	void testListAvailableNegativeNotAuthorized() throws Exception {
-		mockMvc.perform(get("/providers/listAvailable")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(get("/providers/listAvailable")).andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "manager1")
 	@Test
 	void testInitAddProviderToManager() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/providers/addProvider/{providerId}", TEST_PROVIDER2_ID)).andExpect(status().isOk()).andExpect(MockMvcResultMatchers.model().attribute("message", "Provider succesfully added"))
-			.andExpect(MockMvcResultMatchers.model().attributeExists("availableProviders")).andExpect(MockMvcResultMatchers.model().attributeExists("addedProviders")).andExpect(MockMvcResultMatchers.view().name("providers/providersList"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/providers/addProvider/{providerId}", TEST_PROVIDER2_ID))
+			.andExpect(status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attribute("message", "Provider succesfully added"))
+			.andExpect(MockMvcResultMatchers.model().attributeExists("availableProviders"))
+			.andExpect(MockMvcResultMatchers.model().attributeExists("addedProviders"))
+			.andExpect(MockMvcResultMatchers.view().name("providers/providersList"));
 	}
 
 	@WithMockUser(value = "provider")
 	@Test
 	void testInitAddProviderToManagerNegativeNotAuthorized() throws Exception {
-		mockMvc.perform(get("/providers/addProvider/{providerId}", TEST_PROVIDER1_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(get("/providers/addProvider/{providerId}", TEST_PROVIDER1_ID))
+			.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "manager1")
 	@Test
 	void testInitAddProviderToManagerNegativeNotExistingProvider() throws Exception {
-		mockMvc.perform(get("/providers/addProvider/{providerId}", TEST_PROVIDER99_ID)).andExpect(status().isOk()).andExpect(MockMvcResultMatchers.model().attribute("message", "We are very sorry, but the selected provider does not exist"))
+		mockMvc.perform(get("/providers/addProvider/{providerId}", TEST_PROVIDER99_ID)).andExpect(status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attribute("message",
+				"We are very sorry, but the selected provider does not exist"))
 			.andExpect(view().name("providers/providersList"));
 	}
 
@@ -162,34 +173,43 @@ class ProviderControllerTests {
 	@Test
 	void testInitAddProviderToManagerNegativeAlreadyAddedProvider() throws Exception {
 		mockMvc.perform(get("/providers/addProvider/{providerId}", TEST_PROVIDER1_ID)).andExpect(status().isOk())
-			.andExpect(MockMvcResultMatchers.model().attribute("message", "We are very sorry, it is not possible to add a Provider that is already assigned to another Manager")).andExpect(view().name("providers/providersList"));
+			.andExpect(MockMvcResultMatchers.model().attribute("message",
+				"We are very sorry, it is not possible to add a Provider that is already assigned to another Manager"))
+			.andExpect(view().name("providers/providersList"));
 	}
 
 	@WithMockUser(value = "manager1")
 	@Test
 	void testListProductsByProvider() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/providers/listProductsByProvider/{providerId}", TEST_PROVIDER2_ID)).andExpect(status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("products"))
+		mockMvc.perform(MockMvcRequestBuilders.get("/providers/listProductsByProvider/{providerId}", TEST_PROVIDER2_ID))
+			.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("products"))
 			.andExpect(MockMvcResultMatchers.view().name("providers/providerProductsList"));
 	}
 
 	@WithMockUser(value = "FalseManager")
 	@Test
 	void testListProductsByProviderNegativeNotExistingManager() throws Exception {
-		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}", TEST_PROVIDER1_ID)).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
+		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}", TEST_PROVIDER1_ID))
+			.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "manager1")
 	@Test
 	void testListProductsByProviderNegativeNotExistingProvider() throws Exception {
-		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}", TEST_PROVIDER99_ID)).andExpect(MockMvcResultMatchers.model().attribute("message", "We are very sorry, but the selected provider does not exist")).andExpect(status().isOk())
-			.andExpect(view().name("providers/providersList"));
+		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}", TEST_PROVIDER99_ID))
+			.andExpect(MockMvcResultMatchers.model().attribute("message",
+				"We are very sorry, but the selected provider does not exist"))
+			.andExpect(status().isOk()).andExpect(view().name("providers/providersList"));
 	}
 
 	@WithMockUser(value = "manager2")
 	@Test
 	void testListProductsByProviderNegativeListOtherManagersProviders() throws Exception {
-		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}", TEST_PROVIDER1_ID)).andExpect(status().isOk())
-			.andExpect(MockMvcResultMatchers.model().attribute("message", "We are very sorry, but you cannot see the products of a supplier assigned to another manager")).andExpect(view().name("providers/providersList"));
+		mockMvc.perform(get("/providers/listProductsByProvider/{providerId}", TEST_PROVIDER1_ID))
+			.andExpect(status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attribute("message",
+				"We are very sorry, but you cannot see the products of a supplier assigned to another manager"))
+			.andExpect(view().name("providers/providersList"));
 	}
 
 }
