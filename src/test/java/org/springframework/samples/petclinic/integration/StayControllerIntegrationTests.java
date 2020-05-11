@@ -77,7 +77,7 @@ public class StayControllerIntegrationTests {
 		"owner"
 	})
 	@Test
-	public void testListAllPendingAsOwnerNegative() {
+	public void testListAllPendingAsOwnerNegativeNotAuthorized() {
 		ModelMap modelMap = new ModelMap();
 		String view = stayController.listAllPending(modelMap);
 
@@ -163,7 +163,7 @@ public class StayControllerIntegrationTests {
 		int stayId = 1;
 		String view = stayController.cancelStay(stayId, modelMap);
 
-		assertEquals(view, "redirect:/oups");
+		assertEquals("redirect:/oups", view);
 	}
 
 	@WithMockUser(username = "owner1", authorities = {
@@ -178,7 +178,7 @@ public class StayControllerIntegrationTests {
 		Optional<Stay> stay = stayService.findEntityById(stayId);
 
 		assertEquals(false, stay.get().getIsAccepted());
-		assertEquals(view, "redirect:/stays/listByOwner");
+		assertEquals("redirect:/stays/listByOwner", view);
 	}
 
 	@WithMockUser(username = "owner3", authorities = {
@@ -190,8 +190,7 @@ public class StayControllerIntegrationTests {
 		int stayId = 1;
 		String view = stayController.cancelStay(stayId, modelMap);
 
-		assertNotNull(modelMap.get("nonAuthorized"));
-		assertEquals(view, "redirect:/stays/listByOwner");
+		assertEquals("redirect:/oups", view);
 	}
 
 	@WithMockUser(username = "vet1", authorities = {
@@ -203,24 +202,12 @@ public class StayControllerIntegrationTests {
 		int stayId = 1;
 		String view = stayController.changeDateStay(stayId, modelMap);
 		assertNotNull(modelMap.get("stay"));
-		assertEquals(view, "/stays/createOrUpdateStayForm");
+		assertEquals(true, modelMap.get("hasClinic"));
+		assertEquals("stays/createOrUpdateStayForm", view);
 	}
 
-	//	//TODO: No hay restricciones en cuanto al usuario que accede a cambiar la fecha.
-	//	@WithMockUser(username = "owner1", authorities = {
-	//		"owner"
-	//	})
-	//	@Test
-	//	public void testShowChangeDateStayNegative() {
-	//		ModelMap modelMap = new ModelMap();
-	//		int stayId = 1;
-	//		String view = stayController.changeDateStay(stayId, modelMap);
-	//		assertNotNull(modelMap.get("stay"));
-	//		assertEquals(view, "/stays/createOrUpdateStayForm");
-	//	}
-
 	@WithMockUser(username = "vet1", authorities = {
-		"vet"
+		"veterinarian"
 	})
 	@Test
 	public void testUpdateStaySuccesful() {
@@ -245,73 +232,10 @@ public class StayControllerIntegrationTests {
 		stay.setStartDate(LocalDate.now().plusMonths(5L));
 		stay.setFinishDate(LocalDate.now().plusMonths(5L).plusDays(5L));
 
-		stayController.updateStay(stayId, stay, result, modelMap);
+		String view = stayController.updateStay(stayId, stay, result, modelMap);
 
 		assertEquals("Stay succesfully updated", modelMap.get("message"));
-	}
-
-	@WithMockUser(username = "vet1", authorities = {
-		"vet"
-	})
-	@Test
-	public void testNegativeUpdateStayWithNullStartDate() {
-		ModelMap modelMap = new ModelMap();
-		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
-
-		int stayId = 1;
-
-		Clinic clinic = new Clinic();
-		clinic.setId(30);
-
-		Pet pet = new Pet();
-		pet.setId(30);
-		pet.setName("PetName");
-
-		Stay stay = new Stay();
-		stay.setId(stayId);
-		stay.setDescription("Description of the stay");
-		stay.setClinic(clinic);
-		stay.setIsAccepted(true);
-		stay.setPet(pet);
-		stay.setStartDate(null);
-		stay.setFinishDate(LocalDate.now().plusMonths(5L).plusDays(5L));
-
-		stayController.updateStay(stayId, stay, result, modelMap);
-
-		assertEquals("startDateNotNull", result.getFieldError("startDate").getCode());
-		assertNotNull(modelMap.get("stay"));
-	}
-
-	@WithMockUser(username = "vet1", authorities = {
-		"vet"
-	})
-	@Test
-	public void testNegativeUpdateStayWithNullFinishDate() {
-		ModelMap modelMap = new ModelMap();
-		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
-
-		int stayId = 1;
-
-		Clinic clinic = new Clinic();
-		clinic.setId(30);
-
-		Pet pet = new Pet();
-		pet.setId(30);
-		pet.setName("PetName");
-
-		Stay stay = new Stay();
-		stay.setId(stayId);
-		stay.setDescription("Description of the stay");
-		stay.setClinic(clinic);
-		stay.setIsAccepted(true);
-		stay.setPet(pet);
-		stay.setStartDate(LocalDate.now().plusMonths(5L));
-		stay.setFinishDate(null);
-
-		stayController.updateStay(stayId, stay, result, modelMap);
-
-		assertEquals("finishDateNotNull", result.getFieldError("finishDate").getCode());
-		assertNotNull(modelMap.get("stay"));
+		assertEquals("stays/list", view);
 	}
 
 	@WithMockUser(username = "vet5", authorities = {
@@ -340,10 +264,9 @@ public class StayControllerIntegrationTests {
 		stay.setStartDate(LocalDate.now().plusMonths(5L));
 		stay.setFinishDate(null);
 
-		stayController.updateStay(stayId, stay, result, modelMap);
+		String view = stayController.updateStay(stayId, stay, result, modelMap);
 
-		assertEquals("notAuthorized", result.getFieldError("authorized").getCode());
-		assertNotNull(modelMap.get("stay"));
+		assertEquals(view, "redirect:/oups");
 	}
 
 	@WithMockUser(username = "vet1", authorities = {
@@ -372,10 +295,10 @@ public class StayControllerIntegrationTests {
 		stay.setStartDate(LocalDate.now());
 		stay.setFinishDate(LocalDate.now().plusDays(1L));
 
-		stayController.updateStay(stayId, stay, result, modelMap);
+		String view = stayController.updateStay(stayId, stay, result, modelMap);
 
-		assertEquals("startFuturePlus2Days", result.getFieldError("startDate").getCode());
-		assertNotNull(modelMap.get("stay"));
+		assertEquals(modelMap.get("hasClinic"), true);
+		assertEquals("stays/createOrUpdateStayForm", view);
 	}
 
 	@WithMockUser(username = "vet1", authorities = {
@@ -406,11 +329,10 @@ public class StayControllerIntegrationTests {
 
 		String view = stayController.updateStay(stayId, stay, result, modelMap);
 
-		assertEquals(view, "stays/createOrUpdateStayForm");
-
+		assertEquals("stays/createOrUpdateStayForm", view);
+		assertEquals(true, modelMap.get("hasClinic"));
 		assertNotNull(modelMap.get("stay"));
-		assertNotNull(result.getFieldError("finishDate"));
-		assertEquals("Stays cannot last longer than one week", result.getFieldError("finishDate").getDefaultMessage());
+
 	}
 
 	@WithMockUser(username = "vet1", authorities = {
@@ -441,92 +363,16 @@ public class StayControllerIntegrationTests {
 
 		String view = stayController.updateStay(stayId, stay, result, modelMap);
 
-		assertEquals(view, "stays/createOrUpdateStayForm");
-
+		assertEquals("stays/createOrUpdateStayForm", view);
+		assertEquals(true, modelMap.get("hasClinic"));
 		assertNotNull(modelMap.get("stay"));
-		assertNotNull(result.getFieldError("finishDate"));
-		assertEquals("The finish date must be after the start date",
-			result.getFieldError("finishDate").getDefaultMessage());
 	}
-
-	//----------------------------------------------------------------------------
-	//----------------------------------------------------------------------------
-	//----------------------------------------------------------------------------
-	//----------------------------------------------------------------------------
 
 	@WithMockUser(username = "owner1", authorities = {
 		"owner"
 	})
 	@Test
-	public void testNegativeNewStayWithNullStartDate() {
-		ModelMap modelMap = new ModelMap();
-		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
-		result.reject("startDate", "not be must null");
-
-		int stayId = 1;
-
-		Clinic clinic = new Clinic();
-		clinic.setId(30);
-
-		Pet pet = new Pet();
-		pet.setId(30);
-		pet.setName("PetName");
-
-		Stay stay = new Stay();
-		stay.setId(stayId);
-		stay.setDescription("Description of the stay");
-		stay.setClinic(clinic);
-		stay.setIsAccepted(true);
-		stay.setPet(pet);
-		stay.setStartDate(null);
-		stay.setFinishDate(LocalDate.now().plusMonths(5L).plusDays(5L));
-
-		String view = stayController.newStay(stay, result, modelMap);
-
-		assertEquals(view, "stays/createOrUpdateStayForm");
-
-		assertNotNull(modelMap.get("stay"));
-		assertNotNull(result.getFieldError("startDate").getCode());
-		assertEquals("not be must null", result.getFieldError("startDate").getDefaultMessage());
-	}
-
-	@WithMockUser(username = "vet1", authorities = {
-		"vet"
-	})
-	@Test
-	public void testNegativeStayWithNullFinishDate() {
-		ModelMap modelMap = new ModelMap();
-		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
-
-		int stayId = 1;
-
-		Clinic clinic = new Clinic();
-		clinic.setId(30);
-
-		Pet pet = new Pet();
-		pet.setId(30);
-		pet.setName("PetName");
-
-		Stay stay = new Stay();
-		stay.setId(stayId);
-		stay.setDescription("Description of the stay");
-		stay.setClinic(clinic);
-		stay.setIsAccepted(true);
-		stay.setPet(pet);
-		stay.setStartDate(LocalDate.now().plusMonths(5L));
-		stay.setFinishDate(null);
-
-		stayController.newStay(stay, result, modelMap);
-
-		assertEquals("not be must null", result.getFieldError("finishDate").getDefaultMessage());
-		assertNotNull(modelMap.get("stay"));
-	}
-
-	@WithMockUser(username = "vet1", authorities = {
-		"veterinarian"
-	})
-	@Test
-	public void testNegativeStay2DaysFromToday() {
+	public void testNewStayNegativeStay2DaysFromToday() {
 		ModelMap modelMap = new ModelMap();
 		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
 
@@ -548,17 +394,19 @@ public class StayControllerIntegrationTests {
 		stay.setStartDate(LocalDate.now());
 		stay.setFinishDate(LocalDate.now().plusDays(1L));
 
-		stayController.newStay(stay, result, modelMap);
+		String view = stayController.newStay(stay, result, modelMap);
 
-		assertEquals("startFuturePlus2Days", result.getFieldError("startDate").getCode());
-		assertNotNull(modelMap.get("stay"));
+		assertEquals(view, "stays/createOrUpdateStayForm");
+		assertNotNull(modelMap.get("stays"));
+		assertEquals(modelMap.get("hasClinic"), true);
+
 	}
 
 	@WithMockUser(username = "owner1", authorities = {
 		"owner"
 	})
 	@Test
-	public void testNegativeCheckMoreThanOneWeek() {
+	public void testNewStayNegativeCheckMoreThanOneWeek() {
 		ModelMap modelMap = new ModelMap();
 		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
 
@@ -583,17 +431,15 @@ public class StayControllerIntegrationTests {
 		String view = stayController.newStay(stay, result, modelMap);
 
 		assertEquals(view, "stays/createOrUpdateStayForm");
-
-		assertNotNull(modelMap.get("stay"));
-		assertNotNull(result.getFieldError("finishDate"));
-		assertEquals("Stays cannot last longer than one week", result.getFieldError("finishDate").getDefaultMessage());
+		assertNotNull(modelMap.get("stays"));
+		assertEquals(modelMap.get("hasClinic"), true);
 	}
 
-	@WithMockUser(username = "vet5", authorities = {
-		"veterinarian"
+	@WithMockUser(username = "owner1", authorities = {
+		"owner"
 	})
 	@Test
-	public void testNegativeCheckFinishBeforeStart() {
+	public void testNewStayNegativeCheckFinishBeforeStart() {
 		ModelMap modelMap = new ModelMap();
 		BindingResult result = new MapBindingResult(Collections.emptyMap(), "");
 		result.reject("finishDate", "not be must null");
@@ -616,10 +462,11 @@ public class StayControllerIntegrationTests {
 		stay.setStartDate(LocalDate.now().plusMonths(5L).plusDays(9L));
 		stay.setFinishDate(LocalDate.now().plusMonths(5L));
 
-		stayController.newStay(stay, result, modelMap);
+		String view = stayController.newStay(stay, result, modelMap);
 
-		assertEquals("not be must null", result.getFieldError("finishDate").getDefaultMessage());
-		assertNotNull(modelMap.get("stay"));
+		assertEquals(view, "stays/createOrUpdateStayForm");
+		assertNotNull(modelMap.get("stays"));
+		assertEquals(modelMap.get("hasClinic"), true);
 	}
 
 	@WithMockUser(username = "owner1", authorities = {
