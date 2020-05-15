@@ -14,15 +14,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- * @author japarejo
- */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -38,6 +29,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	      .antMatchers(HttpMethod.GET, "/", "/oups").permitAll()
 	      .antMatchers("/users/new").permitAll().antMatchers("/admin/**").hasAnyAuthority("admin")
 	      .antMatchers("/pettype/**").hasAnyAuthority("admin")
+	      .antMatchers("/specialty/**").hasAnyAuthority("admin")
 	      .antMatchers("/suggestion/admin/**").hasAnyAuthority("admin")
 	      .antMatchers("/suggestion/user/**").hasAnyAuthority("veterinarian", "owner", "manager", "provider")
 	      .antMatchers("/visits/**").hasAnyAuthority("veterinarian", "owner")
