@@ -81,13 +81,15 @@
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>Stays</span>
 				</petclinic:menuItem>
-				</sec:authorize>
-				
-				<sec:authorize access="hasAuthority('veterinarian')">
 				<petclinic:menuItem active="${name eq 'clinics'}" url="/clinics/getDetail"
 					title="stays">
 					<span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>
 					<span>My Clinic</span>
+				</petclinic:menuItem>
+				<petclinic:menuItem active="${name eq 'specialties'}" url="/specialty/vet/list"
+					title="specialties">
+					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+					<span>My Specialties</span>
 				</petclinic:menuItem>
 				</sec:authorize>
 				

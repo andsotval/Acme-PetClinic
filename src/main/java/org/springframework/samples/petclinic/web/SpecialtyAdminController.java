@@ -23,10 +23,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/specialty")
-public class SpecialtyController {
+@RequestMapping("/specialty/admin")
+public class SpecialtyAdminController {
 
-	private static final String	VIEWS_SPECIALTY_CREATE_OR_UPDATE_FORM	= "specialty/createOrUpdateSpecialtyForm";
+	private static final String	VIEWS_SPECIALTY_CREATE_OR_UPDATE_FORM	= "specialty/admin/createOrUpdateSpecialtyForm";
 
 	private static final String	REDIRECT_OUPS							= "redirect:/oups";
 
@@ -34,7 +34,7 @@ public class SpecialtyController {
 
 
 	@Autowired
-	public SpecialtyController(SpecialtyService specialtyService) {
+	public SpecialtyAdminController(SpecialtyService specialtyService) {
 		this.specialtyService = specialtyService;
 	}
 
@@ -133,6 +133,6 @@ public class SpecialtyController {
 		model.addAttribute("available", available);
 		model.addAttribute("message", message);
 
-		return "/specialty/list";
+		return "/specialty/admin/list";
 	}
 }
