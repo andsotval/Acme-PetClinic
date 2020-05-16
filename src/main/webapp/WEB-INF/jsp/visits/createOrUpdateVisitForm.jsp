@@ -5,8 +5,22 @@
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="sec"	uri="http://www.springframework.org/security/tags"%>
 
+<petclinic:layout pageName="visitsByPet">
 
-<petclinic:layout pageName="visitsByPet">    
+    <jsp:attribute name="customScript">
+        <script>
+            $(function () {
+                $("#dateTime").datetimepicker(
+                		{
+                			dateFormat: 'yy/mm/dd', 
+                			timeFormat: 'HH:mm',
+                			stepMinute: 30,
+                		});
+            });
+        </script>
+    </jsp:attribute>
+
+    
 	<jsp:body>
     	<c:if test="${visit.id != null}">
 				<h2>Update Visit</h2>
