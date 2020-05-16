@@ -18,13 +18,15 @@
 				<tr>
 					<th>Name</th>
 					<th>Specialties</th>
+					<th>Telephone</th>
+					<th>Email</th>
 					<th>Actions</th>
 				</tr>
 			</thead>
 			<tbody>
 				<c:forEach items="${vets2}" var="vet">
 					<tr>
-						<td>
+						<td width="25%">
 							<spring:url value="/vets/{vetId}" var="vetUrl">
 								<spring:param name="vetId" value="${vet.id}" />
 							</spring:url>
@@ -32,10 +34,12 @@
 								<c:out value="${vet.firstName} ${vet.lastName}" />
 							</a>
 						</td>
-						<td><c:forEach var="specialty" items="${vet.specialties}">
+						<td width="25%"><c:forEach var="specialty" items="${vet.specialties}">
 								<c:out value="[${specialty.name}] " />
 							</c:forEach> <c:if test="${vet.nrOfSpecialties == 0}">none</c:if></td>
-						<td><c:if test="${vet.clinic == null}">
+						<td width="20%"><c:out value="${vet.telephone}" /></td>
+						<td width="20%"><c:out value="${vet.mail}" /></td>
+						<td width="10%"><c:if test="${vet.clinic == null}">
 								<spring:url value="/vets/accept/{vetId}" var="vetUrlAccept">
 									<spring:param name="vetId" value="${vet.id}" />
 								</spring:url>
@@ -58,12 +62,14 @@
 				<tr>
 					<th>Name</th>
 					<th>Specialties</th>
+					<th>Telephone</th>
+					<th>Email</th>
 				</tr>
 			</thead>
 			<tbody>
 				<c:forEach items="${hiredVets}" var="vet">
 					<tr>
-						<td>
+						<td width="25%">
 							<spring:url value="/vets/{vetId}" var="vetUrl">
 								<spring:param name="vetId" value="${vet.id}" />
 							</spring:url>
@@ -71,10 +77,12 @@
 								<c:out value="${vet.firstName} ${vet.lastName}" />
 							</a>
 						</td>
-						<td>
+						<td width="25%">
 							<c:forEach var="specialty" items="${vet.specialties}">
 								<c:out value="[${specialty.name}] " />
 							</c:forEach> <c:if test="${vet.nrOfSpecialties == 0}">none</c:if></td>
+						<td width="20%"><c:out value="${vet.telephone}" /></td>
+						<td width="30%"><c:out value="${vet.mail}" /></td>
 					</tr>
 				</c:forEach>
 			</tbody>
