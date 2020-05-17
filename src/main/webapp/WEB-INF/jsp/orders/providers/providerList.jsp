@@ -9,7 +9,7 @@
     <h2>Select a Provider</h2>
 
 	<c:if test="${empty providers}">
-		<h3>You don't have providers by the moment...</h3>
+		<h3>You don't have providers available by the moment...</h3>
 	</c:if>
 
 	<c:if test="${not empty providers}">

@@ -5,6 +5,29 @@
 <!-- %@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %-->  
 
 <petclinic:layout pageName="home">
+	<style>
+	@media (max-height: 700px) {
+	  #myCarousel {
+	    display: inline-block;
+	    width:900px
+	  }
+	}
+	
+	@media (max-height: 650px) {
+	  #myCarousel {
+	    display: inline-block;
+	    width:850px
+	  }
+	}
+	
+	@media (max-height: 550px) {
+	  #myCarousel {
+	    display: inline-block;
+	    width:750px
+	  }
+	}
+	</style>
+	
     <h2><fmt:message key="welcome.title"/></h2>
     <h3><fmt:message key="welcome.message"/></h3>
     <div class="row">
@@ -20,6 +43,7 @@
         <p><fmt:message key="welcome.message"/></p>
       </div>
     </div>-->
+    <div class="carousel_container" style="text-align:center">
 	 <div style="border-radius: 10px;margin-top:25px" id="myCarousel" class="carousel slide" data-ride="carousel">
 	   <!-- Indicators -->
 	   <ol class="carousel-indicators">
@@ -54,5 +78,4 @@
 	   </a>
 	 </div>
     </div>
-    
 </petclinic:layout>
