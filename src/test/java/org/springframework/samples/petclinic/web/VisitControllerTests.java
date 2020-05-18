@@ -372,7 +372,7 @@ class VisitControllerTests {
 	void testUpdateVisit() throws Exception {
 		mockMvc
 			.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID).with(csrf())
-				.param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00"))
+				.param("description", "description of the visit").param("dateTime", "2020/08/11 08:30"))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.model().attributeExists("messageSuccesful"))
 			.andExpect(MockMvcResultMatchers.view().name("visits/list"));
@@ -383,7 +383,7 @@ class VisitControllerTests {
 	void testUpdateVisitNegativeUserNotInSystem() throws Exception {
 		mockMvc
 			.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID).with(csrf())
-				.param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00"))
+				.param("description", "description of the visit").param("dateTime", "2020/08/11 08:30"))
 			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
@@ -393,7 +393,7 @@ class VisitControllerTests {
 	void testUpdateVisitNegative() throws Exception {
 		mockMvc
 			.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID_NOT_AUTHORIZED).with(csrf())
-				.param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00"))
+				.param("description", "description of the visit").param("dateTime", "2020/08/11 08:30"))
 			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
@@ -403,7 +403,7 @@ class VisitControllerTests {
 	void testUpdateVisitWrongDate() throws Exception {
 		mockMvc
 			.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID).with(csrf())
-				.param("description", "description of the visit").param("dateTime", "2019/08/11 08:30:00"))
+				.param("description", "description of the visit").param("dateTime", "2019/08/11 08:30"))
 			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(model().attributeExists("visit"))
 			.andExpect(model().attributeHasFieldErrorCode("visit", "dateTime", "dateInFuture"))
 			.andExpect(MockMvcResultMatchers.view().name("visits/createOrUpdateVisitForm"));
@@ -414,7 +414,7 @@ class VisitControllerTests {
 	void testCreateVisit() throws Exception {
 		mockMvc
 			.perform(post("/visits/save").with(csrf()).param("description", "description of the visit")
-				.param("dateTime", "2020/08/11 08:30:00").param("clinic.id", String.valueOf(TEST_CLINIC_ID_1))
+				.param("dateTime", "2020/08/11 08:30").param("clinic.id", String.valueOf(TEST_CLINIC_ID_1))
 				.param("pet.id", String.valueOf(TEST_PET_ID_1)))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(MockMvcResultMatchers.view().name("redirect:/visits/listByOwner"));
@@ -426,7 +426,7 @@ class VisitControllerTests {
 	void testCreateVisitWrongDate() throws Exception {
 		mockMvc
 			.perform(post("/visits/save").with(csrf()).param("description", "description of the visit")
-				.param("dateTime", "2019/08/11 08:30:00").param("clinic.id", String.valueOf(TEST_CLINIC_ID_1))
+				.param("dateTime", "2019/08/11 08:30").param("clinic.id", String.valueOf(TEST_CLINIC_ID_1))
 				.param("pet.id", String.valueOf(TEST_PET_ID_1)))
 			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(model().attributeExists("visit"))
 			.andExpect(model().attributeHasFieldErrorCode("visit", "dateTime", "dateInFuture"))
