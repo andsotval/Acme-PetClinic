@@ -99,7 +99,7 @@ public class ProductController {
 	}
 
 	@PostMapping(path = "/save/{productId}")
-	public String updteProduct(@PathVariable("productId") int productId, @Valid Product productForm, BindingResult result, ModelMap model) {
+	public String updateProduct(@PathVariable("productId") int productId, @Valid Product productForm, BindingResult result, ModelMap model) {
 
 		Provider provider = providerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		Optional<Product> product = productService.findEntityById(productId);
@@ -108,7 +108,7 @@ public class ProductController {
 			return REDIRECT_OUPS;
 		if (!product.isPresent())
 			return REDIRECT_OUPS;
-		if (provider.getId().equals(product.get().getProvider().getId()))
+		if (!provider.getId().equals(product.get().getProvider().getId()))
 			return REDIRECT_OUPS;
 
 		if (result.hasErrors()) {

@@ -109,6 +109,21 @@
 				</petclinic:menuItem>
 				</sec:authorize>
 				
+				
+				<sec:authorize access="hasAuthority('provider')">
+				<petclinic:menuItem active="${name eq 'orders'}" url="/order/listMyPets"
+					title="orders">
+					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+					<span>Orders</span>
+				</petclinic:menuItem>			
+				<petclinic:menuItem active="${name eq 'products'}" url="/product/myProductsList"
+					title="products">
+					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+					<span>Products</span>
+				</petclinic:menuItem>
+				
+				</sec:authorize>
+				
         
 		        <sec:authorize access="isAuthenticated() and !hasAuthority('admin')">
 						<petclinic:menuItem active="${name eq 'suggestions'}" url="/suggestion/user/list"
