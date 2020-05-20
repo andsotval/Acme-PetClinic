@@ -15,25 +15,52 @@
             <th>Name</th>
             <th>Price</th>
             <th>Tax</th>
-            <th>Available</th>
+            <th>State</th>
+            <th>Enable/Disable</th>
+            <th>Edit</th>
         </tr>
         </thead>
         <tbody>
         <c:forEach items="${products}" var="product">
             <tr>
-                <td>
+                <td width="30%">
                     <c:out value="${product.name}"/>
                 </td>
-                <td>
+                <td width="20%">
                     <c:out value="${product.price}"/> &#8364
                 </td>           
-                <td>
+                <td width="20%">
                     <c:out value="${product.tax}"/>
                 </td>           
-                <td>
-                    <c:out value="${product.available}"/> 
+                <td width="20%">
+                	<c:if test="${product.available}">
+                	    <c:out value="Available"/> 
+                    </c:if>
+                	<c:if test="${!product.available}">
+                	    <c:out value="Not available"/> 
+                    </c:if>
+                </td>  
+                 
+                    
+                <td width="5%" style="text-align: center;">
+                	<spring:url value="/product/desactivateProduct/{productId}" var="activateOrDesactivateProduct">
+	                    <spring:param name="productId" value="${product.id}"/>
+	                </spring:url>
+	                <c:if test="${product.available}">
+	                	<a href="${fn:escapeXml(activateOrDesactivateProduct)}"><span class="glyphicon glyphicon-ok" style=" color: #6db33f" aria-hidden="true"></span></a>
+                	</c:if>
+	                <c:if test="${!product.available}">
+	                	<a href="${fn:escapeXml(activateOrDesactivateProduct)}"><span class="glyphicon glyphicon-remove" style="color: #FF0000" aria-hidden="true"></span></a>
+                	</c:if>
+                </td>     
+                <td width="5%" style="text-align: center;">
+                	<spring:url value="/product/show/{productId}" var="showProduct">
+	                    <spring:param name="productId" value="${product.id}"/>
+	                </spring:url>
+	                <a href="${fn:escapeXml(showProduct)}"><span class="glyphicon glyphicon-edit" style=" color: #6db33f" aria-hidden="true"></span></a>
                 </td>           
             </tr>
+            
         </c:forEach>
         </tbody>
     </table>
