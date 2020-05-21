@@ -111,7 +111,7 @@
 				
 				
 				<sec:authorize access="hasAuthority('provider')">
-				<petclinic:menuItem active="${name eq 'orders'}" url="/order/listMyPets"
+				<petclinic:menuItem active="${name eq 'orders'}" url="/orders/listByProvider"
 					title="orders">
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>Orders</span>
