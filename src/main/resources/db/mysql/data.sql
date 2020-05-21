@@ -175,15 +175,15 @@ INSERT IGNORE INTO vet(id, user_id, first_name, last_name, address, city, teleph
 
 -- SPECIALTIES
 
-INSERT IGNORE INTO specialty VALUES (1, 'radiology');
-INSERT IGNORE INTO specialty VALUES (2, 'surgery');
-INSERT IGNORE INTO specialty VALUES (3, 'dentistry');
-INSERT IGNORE INTO specialty VALUES (4, 'traumatology');
-INSERT IGNORE INTO specialty VALUES (5, 'cardiology');
-INSERT IGNORE INTO specialty VALUES (6, 'ophtalmology');
-INSERT IGNORE INTO specialty VALUES (7, 'neurology');
-INSERT IGNORE INTO specialty VALUES (8, 'anaesthetist');
-INSERT IGNORE INTO specialty VALUES (9, 'orthopedic');
+INSERT IGNORE INTO specialty VALUES (1, 'radiology', true);
+INSERT IGNORE INTO specialty VALUES (2, 'surgery', true);
+INSERT IGNORE INTO specialty VALUES (3, 'dentistry', true);
+INSERT IGNORE INTO specialty VALUES (4, 'traumatology', true);
+INSERT IGNORE INTO specialty VALUES (5, 'cardiology', true);
+INSERT IGNORE INTO specialty VALUES (6, 'ophtalmology', true);
+INSERT IGNORE INTO specialty VALUES (7, 'neurology', true);
+INSERT IGNORE INTO specialty VALUES (8, 'anaesthetist', false);
+INSERT IGNORE INTO specialty VALUES (9, 'orthopedic', false);
 
 
 -- VET_SPECIALTIES
