@@ -16,4 +16,7 @@ public interface ProductRepository extends BaseRepository<Product> {
 	@Query("SELECT product FROM Product product WHERE (product.provider.id=?1) AND	(product.available = true) ORDER BY product.name")
 	Collection<Product> findProductsAvailableByProviderId(int providerId);
 
+	@Query("SELECT product FROM Product product WHERE (product.provider.id=?1) ORDER BY product.name")
+	Collection<Product> findAllProductsByProviderId(int providerId);
+
 }
