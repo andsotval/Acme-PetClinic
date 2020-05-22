@@ -80,11 +80,12 @@ public class SpecialtyVetController {
 		if (vet == null)
 			return REDIRECT_OUPS;
 
-		Collection<Specialty> specialties = specialtyService.findAvailable();
-		model.addAttribute("specialties", specialties);
-
 		Collection<Specialty> mySpecialties = vet.getSpecialties();
 		model.addAttribute("mySpecialties", mySpecialties);
+
+		Collection<Specialty> specialties = specialtyService.findAvailable();
+		specialties.removeAll(mySpecialties);
+		model.addAttribute("specialties", specialties);
 
 		model.addAttribute("message", message);
 		return "/specialty/vet/list";
