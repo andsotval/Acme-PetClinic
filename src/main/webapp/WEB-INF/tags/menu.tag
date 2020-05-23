@@ -40,7 +40,7 @@
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>Pet types</span>
 				</petclinic:menuItem>
-				<petclinic:menuItem active="${name eq 'specialties'}" url="/specialty/listAvailable"
+				<petclinic:menuItem active="${name eq 'specialties'}" url="/specialty/admin/listAvailable"
 					title="specialties">
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>Specialties</span>

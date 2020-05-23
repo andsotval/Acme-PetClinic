@@ -21,18 +21,18 @@
             <div class="col-sm-offset-2 col-sm-10">
             	<c:choose>
                     <c:when test="${specialty.available eq true}">
-						<a class="btn btn-default" href='<spring:url value="/specialty/listAvailable" htmlEscape="true"/>'>Back to Specialty Available List</a> 
+						<a class="btn btn-default" href='<spring:url value="/specialty/admin/listAvailable" htmlEscape="true"/>'>Back to Specialty Available List</a> 
                     </c:when>
                     <c:otherwise>
-                        <a class="btn btn-default" href='<spring:url value="/specialty/listNotAvailable" htmlEscape="true"/>'>Back to Specialty Not Available List</a> 
+                        <a class="btn btn-default" href='<spring:url value="/specialty/admin/listNotAvailable" htmlEscape="true"/>'>Back to Specialty Not Available List</a> 
                     </c:otherwise>
                 </c:choose>
             	<c:choose>
                     <c:when test="${specialty['new']}">
-						<button class="btn btn-default" type="submit" formaction="/specialty/new">Create Specialty</button>
+						<button class="btn btn-default" type="submit" formaction="/specialty/admin/new">Create Specialty</button>
                     </c:when>
                     <c:otherwise>
-                        <button class="btn btn-default" type="submit" formaction="/specialty/edit/${specialtyId}">Update Specialty</button>
+                        <button class="btn btn-default" type="submit" formaction="/specialty/admin/edit/${specialtyId}">Update Specialty</button>
                     </c:otherwise>
                 </c:choose>
             </div>

@@ -24,12 +24,27 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(final HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/resources/**", "/webjars/**", "/h2-console/**").permitAll().antMatchers(HttpMethod.GET, "/", "/oups").permitAll().antMatchers("/users/new").permitAll().antMatchers("/admin/**").hasAnyAuthority("admin")
-			.antMatchers("/pettype/**").hasAnyAuthority("admin").antMatchers("/specialty/admin/**").hasAnyAuthority("admin").antMatchers("/specialty/vet/**").hasAnyAuthority("veterinarian").antMatchers("/suggestion/admin/**").hasAnyAuthority("admin")
-			.antMatchers("/suggestion/user/**").hasAnyAuthority("veterinarian", "owner", "manager", "provider").antMatchers("/visits/**").hasAnyAuthority("veterinarian", "owner").antMatchers("/stays/**").hasAnyAuthority("veterinarian", "owner")
-			.antMatchers("/product/**").hasAnyAuthority("provider").antMatchers("/stays/listHistoryByPet/").hasAnyAuthority("owner").antMatchers("/clinics/**").hasAnyAuthority("veterinarian", "owner").antMatchers("/pets/**").hasAnyAuthority("owner")
-			.antMatchers("/owners/**").hasAnyAuthority("owner", "admin").antMatchers("/vets/**").hasAnyAuthority("manager", "admin").antMatchers("/orders/**").hasAnyAuthority("manager", "provider").antMatchers("/providers/**").hasAnyAuthority("manager")
-			.antMatchers("/managers/**").hasAnyAuthority("manager", "admin").anyRequest().denyAll().and().formLogin()
+		http.authorizeRequests().antMatchers("/resources/**", "/webjars/**", "/h2-console/**").permitAll()
+			.antMatchers(HttpMethod.GET, "/", "/oups").permitAll()
+			.antMatchers("/users/new").permitAll()
+			.antMatchers("/admin/**").hasAnyAuthority("admin")
+			.antMatchers("/pettype/**").hasAnyAuthority("admin")
+			.antMatchers("/specialty/admin/**").hasAnyAuthority("admin")
+			.antMatchers("/specialty/vet/**").hasAnyAuthority("veterinarian")
+			.antMatchers("/suggestion/admin/**").hasAnyAuthority("admin")
+			.antMatchers("/suggestion/user/**").hasAnyAuthority("veterinarian", "owner", "manager", "provider")
+			.antMatchers("/visits/**").hasAnyAuthority("veterinarian", "owner")
+			.antMatchers("/stays/**").hasAnyAuthority("veterinarian", "owner")
+			.antMatchers("/product/**").hasAnyAuthority("provider")
+			.antMatchers("/stays/listHistoryByPet/").hasAnyAuthority("owner")
+			.antMatchers("/clinics/**").hasAnyAuthority("veterinarian", "owner")
+			.antMatchers("/pets/**").hasAnyAuthority("owner")
+			.antMatchers("/owners/**").hasAnyAuthority("owner", "admin")
+			.antMatchers("/vets/**").hasAnyAuthority("manager", "admin")
+			.antMatchers("/orders/**").hasAnyAuthority("manager", "provider")
+			.antMatchers("/providers/**").hasAnyAuthority("manager")
+			.antMatchers("/managers/**").hasAnyAuthority("manager", "admin")
+			.anyRequest().denyAll().and().formLogin()
 
 			/* .loginPage("/login") */
 			.failureUrl("/login-error").and().logout().logoutSuccessUrl("/");

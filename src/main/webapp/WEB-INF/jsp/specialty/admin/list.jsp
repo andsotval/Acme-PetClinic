@@ -26,20 +26,20 @@
                 	<c:out value="${specialty.name}"/>
                 </td>
                 <td width="10%">
-                	<spring:url value="/specialty/edit/{specialtyId}" var="specialtyUpdateUrl">
+                	<spring:url value="/specialty/admin/edit/{specialtyId}" var="specialtyUpdateUrl">
                         <spring:param name="specialtyId" value="${specialty.id}"/>
                     </spring:url>
                     <a href="${fn:escapeXml(specialtyUpdateUrl)}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>
                     
                     <c:choose>
 	                    <c:when test="${available eq true}">
-			                <spring:url value="/specialty/notAvailable/{specialtyId}" var="specialtyNotAvailableUrl">
+			                <spring:url value="/specialty/admin/notAvailable/{specialtyId}" var="specialtyNotAvailableUrl">
 			                    <spring:param name="specialtyId" value="${specialty.id}"/>
 			                </spring:url>
 			                <a href="${fn:escapeXml(specialtyNotAvailableUrl)}"><span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span></a>
 	                    </c:when>
 	                    <c:otherwise>
-	                    	 <spring:url value="/specialty/available/{specialtyId}" var="specialtyAvailableUrl">
+	                    	 <spring:url value="/specialty/admin/available/{specialtyId}" var="specialtyAvailableUrl">
 			                    <spring:param name="specialtyId" value="${specialty.id}"/>
 			                </spring:url>
 			                <a href="${fn:escapeXml(specialtyAvailableUrl)}"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
@@ -51,13 +51,13 @@
         </tbody>
     </table>
     
-    <a class="btn btn-default" href='<spring:url value="/specialty/new" htmlEscape="true"/>'>Create a new Specialty</a>
+    <a class="btn btn-default" href='<spring:url value="/specialty/admin/new" htmlEscape="true"/>'>Create a new Specialty</a>
 	<c:choose>
 		<c:when test="${available eq true}">
-			<a class="btn btn-default" href='<spring:url value="/specialty/listNotAvailable" htmlEscape="true"/>'>Not Availables</a>
+			<a class="btn btn-default" href='<spring:url value="/specialty/admin/listNotAvailable" htmlEscape="true"/>'>Not Availables</a>
 		</c:when>
 		<c:otherwise>
-			<a class="btn btn-default" href='<spring:url value="/specialty/listAvailable" htmlEscape="true"/>'>Availables</a>
+			<a class="btn btn-default" href='<spring:url value="/specialty/admin/listAvailable" htmlEscape="true"/>'>Availables</a>
 		</c:otherwise>
 	</c:choose>
 
