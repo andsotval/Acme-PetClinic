@@ -41,7 +41,7 @@ class HU032 extends Simulation {
 	
 	
 		object Home {
-			val home = .exec(http("Home")
+			val home = exec(http("Home")
 			.get("/")
 			.headers(headers_0))
 		.pause(9)
@@ -53,7 +53,7 @@ class HU032 extends Simulation {
 			.headers(headers_0)
 			.resources(http("request_2")
 			.get("/login")
-			.headers(headers_2)))
+			.headers(headers_2))
 			.check(css("input[name=_csrf]", "value").saveAs("stoken")))
 		.pause(13)
 		.exec(http("Logged")
@@ -79,8 +79,8 @@ class HU032 extends Simulation {
 		.pause(28)
 		}
 		
-		object CreateNewSpeciality {
-			val createNewSpeciality = exec(http("CreateNewSpeciality")
+		object CreateNewSpecialty {
+			val createNewSpecialty = exec(http("CreateNewSpecialty")
 			.get("/specialty/admin/new")
 			.headers(headers_0))
 		.pause(28)
@@ -90,9 +90,9 @@ class HU032 extends Simulation {
 									  Login.login,
 									  ListSpecialties.listSpecialties,
 									  NewSpecialty.newSpecialty,
-									  CreateNewSpecialty.createNewSpecialty);
+									  CreateNewSpecialty.createNewSpecialty)
 
-	setUp(scnHU032_CreateNewSpecialty.inject(rampUsers(5000) during (100 seconds)).protocols(httpProtocol).assertions(
+	setUp(scnHU032_CreateNewSpecialty.inject(rampUsers(5000) during (100 seconds))).protocols(httpProtocol).assertions(
         global.responseTime.max.lt(5000),    
         global.responseTime.mean.lt(1000),
         global.successfulRequests.percent.gt(95)
