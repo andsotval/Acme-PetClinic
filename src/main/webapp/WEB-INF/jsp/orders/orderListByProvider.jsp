@@ -22,7 +22,7 @@
 				<tr>
 					<th>Date</th>
 					<th>Status</th>
-					<th>Accept Order</th>
+					<th style="text-align: center;">Accept Order</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -37,7 +37,7 @@
 							<c:out value=" "/>
 							<c:out value="${order.manager.lastName}"/>
 						</td>
-						<td>
+						<td style="text-align: center;">
 							<spring:url value="/orders/acceptOrder/{orderId}" var="acceptOrder">
 	                  	  		<spring:param name="orderId" value="${order.id}"/>
 	                		</spring:url>
