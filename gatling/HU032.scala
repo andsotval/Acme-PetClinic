@@ -65,15 +65,15 @@ class HU032 extends Simulation {
 		.pause(13)
 		}
 		
-		object ListSpecialities {
-			val listSpecialities = exec(http("ListSpecialities")
+		object ListSpecialties {
+			val listSpecialties = exec(http("ListSpecialties")
 			.get("/specialty/admin/listAvailable")
 			.headers(headers_0))
 		.pause(19)
 		}
 		
-		object NewSpeciality {
-			val newSpeciality = exec(http("NewSpeciality")
+		object NewSpecialty {
+			val newSpecialty = exec(http("NewSpecialty")
 			.get("/specialty/admin/new")
 			.headers(headers_0))
 		.pause(28)
@@ -86,13 +86,13 @@ class HU032 extends Simulation {
 		.pause(28)
 		}
 		
-	val adminSnc = scenario("Admins").exec(Home.home,
+	val scnHU032_CreateNewSpecialty = scenario("scnHU032_CreateNewSpecialty").exec(Home.home,
 									  Login.login,
-									  ListSpecialities.listSpecialities,
-									  NewSpeciality.newSpeciality,
-									  CreateNewSpeciality.createNewSpeciality);
+									  ListSpecialties.listSpecialties,
+									  NewSpecialty.newSpecialty,
+									  CreateNewSpecialty.createNewSpecialty);
 
-	setUp(adminSnc.inject(atOnceUsers(1))).protocols(httpProtocol).assertions(
+	setUp(scnHU032_CreateNewSpecialty.inject(rampUsers(5000) during (100 seconds)).protocols(httpProtocol).assertions(
         global.responseTime.max.lt(5000),    
         global.responseTime.mean.lt(1000),
         global.successfulRequests.percent.gt(95)

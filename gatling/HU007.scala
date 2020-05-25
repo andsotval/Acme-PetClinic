@@ -83,7 +83,7 @@ class HU007 extends Simulation {
 	}	
 	
 
-	val ownersScn = scenario("Owners").exec(Home.home,
+	val scnHU007_CreateNewSuggestion = scenario("scnHU007_CreateNewSuggestion").exec(Home.home,
 									  Login.login,
 									  ShowSuggestionList.showSuggestionList,
 									  NewSuggestionForm.newSuggestionForm);
@@ -91,7 +91,7 @@ class HU007 extends Simulation {
 									  
 		
 
-	setUp(ownersScn.inject(atOnceUsers(1))).protocols(httpProtocol).assertions(
+	setUp(scnHU007_CreateNewSuggestion.inject(rampUsers(5000) during (100 seconds)).protocols(httpProtocol).assertions(
         global.responseTime.max.lt(5000),    
         global.responseTime.mean.lt(1000),
         global.successfulRequests.percent.gt(95)

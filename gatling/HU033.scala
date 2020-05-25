@@ -69,13 +69,13 @@ class HU033 extends Simulation {
 	}
 	
 	
-	val vetScn = scenario("Vets").exec(Home.home,
+	val scnHU032_AddNewSpecialty = scenario("scnHU032_AddNewSpecialty").exec(Home.home,
 									  Login.login,
 									  ListSpecialty.ListSpecialty,
 									  AddSpecialty.AddSpecialty);
 	
 
-	setUp(vetScn.inject(atOnceUsers(1))).protocols(httpProtocol).assertions(
+	setUp(scnHU032_AddNewSpecialty.inject(rampUsers(5000) during (100 seconds)).protocols(httpProtocol).assertions(
         global.responseTime.max.lt(5000),    
         global.responseTime.mean.lt(1000),
         global.successfulRequests.percent.gt(95)

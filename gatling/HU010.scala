@@ -68,15 +68,12 @@ class HU010 extends Simulation {
 		.pause(22)
 	}
 	
-	val managersScn = scenario("Managers").exec(Home.home,
+	val scnHU010_ShowOrder = scenario("ManascnHU010_ShowOrdergers").exec(Home.home,
 									  Login.login,
 									  OrderList.orderList,
-									  ShowOrder.showOrder);
-		
-		
-		
+									  ShowOrder.showOrder);		
 
-	setUp(managersScn.inject(atOnceUsers(1))).protocols(httpProtocol).assertions(
+	setUp(scnHU010_ShowOrder.inject(rampUsers(5000) during (100 seconds)).protocols(httpProtocol).assertions(
         global.responseTime.max.lt(5000),    
         global.responseTime.mean.lt(1000),
         global.successfulRequests.percent.gt(95)

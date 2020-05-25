@@ -61,13 +61,13 @@ class HU009 extends Simulation {
 		.pause(20)
 	}
 	
-	val managersScn = scenario("Managers").exec(Home.home,
+	val scnHU009_ListOrders = scenario("scnHU009_ListOrders").exec(Home.home,
 									  Login.login,
 									  ListOrders.listOrders);
 	
 	
 
-	setUp(managersScn.inject(atOnceUsers(1))).protocols(httpProtocol).assertions(
+	setUp(scnHU009_ListOrders.inject(rampUsers(5000) during (100 seconds)).protocols(httpProtocol).assertions(
         global.responseTime.max.lt(5000),    
         global.responseTime.mean.lt(1000),
         global.successfulRequests.percent.gt(95)
