@@ -19,7 +19,7 @@
             <petclinic:inputField label="Telephone" name="telephone"/>
             <petclinic:inputField label="Email" name="mail"/>
             <petclinic:inputField label="Username" name="user.username"/>
-            <petclinic:inputField label="Password" name="user.password"/>
+            <petclinic:inputPassword label="Password" name="user.password"/>
             <input type="hidden" name="user.enabled" value="true"/>
         </div>
         <div class="form-group">

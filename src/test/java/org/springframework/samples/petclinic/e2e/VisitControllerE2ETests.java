@@ -237,22 +237,22 @@ public class VisitControllerE2ETests {
 			.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID).with(csrf())
 				.param("description", "description of the visit").param("dateTime", "2019/08/11 08:30:00"))
 			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(model().attributeExists("visit"))
-			.andExpect(model().attributeHasFieldErrorCode("visit", "dateTime", "dateInFuture"))
+			.andExpect(model().attributeHasFieldErrorCode("visit", "dateTime", "typeMismatch"))
 			.andExpect(MockMvcResultMatchers.view().name("visits/createOrUpdateVisitForm"));
 	}
 
 	@WithMockUser(username = "vet4", authorities = {
-			"veterinarian"
-		})
-		@Test
-		@Order(18)
-		void testUpdateVisitAsVetNotAuthorized() throws Exception {
-			mockMvc
-				.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID).with(csrf())
-					.param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00"))
-				.andExpect(status().isOk());
-	
-		}
+		"veterinarian"
+	})
+	@Test
+	@Order(18)
+	void testUpdateVisitAsVetNotAuthorized() throws Exception {
+		mockMvc
+			.perform(post("/visits/save/{visitId}", TEST_PENDING_VISIT_ID).with(csrf())
+				.param("description", "description of the visit").param("dateTime", "2020/08/11 08:30:00"))
+			.andExpect(status().isOk());
+
+	}
 
 	@WithMockUser(username = "owner1", authorities = {
 		"owner"
@@ -290,8 +290,7 @@ public class VisitControllerE2ETests {
 			.perform(post("/visits/save").with(csrf()).param("description", "description of the visit")
 				.param("dateTime", "2020/08/11 08:30:00").param("clinic.id", String.valueOf(TEST_CLINIC_ID))
 				.param("pet.id", String.valueOf(TEST_PET_ID)))
-			.andExpect(status().is3xxRedirection())
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/visits/listByOwner"));
+			.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.view().name("visits/createOrUpdateVisitForm"));
 	}
 
 	@WithMockUser(username = "owner1", authorities = {
@@ -305,7 +304,7 @@ public class VisitControllerE2ETests {
 				.param("dateTime", "2019/08/11 08:30:00").param("clinic.id", String.valueOf(TEST_CLINIC_ID))
 				.param("pet", String.valueOf(TEST_PET_ID)))
 			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(model().attributeExists("visit"))
-			.andExpect(model().attributeHasFieldErrorCode("visit", "dateTime", "dateInFuture"))
+			.andExpect(model().attributeHasFieldErrorCode("visit", "dateTime", "typeMismatch"))
 			.andExpect(MockMvcResultMatchers.view().name("visits/createOrUpdateVisitForm"));
 	}
 

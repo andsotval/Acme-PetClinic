@@ -248,8 +248,8 @@ class StayControllerE2ETests {
 				.param("id", "").param("description", "Description").param("startDate", "2020/05/22")
 				.param("finishDate", "2020/05/29").param("pet.id", String.valueOf(TEST_PET_ID + 1))
 				.param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/stays/listByOwner"));
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
 	@WithMockUser(value = "owner1", authorities = {

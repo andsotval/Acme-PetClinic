@@ -1,3 +1,8 @@
+/**
+ * DP2 - Grupo 8
+ * LAB F1.33
+ * Date: 17-may-2020
+ */
 
 package org.springframework.samples.petclinic.service;
 
@@ -26,7 +31,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @ActiveProfiles("hsqldb")
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-public class PetTypeServiceTest {
+public class PetTypeServiceTests {
 
 	@Autowired
 	protected PetTypeService	petTypeService;

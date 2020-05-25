@@ -40,6 +40,11 @@
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>Pet types</span>
 				</petclinic:menuItem>
+				<petclinic:menuItem active="${name eq 'specialties'}" url="/specialty/admin/listAvailable"
+					title="specialties">
+					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+					<span>Specialties</span>
+				</petclinic:menuItem>
 				<petclinic:menuItem active="${name eq 'suggestions'}" url="/suggestion/admin/list"
 					title="suggestions">
 					<span class="glyphicon glyphicon-bell" aria-hidden="true"></span>
@@ -76,13 +81,28 @@
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>Stays</span>
 				</petclinic:menuItem>
-				</sec:authorize>
-				
-				<sec:authorize access="hasAuthority('veterinarian')">
 				<petclinic:menuItem active="${name eq 'clinics'}" url="/clinics/getDetail"
 					title="stays">
 					<span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>
 					<span>My Clinic</span>
+				</petclinic:menuItem>
+				<petclinic:menuItem active="${name eq 'specialties'}" url="/specialty/vet/list"
+					title="specialties">
+					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+					<span>My Specialties</span>
+				</petclinic:menuItem>
+				</sec:authorize>
+				
+				<sec:authorize access="hasAuthority('provider')">
+				<petclinic:menuItem active="${name eq 'orders'}" url="/orders/listByProvider"
+					title="orders">
+					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+					<span>Orders</span>
+				</petclinic:menuItem>			
+				<petclinic:menuItem active="${name eq 'products'}" url="/product/myProductsList"
+					title="products">
+					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+					<span>Products</span>
 				</petclinic:menuItem>
 				</sec:authorize>
 				
@@ -108,8 +128,7 @@
 					<span>My Stays</span>
 				</petclinic:menuItem>
 				</sec:authorize>
-				
-        
+				  
 		        <sec:authorize access="isAuthenticated() and !hasAuthority('admin')">
 						<petclinic:menuItem active="${name eq 'suggestions'}" url="/suggestion/user/list"
 							title="suggestions">
@@ -175,8 +194,5 @@
 				</sec:authorize>
 			</ul>
 		</div>
-
-
-
 	</div>
 </nav>

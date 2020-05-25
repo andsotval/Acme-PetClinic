@@ -1,3 +1,8 @@
+/**
+ * DP2 - Grupo 8
+ * LAB F1.33
+ * Date: 17-may-2020
+ */
 
 package org.springframework.samples.petclinic.web;
 
@@ -35,7 +40,7 @@ public class PetTypeControllerTests {
 
 	private static final int	TEST_PETTYPE_ID_99	= 99;
 
-	private String				VIEW_REDIRECT_OUPS	= "redirect:/oups";
+	private static final String	VIEW_REDIRECT_OUPS	= "redirect:/oups";
 
 	@Autowired
 	private MockMvc				mockMvc;

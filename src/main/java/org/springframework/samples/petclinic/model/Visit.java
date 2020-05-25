@@ -28,7 +28,7 @@ import lombok.EqualsAndHashCode;
 public class Visit extends BaseEntity {
 
 	@Column(name = "visit_date")
-	@DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy/MM/dd HH:mm")
 	@NotNull
 	private LocalDateTime	dateTime;
 
@@ -52,7 +52,7 @@ public class Visit extends BaseEntity {
 	 * Creates a new instance of Visit for the current date
 	 */
 	public Visit() {
-		dateTime = LocalDateTime.now();
+		//dateTime = LocalDateTime.now();
 	}
 
 }

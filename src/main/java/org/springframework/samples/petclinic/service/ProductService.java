@@ -37,4 +37,9 @@ public class ProductService extends BaseService<Product> {
 		return (Collection<Product>) productRepository.findAllById(ids);
 	}
 
+	@Transactional(readOnly = true)
+	public Collection<Product> findAllProductsByProvider(int providerId) {
+		return productRepository.findAllProductsByProviderId(providerId);
+	}
+
 }
