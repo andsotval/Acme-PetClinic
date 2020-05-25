@@ -1,4 +1,4 @@
-package dp2
+package petclinic
 
 import scala.concurrent.duration._
 
