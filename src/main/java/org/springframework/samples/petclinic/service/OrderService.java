@@ -32,4 +32,9 @@ public class OrderService extends BaseService<Order> {
 		return orderRepository.findAllOrdersByManagerId(managerId);
 	}
 
+	@Transactional(readOnly = true)
+	public Collection<Order> findOrdersByProviderId(final int providerId) {
+		return orderRepository.findOrdersByProviderId(providerId);
+	}
+
 }
