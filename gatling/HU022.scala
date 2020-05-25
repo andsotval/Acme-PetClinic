@@ -9,7 +9,7 @@ import io.gatling.jdbc.Predef._
 class HU022 extends Simulation {
 
 	val httpProtocol = http
-		.baseUrl("http://www.dp2.com")
+		.baseUrl("http://www.petclinic.com")
 		.inferHtmlResources(BlackList(""".*.css""", """.*.js""", """.*.ico""", """.*.png"""), WhiteList())
 		.acceptHeader("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
 		.acceptEncodingHeader("gzip, deflate")
