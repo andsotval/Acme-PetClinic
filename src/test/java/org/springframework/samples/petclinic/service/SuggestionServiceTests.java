@@ -107,8 +107,7 @@ public class SuggestionServiceTests {
 
 	@Test
 	public void testFindAllSuggestionsAvailableByUsernameNotPresent() {
-		Collection<Suggestion> suggestions = suggestionService
-			.findAllEntitiesAvailableByUsername(TEST_USERNAME_NOT_PRESENT);
+		Collection<Suggestion> suggestions = suggestionService.findAllEntitiesAvailableByUsername(TEST_USERNAME_NOT_PRESENT);
 		assertEquals(suggestions.size(), 0);
 	}
 
@@ -127,8 +126,7 @@ public class SuggestionServiceTests {
 
 	@Test
 	public void testUpdateAllSuggestionsToNotAvailableOfUserNotPresent() {
-		Collection<Suggestion> suggestions = suggestionService
-			.findAllEntitiesAvailableByUsername(TEST_USERNAME_NOT_PRESENT);
+		Collection<Suggestion> suggestions = suggestionService.findAllEntitiesAvailableByUsername(TEST_USERNAME_NOT_PRESENT);
 		assertEquals(suggestions.size(), 0);
 
 		suggestionService.updateAllIsAvailableFalse(TEST_USERNAME_NOT_PRESENT);

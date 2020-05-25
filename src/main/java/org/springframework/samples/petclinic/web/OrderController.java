@@ -50,8 +50,7 @@ public class OrderController {
 
 
 	@Autowired
-	public OrderController(OrderService orderService, ManagerService managerService, ProductService productService,
-		ProductOrderService productOrderService, ProviderService providerService) {
+	public OrderController(OrderService orderService, ManagerService managerService, ProductService productService, ProductOrderService productOrderService, ProviderService providerService) {
 		this.orderService = orderService;
 		this.managerService = managerService;
 		this.productService = productService;
@@ -83,9 +82,7 @@ public class OrderController {
 
 	// confirmacion de la creacion de una Order
 	@PostMapping(path = "/save/{providerId}")
-	public String processCreationForm(@PathVariable("providerId") int providerId, ModelMap model,
-		@RequestParam(name = "productIds", required = false) String[] productIds,
-		@RequestParam(name = "amountNumber", required = false) String[] amountNumber) {
+	public String processCreationForm(@PathVariable("providerId") int providerId, ModelMap model, @RequestParam(name = "productIds", required = false) String[] productIds, @RequestParam(name = "amountNumber", required = false) String[] amountNumber) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (manager == null)
 			return REDIRECT_OUPS;
@@ -97,14 +94,11 @@ public class OrderController {
 		if (!provider.get().getManager().getId().equals(manager.getId()))
 			return REDIRECT_OUPS;
 
-		Collection<Product> productsSelected = productService.findProductsByIds(
-			Arrays.stream(productIds).mapToInt(Integer::valueOf).boxed().collect(Collectors.toList()));
+		Collection<Product> productsSelected = productService.findProductsByIds(Arrays.stream(productIds).mapToInt(Integer::valueOf).boxed().collect(Collectors.toList()));
 
-		Collection<Integer> amountNumberSelected = Arrays.stream(amountNumber).mapToInt(Integer::valueOf).boxed()
-			.collect(Collectors.toList());
+		Collection<Integer> amountNumberSelected = Arrays.stream(amountNumber).mapToInt(Integer::valueOf).boxed().collect(Collectors.toList());
 
-		Collection<ProductOrder> productsOrderList = createProductsOrderByProducts(productsSelected,
-			amountNumberSelected);
+		Collection<ProductOrder> productsOrderList = createProductsOrderByProducts(productsSelected, amountNumberSelected);
 
 		if (!productsOrderList.iterator().hasNext()) {
 			Collection<Product> products = productService.findProductsAvailableByProviderId(providerId);
@@ -177,6 +171,60 @@ public class OrderController {
 		return createModelOrderList(modelMap, "");
 	}
 
+	@GetMapping(path = "/listByProvider")
+	public String listByProvider(ModelMap model) {
+		Provider provider = providerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		if (provider == null)
+			return REDIRECT_OUPS;
+		Collection<Order> orders = orderService.findOrdersByProviderId(provider.getId());
+		model.addAttribute("orders", orders);
+
+		return "/orders/orderListByProvider";
+	}
+
+	@GetMapping(path = "/provider/{orderId}")
+	public String showOrderByProvider(@PathVariable("orderId") int orderId, ModelMap model) {
+		Provider provider = providerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		Order order = orderService.findEntityById(orderId).get();
+
+		if (provider == null)
+			return REDIRECT_OUPS;
+		if (order == null)
+			return REDIRECT_OUPS;
+
+		Provider orderProvider = productOrderService.findProviderByOrder(orderId);
+		if (!orderProvider.getId().equals(provider.getId()))
+			return REDIRECT_OUPS;
+
+		Collection<ProductOrder> productsOrder = productOrderService.findProductOrderByOrder(orderId);
+
+		model.addAttribute("order", order);
+		model.addAttribute("productsOrder", productsOrder);
+		model.addAttribute("manager", order.getManager());
+
+		return "/orders/orderDetailsByProvider";
+	}
+
+	@GetMapping(path = "/acceptOrder/{orderId}")
+	public String acceptOrder(@PathVariable("orderId") int orderId, ModelMap model) {
+		Provider provider = providerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		Order order = orderService.findEntityById(orderId).get();
+
+		if (provider == null)
+			return REDIRECT_OUPS;
+		if (order == null)
+			return REDIRECT_OUPS;
+
+		Provider orderProvider = productOrderService.findProviderByOrder(orderId);
+		if (!orderProvider.getId().equals(provider.getId()))
+			return REDIRECT_OUPS;
+
+		order.setIsAccepted(true);
+		orderService.saveEntity(order);
+
+		return "redirect:/orders/listByProvider";
+	}
+
 	private String createModelOrderList(ModelMap model, String message) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (manager == null)
@@ -189,8 +237,7 @@ public class OrderController {
 		return "/orders/orderList";
 	}
 
-	private Collection<ProductOrder> createProductsOrderByProducts(Collection<Product> products,
-		Collection<Integer> amounts) {
+	private Collection<ProductOrder> createProductsOrderByProducts(Collection<Product> products, Collection<Integer> amounts) {
 		Iterator<Product> productsSelected = products.iterator();
 		Iterator<Integer> amountsSelected = amounts.iterator();
 		Collection<ProductOrder> productsOrderList = new ArrayList<ProductOrder>();
