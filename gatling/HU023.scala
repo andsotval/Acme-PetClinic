@@ -25,7 +25,7 @@ class HU023 extends Simulation {
 		"Proxy-Connection" -> "keep-alive")
 
 	val headers_3 = Map(
-		"Origin" -> "http://www.dp2.com",
+		"Origin" -> "http://www.petclinic.com",
 		"Proxy-Connection" -> "keep-alive",
 		"Upgrade-Insecure-Requests" -> "1")
 		
