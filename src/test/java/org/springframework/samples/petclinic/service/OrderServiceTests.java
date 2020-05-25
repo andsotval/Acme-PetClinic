@@ -37,15 +37,21 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 public class OrderServiceTests {
 
 	@Autowired
-	protected OrderService	orderService;
+	protected OrderService			orderService;
+	@Autowired
+	protected ProductOrderService	productOrderService;
 
-	private int				TEST_MANAGER_ID				= 1;
+	private int						TEST_MANAGER_ID					= 1;
 
-	private int				TEST_MANAGER_ID_NOT_PRESENT	= 100;
+	private int						TEST_MANAGER_ID_NOT_PRESENT		= 100;
 
-	private int				TEST_ORDER_ID				= 1;
+	private int						TEST_PROVIDER_ID				= 1;
 
-	private int				TEST_ORDER_ID_NOT_PRESENT	= 100;
+	private int						TEST_PROVIDER_ID_NOT_PRESENT	= 100;
+
+	private int						TEST_ORDER_ID					= 1;
+
+	private int						TEST_ORDER_ID_NOT_PRESENT		= 100;
 
 
 	private Validator createValidator() {
@@ -63,6 +69,18 @@ public class OrderServiceTests {
 	@Test
 	public void TestFindAllOrdersByManagerIdNotPresent() {
 		Collection<Order> orders = orderService.findAllOrdersByManagerId(TEST_MANAGER_ID_NOT_PRESENT);
+		assertEquals(0, orders.size());
+	}
+
+	@Test
+	public void TestFindAllOrdersByProviderId() {
+		Collection<Order> orders = orderService.findOrdersByProviderId(TEST_PROVIDER_ID);
+		orders.forEach(o -> assertTrue(productOrderService.findProviderByOrder(o.getId()).getId() == TEST_PROVIDER_ID));
+	}
+
+	@Test
+	public void TestFindOrdersByProviderIdNotPresent() {
+		Collection<Order> orders = orderService.findOrdersByProviderId(TEST_PROVIDER_ID_NOT_PRESENT);
 		assertEquals(0, orders.size());
 	}
 
