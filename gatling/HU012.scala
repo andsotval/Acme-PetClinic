@@ -51,8 +51,7 @@ class HU012 extends Simulation {
 	)
 
 	setUp(
-		scnHU011_AddNewPet.inject(rampUsers(5000) during (100 seconds)),
-		scnHU012_deletePet.inject(rampUsers(5000) during (100 seconds))
+		scnHU011_ShowStays.inject(rampUsers(5000) during (100 seconds)),
 	).protocols(httpProtocol)
      .assertions(
         global.responseTime.max.lt(5000),
