@@ -88,7 +88,7 @@ public class ProductServiceTests {
 		int collectionSize = collection.size();
 
 		Product entity = new Product();
-		entity.setName("Comida para perros castrados");
+		entity.setName("Comida para perros no castrados");
 		entity.setPrice(15.95);
 		entity.setAvailable(true);
 		entity.setTax(1.20);
@@ -100,7 +100,7 @@ public class ProductServiceTests {
 
 		assertEquals(collectionSize + 1, newCollectionSize);
 
-		Assert.assertEquals("Comida para perros castrados",
+		Assert.assertEquals("Comida para perros no castrados",
 			productService.findEntityById(newCollectionSize).get().getName());
 	}
 

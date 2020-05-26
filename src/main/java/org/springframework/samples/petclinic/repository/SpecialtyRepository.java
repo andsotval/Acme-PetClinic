@@ -11,7 +11,7 @@ import java.util.Collection;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.samples.petclinic.model.Specialty;
 
-public interface SpecialtyRepository extends BaseRepository<Specialty> {
+public interface SpecialtyRepository extends NamedRepository<Specialty> {
 
 	@Query("SELECT s FROM Specialty s WHERE s.available = true")
 	Collection<Specialty> findAvailable();

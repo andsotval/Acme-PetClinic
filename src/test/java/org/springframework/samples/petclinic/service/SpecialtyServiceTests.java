@@ -100,7 +100,7 @@ public class SpecialtyServiceTests {
 	}
 
 	@Test
-	public void testSavePetTypeWithNullAvaliability() {
+	public void testSaveSpecialtyWithNullAvaliability() {
 		LocaleContextHolder.setLocale(Locale.ENGLISH);
 		Specialty entity = new Specialty();
 		entity.setName("name1");

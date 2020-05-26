@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.PetType;
@@ -60,13 +61,20 @@ public class PetTypeController {
 
 	@PostMapping(path = "/new")
 	public String processCreationForm(@Valid PetType petType, BindingResult result, ModelMap model) {
-		if (result.hasErrors()) {
+		if (result.hasErrors())
 			model.addAttribute("petType", petType);
-			return VIEWS_PETTYPE_CREATE_OR_UPDATE_FORM;
-		} else {
-			petTypeService.saveEntity(petType);
-			return createModelPettypeList(model, true, "Pet type succesfully saved");
-		}
+		else
+			try {
+				petTypeService.saveEntity(petType);
+				return createModelPettypeList(model, true, "Pet type succesfully saved");
+			} catch (RuntimeException e) {
+				if (e.getCause() instanceof ValidationException) {
+					model.addAttribute("petType", petType);
+					result.rejectValue("name", "duplicate", e.getMessage());
+				} else
+					return REDIRECT_OUPS;
+			}
+		return VIEWS_PETTYPE_CREATE_OR_UPDATE_FORM;
 	}
 
 	@GetMapping(path = "/edit/{pettypeId}")
@@ -91,12 +99,21 @@ public class PetTypeController {
 			model.addAttribute("petType", entity);
 		else {
 			petType.get().setName(entity.getName());
-			petTypeService.saveEntity(petType.get());
+			try {
+				petTypeService.saveEntity(petType.get());
 
-			if (petType.get().getAvailable())
-				return createModelPettypeList(model, true, "Pet type succesfully updated");
-			else
-				return createModelPettypeList(model, false, "Pet type succesfully updated");
+				if (petType.get().getAvailable())
+					return createModelPettypeList(model, true, "Pet type succesfully updated");
+				else
+					return createModelPettypeList(model, false, "Pet type succesfully updated");
+			} catch (RuntimeException e) {
+				if (e.getCause() instanceof ValidationException) {
+					model.addAttribute("petType", entity);
+					result.rejectValue("name", "duplicate", e.getMessage());
+				} else
+					return REDIRECT_OUPS;
+			}
+
 		}
 
 		return VIEWS_PETTYPE_CREATE_OR_UPDATE_FORM;

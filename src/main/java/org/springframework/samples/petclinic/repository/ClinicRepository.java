@@ -13,7 +13,7 @@ import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.web.bind.annotation.PathVariable;
 
-public interface ClinicRepository extends BaseRepository<Clinic> {
+public interface ClinicRepository extends NamedRepository<Clinic> {
 
 	@Query("SELECT clinic FROM Clinic clinic WHERE clinic.name=?1")
 	Clinic findClinicByName(String name);
