@@ -181,7 +181,7 @@ class StayControllerTests {
 		stay.setClinic(clinic);
 		stay.setPet(pet);
 
-		Collection<Stay> stays = new ArrayList<Stay>();
+		Collection<Stay> stays = new ArrayList<>();
 		stays.add(stay);
 
 		Optional<Stay> optionalStay = Optional.of(stay);
@@ -484,9 +484,9 @@ class StayControllerTests {
 				.param("id", "").param("description", "Description").param("startDate", "2020/05/22")
 				.param("finishDate", "2020/05/29").param("pet.id", String.valueOf(TEST_PET_ID + 1))
 				.param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.status().isOk())
 			/* .andExpect(MockMvcResultMatchers.model().attribute("message", "Stay succesfully updated")) */.andExpect(
-				MockMvcResultMatchers.view().name("redirect:/stays/listByOwner"));
+				MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
 	@WithMockUser(value = "falseOwner")
