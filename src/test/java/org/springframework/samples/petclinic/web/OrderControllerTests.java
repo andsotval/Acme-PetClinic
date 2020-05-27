@@ -42,7 +42,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @ActiveProfiles("hsqldb")
-@WebMvcTest(controllers = OrderController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
+@WebMvcTest(controllers = OrderController.class,
+	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
+	excludeAutoConfiguration = SecurityConfiguration.class)
 public class OrderControllerTests {
 
 	private static final int	TEST_MANAGER_ID					= 1;
@@ -166,7 +168,8 @@ public class OrderControllerTests {
 		Optional<Provider> optionalProvider2 = Optional.of(provider2);
 		BDDMockito.given(providerService.findEntityById(TEST_PROVIDER_2_ID)).willReturn(optionalProvider2);
 
-		BDDMockito.given(providerService.findProvidersByManagerId(TEST_MANAGER_ID)).willReturn(Lists.newArrayList(provider1, provider2));
+		BDDMockito.given(providerService.findProvidersByManagerId(TEST_MANAGER_ID))
+			.willReturn(Lists.newArrayList(provider1, provider2));
 
 		Product product1 = new Product();
 		product1.setId(TEST_PRODUCT_ID_1);
@@ -184,9 +187,10 @@ public class OrderControllerTests {
 		product2.setTax(21.0);
 		product2.setProvider(provider1);
 
-		BDDMockito.given(productService.findProductsAvailableByProviderId(TEST_PROVIDER_ID)).willReturn(Lists.newArrayList(product1, product2));
+		BDDMockito.given(productService.findProductsAvailableByProviderId(TEST_PROVIDER_ID))
+			.willReturn(Lists.newArrayList(product1, product2));
 
-		Set<Product> setProducts = new HashSet<Product>();
+		Set<Product> setProducts = new HashSet<>();
 		setProducts.add(product1);
 		setProducts.add(product2);
 
@@ -223,115 +227,159 @@ public class OrderControllerTests {
 		productOrder1.setAmount(4);
 		productOrder1.setOrder(order1);
 
-		BDDMockito.given(productOrderService.findProductOrderByOrder(TEST_ORDER_ID)).willReturn(Lists.newArrayList(productOrder1));
+		BDDMockito.given(productOrderService.findProductOrderByOrder(TEST_ORDER_ID))
+			.willReturn(Lists.newArrayList(productOrder1));
 
 		BDDMockito.given(orderService.findAllOrdersByManagerId(TEST_ORDER_ID)).willReturn(Lists.newArrayList(order1));
 
-		BDDMockito.given(productService.findProductsByIds(Lists.newArrayList(product1.getId(), product2.getId()))).willReturn(Lists.newArrayList(product1, product2));
+		BDDMockito.given(productService.findProductsByIds(Lists.newArrayList(product1.getId(), product2.getId())))
+			.willReturn(Lists.newArrayList(product1, product2));
 	}
 
 	@WithMockUser(value = "manager1")
 	@Test
 	void testInitCreationForm() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/new/{providerId}", TEST_PROVIDER_ID)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("products"))
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/new/{providerId}", TEST_PROVIDER_ID))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("products"))
 			.andExpect(MockMvcResultMatchers.view().name("/orders/createOrUpdateOrderForm"));
 	}
 
 	@WithMockUser(value = "manager1")
 	@Test
 	void testInitCreationFormNegativeNotAuthorized() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/new/{providerId}", TEST_PROVIDER_2_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/new/{providerId}", TEST_PROVIDER_2_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "manager1")
 	@Test
 	void testInitCreationFormNegativeNotExistingProvider() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/new/{providerId}", TEST_PROVIDER_NOT_EXISTING_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/new/{providerId}", TEST_PROVIDER_NOT_EXISTING_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "manager1")
 	@Test
 	void testProcessCreationFormPositive() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("productIds", "1").param("productIds", "2").param("amountNumber", "3").param("amountNumber", "4"))
-			.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("/orders/orderList"));
+		mockMvc
+			.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_ID)
+				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("productIds", "1").param("productIds", "2")
+				.param("amountNumber", "3").param("amountNumber", "4"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("/orders/orderList"));
 	}
 
 	@WithMockUser(value = "manager1")
 	@Test
 	void testProcessCreationFormNegativeNoProductsInOrder() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("productIds", "").param("amountNumber", "")).andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.model().attributeExists("products")).andExpect(MockMvcResultMatchers.model().attributeExists("notProductsOrder")).andExpect(MockMvcResultMatchers.view().name("/orders/createOrUpdateOrderForm"));
+		mockMvc
+			.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_ID)
+				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("productIds", "").param("amountNumber", ""))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("products"))
+			.andExpect(MockMvcResultMatchers.model().attributeExists("notProductsOrder"))
+			.andExpect(MockMvcResultMatchers.view().name("/orders/createOrUpdateOrderForm"));
 	}
 
 	@WithMockUser(value = "manager1")
 	@Test
 	void testProcessCreationFormNegativeNotExistingProvider() throws Exception {
-		mockMvc.perform(
-			MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_NOT_EXISTING_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("productIds", "1").param("productIds", "2").param("amountNumber", "3").param("amountNumber", "4"))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc
+			.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_NOT_EXISTING_ID)
+				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("productIds", "1").param("productIds", "2")
+				.param("amountNumber", "3").param("amountNumber", "4"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "manager1")
 	@Test
 	void testProcessCreationFormNegativeUpdateOtherProvider() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_2_ID).with(SecurityMockMvcRequestPostProcessors.csrf()).param("productIds", "1").param("productIds", "2").param("amountNumber", "3").param("amountNumber", "4"))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc
+			.perform(MockMvcRequestBuilders.post("/orders/save/{providerId}", TEST_PROVIDER_2_ID)
+				.with(SecurityMockMvcRequestPostProcessors.csrf()).param("productIds", "1").param("productIds", "2")
+				.param("amountNumber", "3").param("amountNumber", "4"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "manager1")
 	@Test
 	void testShowOrderPositive() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", TEST_ORDER_ID)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("order"))
-			.andExpect(MockMvcResultMatchers.model().attributeExists("productsOrder")).andExpect(MockMvcResultMatchers.model().attributeExists("provider")).andExpect(MockMvcResultMatchers.view().name("orders/orderDetails"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", TEST_ORDER_ID))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("order"))
+			.andExpect(MockMvcResultMatchers.model().attributeExists("productsOrder"))
+			.andExpect(MockMvcResultMatchers.model().attributeExists("provider"))
+			.andExpect(MockMvcResultMatchers.view().name("orders/orderDetails"));
 	}
 
 	@WithMockUser(value = "manager2")
 	@Test
 	void testShowOrderNegativeNotAuthorized() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", TEST_ORDER_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", TEST_ORDER_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "falseManager")
 	@Test
 	void testShowOrderNegativeNotExistingManager() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", TEST_ORDER_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", TEST_ORDER_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "manager1")
 	@Test
 	void testShowOrderNegativeNotPresent() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", 99)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", 99))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "manager1")
 	@Test
 	void testListAvailableProviders() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/providers/listAvailable")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("providers"))
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/providers/listAvailable"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("providers"))
 			.andExpect(MockMvcResultMatchers.view().name("/orders/providers/providerList"));
 	}
 
 	@WithMockUser(value = "falseManager")
 	@Test
 	void testListAvailableProvidersNegativeNotAuthorized() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/providers/listAvailable")).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/providers/listAvailable"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "manager1")
 	@Test
 	void testListOrders() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/list")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("orders")).andExpect(MockMvcResultMatchers.view().name("/orders/orderList"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/list")).andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("orders"))
+			.andExpect(MockMvcResultMatchers.view().name("/orders/orderList"));
 	}
 
 	@WithMockUser(value = "falseManager")
 	@Test
 	void testListOrdersNegativeNotExistingManager() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/list")).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/list"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "provider1")
 	@Test
 	void testListOrdersByProvider() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/listByProvider")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("orders"))
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/listByProvider"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("orders"))
 			.andExpect(MockMvcResultMatchers.view().name("/orders/orderListByProvider"));
 
 	}
@@ -339,32 +387,44 @@ public class OrderControllerTests {
 	@WithMockUser(value = "falseProvider")
 	@Test
 	void testListOrdersByProviderNegativeNotExistingProvider() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/listByProvider")).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/listByProvider"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "provider1")
 	@Test
 	void testShowOrderByProvider() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/provider/{orderId}", TEST_ORDER_ID)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("order"))
-			.andExpect(MockMvcResultMatchers.model().attributeExists("productsOrder")).andExpect(MockMvcResultMatchers.model().attributeExists("manager")).andExpect(MockMvcResultMatchers.view().name("/orders/orderDetailsByProvider"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/provider/{orderId}", TEST_ORDER_ID))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("order"))
+			.andExpect(MockMvcResultMatchers.model().attributeExists("productsOrder"))
+			.andExpect(MockMvcResultMatchers.model().attributeExists("manager"))
+			.andExpect(MockMvcResultMatchers.view().name("/orders/orderDetailsByProvider"));
 
 	}
 
 	@WithMockUser(value = "provider1")
 	@Test
 	void testShowOrderByProviderNegativeAccessNotAllowedToOtherOrder() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/provider/{orderId}", TEST_ORDER_2_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/provider/{orderId}", TEST_ORDER_2_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "provider1")
 	@Test
 	void testAcceptOrder() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/acceptOrder/{orderId}", TEST_ORDER_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/orders/listByProvider"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/acceptOrder/{orderId}", TEST_ORDER_ID))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("/orders/orderListByProvider"));
 	}
 
 	@WithMockUser(value = "provider1")
 	@Test
 	void testAcceptOrderNegativeAccessNotAllowedToOtherOrder() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/orders/acceptOrder/{orderId}", TEST_ORDER_2_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/acceptOrder/{orderId}", TEST_ORDER_2_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 }

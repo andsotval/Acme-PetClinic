@@ -138,7 +138,7 @@ public class OrderServiceTests {
 
 		Validator validator = createValidator();
 		Set<ConstraintViolation<Order>> constraintViolations = validator.validate(order);
-		assertEquals(constraintViolations.size(), 2);
+		assertEquals(constraintViolations.size(), 1);
 
 		Iterator<ConstraintViolation<Order>> it = constraintViolations.iterator();
 		while (it.hasNext()) {
