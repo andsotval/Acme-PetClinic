@@ -16,7 +16,7 @@ public interface OrderRepository extends BaseRepository<Order> {
 	@Query("SELECT order FROM Order order WHERE order.manager.id=?1 ORDER BY order.isAccepted desc, order.date desc")
 	Collection<Order> findAllOrdersByManagerId(int managerId);
 
-	@Query("SELECT order FROM Order order WHERE order.id IN (SELECT po.order.id FROM ProductOrder po WHERE po.product.provider.id = ?1)")
+	@Query("SELECT order FROM Order order WHERE order.id IN (SELECT po.order.id FROM ProductOrder po WHERE po.product.provider.id = ?1) order by order.isAccepted, order.date asc")
 	Collection<Order> findOrdersByProviderId(int providerId);
 
 }

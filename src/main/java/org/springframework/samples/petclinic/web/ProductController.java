@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Product;
@@ -77,8 +78,18 @@ public class ProductController {
 			model.addAttribute(product);
 			return VIEWS_PRODUCT_CREATE_OR_UPDATE_FORM;
 		}
-		productService.saveEntity(product);
-		return REDIRECT_LIST_MY_PRODUCTS;
+		try {
+			productService.saveEntity(product);
+			return REDIRECT_LIST_MY_PRODUCTS;
+		} catch (RuntimeException e) {
+			if (e.getCause() instanceof ValidationException) {
+				model.addAttribute("product", product);
+				result.rejectValue("name", "duplicate", e.getMessage());
+				return VIEWS_PRODUCT_CREATE_OR_UPDATE_FORM;
+			} else
+				return REDIRECT_OUPS;
+		}
+
 	}
 
 	@GetMapping(path = "/show/{productId}")
@@ -99,7 +110,8 @@ public class ProductController {
 	}
 
 	@PostMapping(path = "/save/{productId}")
-	public String updateProduct(@PathVariable("productId") int productId, @Valid Product productForm, BindingResult result, ModelMap model) {
+	public String updateProduct(@PathVariable("productId") int productId, @Valid Product productForm,
+		BindingResult result, ModelMap model) {
 
 		Provider provider = providerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		Optional<Product> product = productService.findEntityById(productId);
@@ -115,8 +127,22 @@ public class ProductController {
 			model.addAttribute(product);
 			return VIEWS_PRODUCT_CREATE_OR_UPDATE_FORM;
 		}
-		productService.saveEntity(productForm);
-		return REDIRECT_LIST_MY_PRODUCTS;
+
+		product.get().setName(productForm.getName());
+		product.get().setPrice(productForm.getPrice());
+		product.get().setTax(productForm.getTax());
+		try {
+			productService.saveEntity(product.get());
+			return REDIRECT_LIST_MY_PRODUCTS;
+		} catch (RuntimeException e) {
+			if (e.getCause() instanceof ValidationException) {
+				model.addAttribute("product", productForm);
+				result.rejectValue("name", "duplicate", e.getMessage());
+				return VIEWS_PRODUCT_CREATE_OR_UPDATE_FORM;
+			} else
+				return REDIRECT_OUPS;
+		}
+
 	}
 
 	//this method changes the state of Available.

@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Specialty;
@@ -60,13 +61,21 @@ public class SpecialtyAdminController {
 
 	@PostMapping(path = "/new")
 	public String processCreationForm(@Valid Specialty specialty, BindingResult result, ModelMap model) {
-		if (result.hasErrors()) {
+		if (result.hasErrors())
 			model.addAttribute("specialty", specialty);
-			return VIEWS_SPECIALTY_CREATE_OR_UPDATE_FORM;
-		} else {
-			specialtyService.saveEntity(specialty);
-			return createModelSpecialtyList(model, true, "Specialty succesfully saved");
-		}
+		else
+			try {
+				specialtyService.saveEntity(specialty);
+				return createModelSpecialtyList(model, true, "Specialty succesfully saved");
+			} catch (RuntimeException e) {
+				if (e.getCause() instanceof ValidationException) {
+					model.addAttribute("specialty", specialty);
+					result.rejectValue("name", "duplicate", e.getMessage());
+				} else
+					return REDIRECT_OUPS;
+			}
+
+		return VIEWS_SPECIALTY_CREATE_OR_UPDATE_FORM;
 	}
 
 	@GetMapping(path = "/edit/{specialtyId}")
@@ -91,12 +100,21 @@ public class SpecialtyAdminController {
 			model.addAttribute("specialty", entity);
 		else {
 			specialty.get().setName(entity.getName());
-			specialtyService.saveEntity(specialty.get());
+			try {
+				specialtyService.saveEntity(specialty.get());
 
-			if (specialty.get().getAvailable())
-				return createModelSpecialtyList(model, true, "Specialty succesfully updated");
-			else
-				return createModelSpecialtyList(model, false, "Specialty succesfully updated");
+				if (specialty.get().getAvailable())
+					return createModelSpecialtyList(model, true, "Specialty succesfully updated");
+				else
+					return createModelSpecialtyList(model, false, "Specialty succesfully updated");
+			} catch (RuntimeException e) {
+				if (e.getCause() instanceof ValidationException) {
+					model.addAttribute("specialty", entity);
+					result.rejectValue("name", "duplicate", e.getMessage());
+				} else
+					return REDIRECT_OUPS;
+			}
+
 		}
 
 		return VIEWS_SPECIALTY_CREATE_OR_UPDATE_FORM;

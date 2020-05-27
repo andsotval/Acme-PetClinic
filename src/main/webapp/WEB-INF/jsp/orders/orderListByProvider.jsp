@@ -21,8 +21,9 @@
 			<thead>
 				<tr>
 					<th>Date</th>
+					<th>Manager</th>
 					<th>Status</th>
-					<th style="text-align: center;">Accept Order</th>
+					<th style="text-align: center;">Action</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -37,18 +38,39 @@
 							<c:out value=" "/>
 							<c:out value="${order.manager.lastName}"/>
 						</td>
-						<td style="text-align: center;">
-							<spring:url value="/orders/acceptOrder/{orderId}" var="acceptOrder">
-	                  	  		<spring:param name="orderId" value="${order.id}"/>
-	                		</spring:url>
+						<td>
 							<c:choose>
 								<c:when test="${order.isAccepted eq false}">
+									<c:out value ="REJECTED"/>
+								</c:when>
+								<c:when test="${order.isAccepted eq true}">
+									<c:out value ="ACCEPTED"/>
+								</c:when>
+								<c:otherwise>
+									<c:out value ="PENDING"/>
+								</c:otherwise>
+							</c:choose>
+							
+						</td>
+						<td style="text-align: center;">
+							<c:choose>
+								<c:when test="${order.isAccepted eq null}">
+									<spring:url value="/orders/acceptOrder/{orderId}" var="acceptOrder">
+			                  	  		<spring:param name="orderId" value="${order.id}"/>
+			                		</spring:url>
 	                				<a href="${fn:escapeXml(acceptOrder)}">
+	                					<span class="glyphicon glyphicon-ok" style="color: #6db33f" aria-hidden="true"></span>
+	                				</a>
+	                				
+	                				<spring:url value="/orders/rejectedOrder/{orderId}" var="rejectedOrder">
+			                  	  		<spring:param name="orderId" value="${order.id}"/>
+			                		</spring:url>
+	                				<a href="${fn:escapeXml(rejectedOrder)}">
 	                					<span class="glyphicon glyphicon-remove" style="color: #FF0000" aria-hidden="true"></span>
 	                				</a>
 								</c:when>
 								<c:otherwise>
-									<span class="glyphicon glyphicon-ok" style="color: #6db33f" aria-hidden="true"></span>
+									<c:out value ="-"/>
 								</c:otherwise>
 							</c:choose>
 						</td>

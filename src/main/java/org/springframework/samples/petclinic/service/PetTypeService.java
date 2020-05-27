@@ -11,19 +11,21 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.repository.BaseRepository;
+import org.springframework.samples.petclinic.repository.NamedRepository;
 import org.springframework.samples.petclinic.repository.PetTypeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PetTypeService extends BaseService<PetType> {
+public class PetTypeService extends NamedService<PetType> {
 
 	private PetTypeRepository petTypeRepository;
 
 
 	@Autowired
-	public PetTypeService(BaseRepository<PetType> repository, PetTypeRepository petTypeRepository) {
-		super(repository);
+	public PetTypeService(BaseRepository<PetType> repository, NamedRepository<PetType> namedRepository,
+		PetTypeRepository petTypeRepository) {
+		super(repository, namedRepository);
 		this.petTypeRepository = petTypeRepository;
 	}
 
