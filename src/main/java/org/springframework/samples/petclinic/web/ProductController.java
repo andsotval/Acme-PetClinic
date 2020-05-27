@@ -128,12 +128,15 @@ public class ProductController {
 			return VIEWS_PRODUCT_CREATE_OR_UPDATE_FORM;
 		}
 
+		product.get().setName(productForm.getName());
+		product.get().setPrice(productForm.getPrice());
+		product.get().setTax(productForm.getTax());
 		try {
-			productService.saveEntity(productForm);
+			productService.saveEntity(product.get());
 			return REDIRECT_LIST_MY_PRODUCTS;
 		} catch (RuntimeException e) {
 			if (e.getCause() instanceof ValidationException) {
-				model.addAttribute("product", product);
+				model.addAttribute("product", productForm);
 				result.rejectValue("name", "duplicate", e.getMessage());
 				return VIEWS_PRODUCT_CREATE_OR_UPDATE_FORM;
 			} else

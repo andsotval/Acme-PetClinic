@@ -3,6 +3,7 @@ package org.springframework.samples.petclinic.service;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.List;
 
 import javax.validation.ValidationException;
 
@@ -65,8 +66,12 @@ public abstract class NamedService<T extends NamedEntity> extends BaseService<T>
 	private T merge(T entity) throws RuntimeException {
 		try {
 			String name = (String) method.invoke(entity);
-			if (findByName(name).size() > 1)
-				throw new ValidationException("The indicated name already exists");
+			List<T> collection = (List<T>) findByName(name);
+			if (collection.size() >= 1) {
+				T _entity = collection.get(0);
+				if (!_entity.getId().equals(entity.getId()))
+					throw new ValidationException("The indicated name already exists");
+			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
