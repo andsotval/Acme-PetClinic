@@ -33,6 +33,8 @@ import lombok.EqualsAndHashCode;
 @Table(name = "vet")
 public class Vet extends Person {
 
+	// TODO Este fecth esta EAGER porque si no fallan los test
+	// En producción debería ser LAZY
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "vet_specialties", joinColumns = @JoinColumn(name = "vet_id"),
 		inverseJoinColumns = @JoinColumn(name = "specialty_id"))
