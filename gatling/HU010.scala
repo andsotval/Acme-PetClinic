@@ -42,7 +42,7 @@ class HU010 extends Simulation {
 			.headers(headers_0)
 			.resources(http("request_2")
 			.get("/login")
-			.headers(headers_2)))
+			.headers(headers_2))
 			.check(css("input[name=_csrf]", "value").saveAs("stoken")))
 		.pause(16)
 		.exec(http("Logged")
@@ -71,9 +71,9 @@ class HU010 extends Simulation {
 	val scnHU010_ShowOrder = scenario("ManascnHU010_ShowOrdergers").exec(Home.home,
 									  Login.login,
 									  OrderList.orderList,
-									  ShowOrder.showOrder);		
+									  ShowOrder.showOrder)	
 
-	setUp(scnHU010_ShowOrder.inject(rampUsers(5000) during (100 seconds)).protocols(httpProtocol).assertions(
+	setUp(scnHU010_ShowOrder.inject(rampUsers(5000) during (100 seconds))).protocols(httpProtocol).assertions(
         global.responseTime.max.lt(5000),    
         global.responseTime.mean.lt(1000),
         global.successfulRequests.percent.gt(95)
