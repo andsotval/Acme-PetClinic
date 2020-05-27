@@ -26,9 +26,9 @@ public class SetAcceptedVisitsAsVetUITests extends AbstractUITests {
 		driver.findElement(By.id("dateTime")).click();
 		driver.findElement(By.id("dateTime")).click();
 		driver.findElement(By.id("dateTime")).clear();
-		driver.findElement(By.id("dateTime")).sendKeys("2021/08/09 09:30:00");
+		driver.findElement(By.id("dateTime")).sendKeys("2021/08/09 09:30");
 		driver.findElement(By.name("authorized")).click();
-		driver.findElement(By.xpath("//table[@id='vetsTable']/tbody/tr/td")).click();
+		assertEquals("Visit succesfully updated", driver.findElement(By.xpath("/html/body/div/div/div[1]")).getText());
 
 		LogOut();
 
@@ -56,7 +56,7 @@ public class SetAcceptedVisitsAsVetUITests extends AbstractUITests {
 			driver.findElement(By.xpath("//form[@id=\"visit\"]/div/div[2]/div/span[2]")).getText());
 		driver.findElement(By.id("dateTime")).click();
 		driver.findElement(By.id("dateTime")).clear();
-		driver.findElement(By.id("dateTime")).sendKeys("2019/08/09 09:30:00");
+		driver.findElement(By.id("dateTime")).sendKeys("2019/08/09 09:30");
 		driver.findElement(By.name("authorized")).click();
 		assertEquals("Minimum 2 days after today",
 			driver.findElement(By.xpath("//form[@id=\"visit\"]/div/div[2]/div/span[2]")).getText());

@@ -17,7 +17,7 @@ public class ListSuggestionsTrashAsAdminUITests extends AbstractUITests {
 
 		LogInAsAdmin();
 
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a/span[2]")).click();
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[4]/a/span[2]")).click();
 		driver.findElement(By.xpath("//h2")).click();
 		assertEquals("Suggestions Received", driver.findElement(By.xpath("//h2")).getText());
 		String s = driver.findElement(By.xpath("//table[@id='suggestionsTable']/tbody/tr/td/a/strong")).getText();
@@ -37,7 +37,7 @@ public class ListSuggestionsTrashAsAdminUITests extends AbstractUITests {
 
 		LogInAsAdmin();
 
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a/span[2]")).click();
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[4]/a/span[2]")).click();
 		driver.findElement(By.xpath("//h2")).click();
 
 		assertEquals("Suggestions Received", driver.findElement(By.xpath("//h2")).getText());

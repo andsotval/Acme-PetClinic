@@ -17,7 +17,7 @@ public class MarkAsReadSuggestionsAsAdminUITests extends AbstractUITests {
 
 		LogInAsAdmin();
 
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a/span[2]")).click();
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[4]/a/span[2]")).click();
 		driver.findElement(By.xpath("//h2")).click();
 		assertEquals("Suggestions Received", driver.findElement(By.xpath("//h2")).getText());
 
@@ -31,11 +31,11 @@ public class MarkAsReadSuggestionsAsAdminUITests extends AbstractUITests {
 		driver.findElement(By.xpath("//table[@id='suggestionsTable']/tbody/tr/td[3]/a/span")).click();
 		assertEquals("Suggestion succesfully updated",
 			driver.findElement(By.xpath("/html/body/div/div/div[1]")).getText());
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a/span[2]")).click();
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[4]/a/span[2]")).click();
 		driver.findElement(By.xpath("//table[@id='suggestionsTable']/tbody/tr/td[3]/a/span")).click();
 		assertEquals("Suggestion succesfully updated",
 			driver.findElement(By.xpath("/html/body/div/div/div[1]")).getText());
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a/span[2]")).click();
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[4]/a/span[2]")).click();
 		driver.findElement(By.xpath("//table[@id='suggestionsTable']/tbody/tr/td[3]/a/span")).click();
 		assertEquals("Suggestion succesfully updated",
 			driver.findElement(By.xpath("/html/body/div/div/div[1]")).getText());
@@ -51,7 +51,7 @@ public class MarkAsReadSuggestionsAsAdminUITests extends AbstractUITests {
 		LogInAsAdmin();
 
 		// Accede a la lista de suggestions y comprueba que ha llegado
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a/span[2]")).click();
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[4]/a/span[2]")).click();
 		driver.findElement(By.xpath("//h2")).click();
 		assertEquals("Suggestions Received", driver.findElement(By.xpath("//h2")).getText());
 
