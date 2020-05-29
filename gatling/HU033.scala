@@ -53,30 +53,30 @@ class HU033 extends Simulation {
 			.formParam("_csrf", "${stoken}"))
 		.pause(24)
 	}
-	
+
 	object ListSpecialty {
 			val listSpecialty = exec(http("ListSpecialty")
 			.get("/specialty/vet/list")
 			.headers(headers_0))
 		.pause(49)
 	}
-	
+
 	object AddSpecialty {
 			val addSpecialty = exec(http("AddSpecialty")
 			.get("/specialty/vet/add/4")
 			.headers(headers_0))
 		.pause(63)
 	}
-	
-	
+
+
 	val scnHU032_AddNewSpecialty = scenario("scnHU032_AddNewSpecialty").exec(Home.home,
 									  Login.login,
 									  ListSpecialty.listSpecialty,
 									  AddSpecialty.addSpecialty)
-	
 
-	setUp(scnHU032_AddNewSpecialty.inject(rampUsers(5000) during (100 seconds))).protocols(httpProtocol).assertions(
-        global.responseTime.max.lt(5000),    
+
+	setUp(scnHU032_AddNewSpecialty.inject(rampUsers(8000) during (100 seconds))).protocols(httpProtocol).assertions(
+        global.responseTime.max.lt(5000),
         global.responseTime.mean.lt(1000),
         global.successfulRequests.percent.gt(95)
      )

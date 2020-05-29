@@ -35,21 +35,18 @@ class HU025 extends Simulation {
 			.headers(headers_0))
 		.pause(9)
 	}
-	object Login{
+	object Login {
 		val login = exec(http("Login")
 			.get("/login")
-			.headers(headers_0)
-			.resources(http("Login_2")
-			.get("/login")
-			.headers(headers_2)))
-		.pause(6)
-		.exec(http("LoggedAsManager")
+			.check(css("input[name=_csrf]", "value").saveAs("stoken")))
+			.pause(10)
+		.exec(http("Login_2")
 			.post("/login")
-			.headers(headers_3)
+			.headers(headers_2)
 			.formParam("username", "manager1")
 			.formParam("password", "manager1")
-			.formParam("_csrf", "cbb09606-eb61-459d-b8ec-2df7339c20f6"))
-		.pause(10)
+			.formParam("_csrf", "${stoken}"))
+			.pause(12)
 	}
 	
 	object ShowAvailableVets{
@@ -78,7 +75,7 @@ class HU025 extends Simulation {
 	)
 
 	setUp(
-		scnHU025_AddVetsToClinic.inject(rampUsers(5000) during (100 seconds))
+		scnHU025_AddVetsToClinic.inject(rampUsers(10000) during (100 seconds))
 	).protocols(httpProtocol)
      .assertions(
         global.responseTime.max.lt(5000),    

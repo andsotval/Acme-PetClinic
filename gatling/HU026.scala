@@ -59,7 +59,7 @@ class HU026 extends Simulation {
 		ListPendingStays.listPendingStays,
 		AcceptStay.acceptStay)
 
-	setUp(scnHU026_AcceptStay.inject(rampUsers(5000) during (100 seconds)))
+	setUp(scnHU026_AcceptStay.inject(rampUsers(13000) during (100 seconds)))
 	.protocols(httpProtocol)
      .assertions(
         global.responseTime.max.lt(5000),    

@@ -35,21 +35,18 @@ class HU023 extends Simulation {
 			.headers(headers_0))
 		.pause(6)
 	}
-	object Login{
+	object Login {
 		val login = exec(http("Login")
 			.get("/login")
-			.headers(headers_0)
-			.resources(http("Login_2")
-			.get("/login")
-			.headers(headers_2)))
-		.pause(10)
-		.exec(http("LoggedAsOwner")
+			.check(css("input[name=_csrf]", "value").saveAs("stoken")))
+			.pause(10)
+		.exec(http("Login_2")
 			.post("/login")
-			.headers(headers_3)
+			.headers(headers_2)
 			.formParam("username", "owner10")
 			.formParam("password", "owner10")
-			.formParam("_csrf", "64af2d94-afb4-4dae-b353-5199c1309e23"))
-		.pause(8)
+			.formParam("_csrf", "${stoken}"))
+			.pause(12)
 	}
 	
 	object ShowClinicsAvailable{

@@ -92,8 +92,8 @@ class HU032 extends Simulation {
 									  NewSpecialty.newSpecialty,
 									  CreateNewSpecialty.createNewSpecialty)
 
-	setUp(scnHU032_CreateNewSpecialty.inject(rampUsers(5000) during (100 seconds))).protocols(httpProtocol).assertions(
-        global.responseTime.max.lt(5000),    
+	setUp(scnHU032_CreateNewSpecialty.inject(rampUsers(8000) during (100 seconds))).protocols(httpProtocol).assertions(
+        global.responseTime.max.lt(5000),
         global.responseTime.mean.lt(1000),
         global.successfulRequests.percent.gt(95)
      )

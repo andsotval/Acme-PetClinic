@@ -35,21 +35,18 @@ class HU024 extends Simulation {
 			.headers(headers_0))
 		.pause(6)
 	}
-	object Login{
+	object Login {
 		val login = exec(http("Login")
 			.get("/login")
-			.headers(headers_0)
-			.resources(http("Login_2")
-			.get("/login")
-			.headers(headers_2)))
-		.pause(8)
-		.exec(http("LoggedAsManager")
+			.check(css("input[name=_csrf]", "value").saveAs("stoken")))
+			.pause(10)
+		.exec(http("Login_2")
 			.post("/login")
-			.headers(headers_3)
+			.headers(headers_2)
 			.formParam("username", "manager1")
 			.formParam("password", "manager1")
-			.formParam("_csrf", "648ea219-e8bb-4480-86a2-0a80319edaa9"))
-		.pause(24)
+			.formParam("_csrf", "${stoken}"))
+			.pause(12)
 	}
 	
 	object ShowAvailableProviders{
@@ -86,7 +83,7 @@ class HU024 extends Simulation {
 	)
 
 	setUp(
-		scnHU024_AddProvidersToClinic.inject(rampUsers(5000) during (100 seconds))
+		scnHU024_AddProvidersToClinic.inject(rampUsers(4000) during (100 seconds))
 	).protocols(httpProtocol)
      .assertions(
         global.responseTime.max.lt(5000),    

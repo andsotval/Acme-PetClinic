@@ -52,10 +52,10 @@ class HU031 extends Simulation {
 	)
 
 	setUp(
-		scnHU031_ListPendingVisits.inject(rampUsers(5000) during (100 seconds))
+		scnHU031_ListPendingVisits.inject(rampUsers(16000) during (100 seconds))
 	).protocols(httpProtocol)
      .assertions(
-        global.responseTime.max.lt(5000),    
+        global.responseTime.max.lt(5000),
         global.responseTime.mean.lt(1000),
         global.successfulRequests.percent.gt(95)
      )

@@ -55,10 +55,10 @@ class HU030 extends Simulation {
 		Login.login,
 		DetailMyClinic.detailMyClinic)
 
-	setUp(scnHU030_DetailClinic.inject(rampUsers(5000) during (100 seconds)))
+	setUp(scnHU030_DetailClinic.inject(rampUsers(16000) during (100 seconds)))
 	.protocols(httpProtocol)
      .assertions(
-        global.responseTime.max.lt(5000),    
+        global.responseTime.max.lt(5000),
         global.responseTime.mean.lt(1000),
         global.successfulRequests.percent.gt(95)
      )

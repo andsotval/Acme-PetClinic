@@ -42,7 +42,7 @@ class HU007 extends Simulation {
 			.headers(headers_0)
 			.resources(http("request_2")
 			.get("/login")
-			.headers(headers_2))
+			.headers(headers_2))	
 			.check(css("input[name=_csrf]", "value").saveAs("stoken")))
 		.pause(18)
 		.exec(http("Logged")

@@ -50,15 +50,13 @@ class HU027 extends Simulation {
 		.pause(22)
 	}
 
-	object ModifyStay {
-		val modifyStay = exec(http("ModifyStay")
-			.get("/stays/changeDate/1")
-			.headers(headers_0))
-		.pause(22)
-	}
-	
 	object ModifyCorrectStay {
-		val modifyCorrectStay = exec(http("ModifyCorrectStay")
+		val modifyCorrectStay = exec(http("ModifyStay")
+			.get("/stays/changeDate/1")
+			.headers(headers_0)
+			.check(css("input[name=_csrf]", "value").saveAs("stoken")))
+		.pause(22)
+		.exec(http("ModifyCorrectStay")
 			.post("/stays/save/1")
 			.headers(headers_2)
 			.formParam("description", "stay modificada")
@@ -73,14 +71,13 @@ class HU027 extends Simulation {
 				.exec(Home.home,
 		Login.login,
 		ListAcceptStays.listAcceptStays,
-		ModifyStay.modifyStay,
 		ModifyCorrectStay.modifyCorrectStay)
 
 
-	setUp(scnHU027_ModifyStay.inject(rampUsers(5000) during (100 seconds)))
+	setUp(scnHU027_ModifyStay.inject(rampUsers(8000) during (100 seconds)))
 	.protocols(httpProtocol)
      .assertions(
-        global.responseTime.max.lt(5000),    
+        global.responseTime.max.lt(5000),
         global.responseTime.mean.lt(1000),
         global.successfulRequests.percent.gt(95)
      )
