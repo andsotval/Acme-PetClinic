@@ -42,15 +42,15 @@ class HU007 extends Simulation {
 			.headers(headers_0)
 			.resources(http("request_2")
 			.get("/login")
-			.headers(headers_2)))
+			.headers(headers_2))
 			.check(css("input[name=_csrf]", "value").saveAs("stoken")))
 		.pause(18)
-		exec(http("Logged")
+		.exec(http("Logged")
 			.post("/login")
 			.headers(headers_3)
 			.formParam("username", "owner1")
 			.formParam("password", "owner1")
-			.formParam("_csrf", "${stoken}")
+			.formParam("_csrf", "${stoken}"))
 		.pause(15)
 	}
 	
@@ -63,9 +63,9 @@ class HU007 extends Simulation {
 	}
 	
 	object NewSuggestionForm{
-		val NewSuggestionForm = exec(http("NewSuggestionForm")
+		val newSuggestionForm = exec(http("NewSuggestionForm")
 			.get("/suggestion/user/new")
-			.headers(headers_0))
+			.headers(headers_0)
 			.check(css("input[name=_csrf]", "value").saveAs("stoken")))
 		.pause(39)
 		.exec(http("SaveNewSuggestion")
@@ -86,14 +86,16 @@ class HU007 extends Simulation {
 	val scnHU007_CreateNewSuggestion = scenario("scnHU007_CreateNewSuggestion").exec(Home.home,
 									  Login.login,
 									  ShowSuggestionList.showSuggestionList,
-									  NewSuggestionForm.newSuggestionForm);
+									  NewSuggestionForm.newSuggestionForm)
 									  
 									  
 		
 
-	setUp(scnHU007_CreateNewSuggestion.inject(rampUsers(5000) during (100 seconds)).protocols(httpProtocol).assertions(
+	setUp(scnHU007_CreateNewSuggestion.inject(rampUsers(5000) during (100 seconds))).protocols(httpProtocol)
+	.assertions(
         global.responseTime.max.lt(5000),    
         global.responseTime.mean.lt(1000),
         global.successfulRequests.percent.gt(95)
      )
+	 
 }

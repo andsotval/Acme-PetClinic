@@ -42,7 +42,7 @@ class HU008 extends Simulation {
 			.headers(headers_0)
 			.resources(http("request_2")
 			.get("/login")
-			.headers(headers_2)))
+			.headers(headers_2))
 			.check(css("input[name=_csrf]", "value").saveAs("stoken")))
 		.pause(12)
 		.exec(http("Logged")
@@ -71,7 +71,7 @@ class HU008 extends Simulation {
 	object NewOrder {
 		val newOrder = exec(http("NewOrder")
 			.get("/orders/new/1")
-			.headers(headers_0))
+			.headers(headers_0)
 			.check(css("input[name=_csrf]", "value").saveAs("stoken")))
 		.pause(33)
 		.exec(http("SaveNewOrder")
@@ -91,10 +91,10 @@ class HU008 extends Simulation {
 									  Login.login,
 									  ListOrders.listOrders,
 									  ListAvailableProviders.listAvailableProviders,
-									  NewOrder.newOrder);
+									  NewOrder.newOrder)
 	
 
-	setUp(scnHU008_CreateNewOrder.inject(rampUsers(5000) during (100 seconds)).protocols(httpProtocol).assertions(
+	setUp(scnHU008_CreateNewOrder.inject(rampUsers(5000) during (100 seconds))).protocols(httpProtocol).assertions(
         global.responseTime.max.lt(5000),    
         global.responseTime.mean.lt(1000),
         global.successfulRequests.percent.gt(95)
