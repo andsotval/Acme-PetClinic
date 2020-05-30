@@ -22,14 +22,14 @@ public class AddNewPetAsOwnerUITests extends AbstractUITests {
 		driver.findElement(By.linkText("Add new Pet")).click();
 		driver.findElement(By.id("name")).click();
 		driver.findElement(By.id("name")).clear();
-		driver.findElement(By.id("name")).sendKeys("Wiskers");
+		driver.findElement(By.id("name")).sendKeys("Nombre de prueba");
 		driver.findElement(By.id("birthDate")).clear();
 		driver.findElement(By.id("birthDate")).sendKeys("2020/04/04");
 		driver.findElement(By.id("pet")).click();
 		new Select(driver.findElement(By.id("type"))).selectByVisibleText("cat");
 		driver.findElement(By.xpath("//option[@value='cat']")).click();
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		assertEquals("Wiskers", driver.findElement(By.linkText("Wiskers")).getText());
+		assertEquals("Nombre de prueba", driver.findElement(By.linkText("Nombre de prueba")).getText());
 
 		LogOut();
 

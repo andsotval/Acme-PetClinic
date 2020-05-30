@@ -30,7 +30,7 @@ public class AddVetsToClinicAsManagerUITests extends AbstractUITests {
 			.getText();
 
 		//añade a la clinica el veterinario de la primera linea
-		driver.findElement(By.xpath("//table[@id=\"vetsAvailableTable\"]/tbody/tr[1]/td[3]/a/span")).click();
+		driver.findElement(By.xpath("//table[@id=\"vetsAvailableTable\"]/tbody/tr/td[5]/a/span")).click();
 
 		//comprueba que ahora ese elemento con ese nombre pertenece a la segunda tabla
 		assertEquals(name,

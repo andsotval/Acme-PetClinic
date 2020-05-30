@@ -150,7 +150,8 @@ public class OrderControllerIntegrationTests {
 
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		Collection<Order> orders = orderService.findAllOrdersByManagerId(manager.getId());
-		List<Order> order = orders.stream().filter(o -> o.getDate().equals(LocalDate.now()) && o.getIsAccepted().equals(false) && o.getManager().getId().equals(manager.getId())).collect(Collectors.toList());
+		List<Order> order = orders.stream().filter(o -> o.getDate().equals(LocalDate.now()) && o.getIsAccepted() == null
+			&& o.getManager().getId().equals(manager.getId())).collect(Collectors.toList());
 
 		Collection<ProductOrder> productOrders = productOrderService.findProductOrderByOrder(order.get(0).getId());
 		productOrders.forEach(po -> {
@@ -447,7 +448,7 @@ public class OrderControllerIntegrationTests {
 		ModelMap model = new ModelMap();
 		String view = orderController.acceptOrder(TEST_ORDER_ID, model);
 
-		assertEquals(view, "redirect:/orders/listByProvider");
+		assertEquals(view, "/orders/orderListByProvider");
 	}
 
 	@SuppressWarnings("unchecked")

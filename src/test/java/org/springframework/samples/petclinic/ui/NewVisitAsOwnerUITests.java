@@ -25,12 +25,14 @@ public class NewVisitAsOwnerUITests extends AbstractUITests {
 		driver.findElement(By.id("dateTime")).click();
 		driver.findElement(By.id("dateTime")).click();
 		driver.findElement(By.id("dateTime")).clear();
-		driver.findElement(By.id("dateTime")).sendKeys("2020/06/05 18:55:00");
+		driver.findElement(By.id("dateTime")).sendKeys("2020/06/05 18:30");
+		driver.findElement(By.id("description")).click();
+		driver.findElement(By.id("description")).click();
 		driver.findElement(By.name("authorized")).click();
-		assertEquals("My Visits", driver.findElement(By.xpath("//h1")).getText());
+		assertEquals("Visits waiting for Acceptance", driver.findElement(By.xpath("//h2[2]")).getText());
 		assertEquals("Nueva visita",
 			driver.findElement(By.xpath("//table[@id='visitsTable'][2]/tbody/tr/td[3]")).getText());
-		assertEquals("2020-06-05 18:55:00",
+		assertEquals("2020-06-05 18:30:00",
 			driver.findElement(By.xpath("//table[@id='visitsTable'][2]/tbody/tr/td[2]")).getText());
 
 		LogOut();
@@ -48,6 +50,8 @@ public class NewVisitAsOwnerUITests extends AbstractUITests {
 		driver.findElement(By.id("dateTime")).click();
 		driver.findElement(By.id("dateTime")).click();
 		driver.findElement(By.id("dateTime")).clear();
+		driver.findElement(By.id("description")).click();
+		driver.findElement(By.id("description")).click();
 		driver.findElement(By.name("authorized")).click();
 		assertEquals("no puede estar vacío",
 			driver.findElement(By.xpath("//form[@id=\"visit\"]/div/div/div/span[2]")).getText());
@@ -55,7 +59,8 @@ public class NewVisitAsOwnerUITests extends AbstractUITests {
 			driver.findElement(By.xpath("//form[@id=\"visit\"]/div/div[2]/div/span[2]")).getText());
 		driver.findElement(By.id("dateTime")).click();
 		driver.findElement(By.id("dateTime")).clear();
-		driver.findElement(By.id("dateTime")).sendKeys("2019/05/01 19:00:11");
+		driver.findElement(By.id("dateTime")).sendKeys("2019/05/01 19:00");
+		driver.findElement(By.id("description")).click();
 		driver.findElement(By.name("authorized")).click();
 		assertEquals("Minimum 2 days after today",
 			driver.findElement(By.xpath("//form[@id=\"visit\"]/div/div[2]/div/span[2]")).getText());

@@ -51,15 +51,13 @@ class HU013 extends Simulation {
 		.pause(11)
 	}
 	
-	object CreateStay {
-		val createStay = exec(http("CreateStay")
-			.get("/pets/newStay/1")
-			.headers(headers_0))
-		.pause(23)
-	}
-	
 	object CreateCorrectStay {
-		val createCorrectStay = exec(http("CreateCorrectStay")
+		val createCorrectStay = 
+			exec(http("CreateStay")
+			.get("/pets/newStay/1")
+			.check(css("input[name=_csrf]", "value").saveAs("stoken")))
+			.pause(5)
+			.exec(http("CreateCorrectStay")
 			.post("/stays/save")
 			.headers(headers_2)
 			.formParam("description", "Description")
@@ -76,7 +74,6 @@ class HU013 extends Simulation {
 		.exec(Home.home,
 		Login.login,
 		PetList.petList,
-		CreateStay.createStay,
 		CreateCorrectStay.createCorrectStay)
 
 

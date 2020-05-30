@@ -3,3 +3,9 @@ language: java
 jdk: oraclejdk8
 before_install:
   - chmod +x mvnw
+install: travis_wait 30 mvn install
+cache:
+  directories:
+  - .autoconf
+  - $HOME/.m2
+  
