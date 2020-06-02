@@ -20,10 +20,13 @@
 			<th>Status</th>
 			<td><c:choose>
 					<c:when test="${order.isAccepted eq false}">
-						<c:out value="PENDING" />
+						<c:out value="REJECTED" />
+					</c:when>
+					<c:when test="${order.isAccepted eq true}">
+						<c:out value="ACCEPTED" />
 					</c:when>
 					<c:otherwise>
-						<c:out value="ACCEPTED" />
+						<c:out value="PENDING" />
 					</c:otherwise>
 				</c:choose></td>
 		</tr>
