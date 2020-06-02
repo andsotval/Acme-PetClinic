@@ -19,20 +19,23 @@ class HU018 extends Simulation {
 
 	val headers_1 = Map("Origin" -> "http://www.petclinic.com")
 
-
-	object Home{
+	object Home {
 		val home = exec(http("Home")
-			.get("/login"))
-		.pause(16)
+			.get("/"))
+			.pause(7)
 	}
 
 	object Login{
 		val login = exec(http("Login")
+			.get("/login")
+			.check(css("input[name=_csrf]", "value").saveAs("stoken")))
+		.pause(16)
+		.exec(http("Login_2")
 			.post("/login")
 			.headers(headers_1)
 			.formParam("username", "owner1")
 			.formParam("password", "owner1")
-			.formParam("_csrf", "54c68dac-7aff-4f3f-bc3d-5e82787917e7"))
+			.formParam("_csrf", "${stoken}"))
 		.pause(13)
 	}
 
@@ -49,7 +52,11 @@ class HU018 extends Simulation {
 	}
 
 	object SaveNewPet{
-		val saveNewPet = exec(http("SaveNewPet")
+		val saveNewPet = exec(http("FormNewPet")
+			.get("/pets/new")
+			.check(css("input[name=_csrf]", "value").saveAs("stoken")))
+		.pause(23)
+		.exec(http("SaveNewPet")
 			.post("/pets/save")
 			.headers(headers_1)
 			.formParam("id", "")
@@ -57,7 +64,7 @@ class HU018 extends Simulation {
 			.formParam("name", "Wiskers")
 			.formParam("birthDate", "2020/05/07")
 			.formParam("type", "cat")
-			.formParam("_csrf", "4ceca828-8017-44a3-8ac2-1b2a8178dcba"))
+			.formParam("_csrf", "${stoken}"))
 		.pause(18)
 	}
 
@@ -67,14 +74,7 @@ class HU018 extends Simulation {
 		.pause(7)
 	}
 
-	val scnHU011_AddNewPet = scenario("scnHU011_AddNewPet").exec(
-		Home.home,
-		Login.login,
-		ShowMyPets.ShowMyPets,
-		FormNewPet.formNewPet,
-		SaveNewPet.saveNewPet
-	)
-	val scnHU012_deletePet = scenario("scnHU012_DeletePet").exec(
+	val scnHU018_deletePet = scenario("scnHU012_DeletePet").exec(
 		Home.home,
 		Login.login,
 		ShowMyPets.ShowMyPets,
@@ -85,8 +85,8 @@ class HU018 extends Simulation {
 
 
 	setUp(
-		scnHU011_AddNewPet.inject(rampUsers(5000) during (100 seconds)),
-		scnHU012_deletePet.inject(rampUsers(5000) during (100 seconds))
+		scnHU018_deletePet.inject(rampUsers(5000) during (100 seconds)),
+
 	).protocols(httpProtocol)
      .assertions(
         global.responseTime.max.lt(5000),
