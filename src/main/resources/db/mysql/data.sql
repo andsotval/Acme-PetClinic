@@ -97,12 +97,6 @@ INSERT IGNORE INTO purchase_order(id, order_date, is_accepted, manager_id) VALUE
 INSERT IGNORE INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (4, '2020-04-18', false, 1);
 INSERT IGNORE INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (5, '2020-04-08', true, 2);
 INSERT IGNORE INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (6, '2020-03-11', false, 2);
---INSERT IGNORE INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (7, '2020/01/28', true, 3)
---INSERT IGNORE INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (8, '2020/04/13', false, 3)
---INSERT IGNORE INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (9, '2020/02/29', true, 4)
---INSERT IGNORE INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (10, '2019/09/30', false, 4)
---INSERT IGNORE INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (11, '2019/06/07', true, 5)
---INSERT IGNORE INTO purchase_order(id, order_date, is_accepted, manager_id) VALUES (12, '2020/02/23', false, 5)
 
 -- PRODUCTS_ORDER
 
