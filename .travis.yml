@@ -13,6 +13,7 @@ before_install:
   - mysql -u root -e 'CREATE DATABASE IF NOT EXISTS petclinic;'
   - mysql -u root -e "CREATE USER 'petclinic'@'localhost' IDENTIFIED BY 'petclinic';"
   - mysql -u root -e "GRANT ALL ON petclinic.* TO 'petclinic'@'localhost';"
-  - mysql -u root --default-character-set=utf8 petclinic < src/main/resources/db/mysql/data.sql
 
-script: ./mvnw test -Dspring.profiles.active=mysql
+script: 
+  - mysql -u root --default-character-set=utf8 petclinic < src/main/resources/db/mysql/data.sql
+  ./mvnw test -Dspring.profiles.active=mysql
