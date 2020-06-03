@@ -10,8 +10,9 @@ services:
   - mysql
 before_install:
   - chmod +x mvnw
-  - mysql -u root -e 'CREATE DATABASE petclinic;'
+  - mysql -u root -e 'CREATE DATABASE IF NOT EXISTS petclinic;'
   - mysql -u root -e "CREATE USER 'petclinic'@'localhost' IDENTIFIED BY 'petclinic';"
   - mysql -u root -e "GRANT ALL ON petclinic.* TO 'petclinic'@'localhost';"
+  - mysql -u root --default-character-set=utf8 petclinic < db/mysql/data.sql
 
 script: ./mvnw test -Dspring.profiles.active=mysql
