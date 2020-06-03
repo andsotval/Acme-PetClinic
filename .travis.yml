@@ -21,3 +21,6 @@ before_script:
 
 script: 
   ./mvnw test -Dspring.profiles.active=mysql
+  
+after_script:
+  - mysql -u root --default-character-set=utf8 petclinic < src/main/resources/db/mysql/data.sql
