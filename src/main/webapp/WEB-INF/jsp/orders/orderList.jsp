@@ -33,13 +33,16 @@
 							</spring:url> <a href="${fn:escapeXml(orderUrl)}"><c:out
 									value="${order.date}" /></a></td>
 						<td><c:choose>
-								<c:when test="${order.isAccepted eq false}">
-									<c:out value="PENDING" />
-								</c:when>
-								<c:otherwise>
-									<c:out value="ACCEPTED" />
-								</c:otherwise>
-							</c:choose></td>
+					<c:when test="${order.isAccepted eq false}">
+						<c:out value="REJECTED" />
+					</c:when>
+					<c:when test="${order.isAccepted eq true}">
+						<c:out value="ACCEPTED" />
+					</c:when>
+					<c:otherwise>
+						<c:out value="PENDING" />
+					</c:otherwise>
+				</c:choose></td>
 					</tr>
 				</c:forEach>
 			</tbody>

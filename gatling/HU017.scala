@@ -6,7 +6,7 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import io.gatling.jdbc.Predef._
 
-class HU018 extends Simulation {
+class HU017 extends Simulation {
 
 	val httpProtocol = http
 		.baseUrl("http://www.petclinic.com")
@@ -23,7 +23,7 @@ class HU018 extends Simulation {
 		val home = exec(http("Home")
 			.get("/"))
 			.pause(7)
-	}
+	}	
 
 	object Login{
 		val login = exec(http("Login")
@@ -40,23 +40,16 @@ class HU018 extends Simulation {
 	}
 
 	object ShowMyPets{
-		val ShowMyPets = exec(http("ShowMyPets")
+		val showMyPets = exec(http("ShowMyPets")
 			.get("/pets/listMyPets"))
 		.pause(14)
-	}
-
-	object FormNewPet{
-		val formNewPet = exec(http("FormNewPet")
-			.get("/pets/new"))
-		.pause(23)
 	}
 
 	object SaveNewPet{
 		val saveNewPet = exec(http("FormNewPet")
 			.get("/pets/new")
 			.check(css("input[name=_csrf]", "value").saveAs("stoken")))
-		.pause(23)
-		.exec(http("SaveNewPet")
+		.pause(23).exec(http("SaveNewPet")
 			.post("/pets/save")
 			.headers(headers_1)
 			.formParam("id", "")
@@ -68,25 +61,15 @@ class HU018 extends Simulation {
 		.pause(18)
 	}
 
-	object DeletePet{
-		val deletePet = exec(http("DeletePet")
-			.get("/pets/delete/15"))
-		.pause(7)
-	}
-
-	val scnHU018_deletePet = scenario("scnHU012_DeletePet").exec(
+	val scnHU017_AddNewPet = scenario("scnHU017_SaveNewPet").exec(
 		Home.home,
 		Login.login,
-		ShowMyPets.ShowMyPets,
-		FormNewPet.formNewPet,
-		SaveNewPet.saveNewPet,
-		DeletePet.deletePet
+		ShowMyPets.showMyPets,
+		SaveNewPet.saveNewPet
 	)
 
-
 	setUp(
-		scnHU018_deletePet.inject(rampUsers(5000) during (100 seconds)),
-
+		scnHU017_AddNewPet.inject(rampUsers(10000) during (100 seconds))
 	).protocols(httpProtocol)
      .assertions(
         global.responseTime.max.lt(5000),
