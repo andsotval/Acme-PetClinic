@@ -34,7 +34,7 @@ public abstract class NamedService<T extends NamedEntity> extends BaseService<T>
 		try {
 			method = NamedEntity.class.getDeclaredMethod("getName");
 		} catch (NoSuchMethodException | SecurityException e) {
-			log.debug("Faild to instance NamedService. ", e);
+			log.error("Faild to instance NamedService. ", e);
 		}
 	}
 
