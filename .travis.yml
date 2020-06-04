@@ -1,4 +1,5 @@
 dist: trusty
+sudo: true
 language: java
 jdk: oraclejdk8
 branches:
@@ -16,13 +17,15 @@ before_install:
   - mysql -u root -e "GRANT ALL ON petclinic.* TO 'petclinic'@'localhost';"
   
 before_script:
+  - wget https://repo.mysql.com//mysql-apt-config_0.8.10-1_all.deb
+  - sudo dpkg -i mysql-apt-config_0.8.10-1_all.deb
+  - sudo apt-get update -q
+  - sudo apt-get install -q -y --allow-unauthenticated -o Dpkg::Options::=--force-confnew mysql-server
+  - sudo systemctl restart mysql
+  - sudo mysql_upgrade
+  - mysql --version  
   - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/schema.sql
   - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/data.sql
 
 script: 
   ./mvnw test -Dspring.profiles.active=mysql -Dtest=org.springframework.samples.petclinic.e2e.OrderControllerE2ETests && 
-  - mysql -u petclinic --password=petclinic petclinic < src/main/resources/drop-tables.sql &&  
-  - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/schema.sql && 
-  - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/data.sql && 
-  ./mvnw test -Dspring.profiles.active=mysql -Dtest=org.springframework.samples.petclinic.e2e.OrderControllerE2ETests && 
-  - mysql -u petclinic --password=petclinic petclinic < src/main/resources/drop-tables.sql 
