@@ -25,14 +25,14 @@ public class NewVisitAsOwnerUITests extends AbstractUITests {
 		driver.findElement(By.id("dateTime")).click();
 		driver.findElement(By.id("dateTime")).click();
 		driver.findElement(By.id("dateTime")).clear();
-		driver.findElement(By.id("dateTime")).sendKeys("2020/06/05 18:30");
+		driver.findElement(By.id("dateTime")).sendKeys("2020/08/05 18:30");
 		driver.findElement(By.id("description")).click();
 		driver.findElement(By.id("description")).click();
 		driver.findElement(By.name("authorized")).click();
 		assertEquals("Visits waiting for Acceptance", driver.findElement(By.xpath("//h2[2]")).getText());
 		assertEquals("Nueva visita",
 			driver.findElement(By.xpath("//table[@id='visitsTable'][2]/tbody/tr/td[3]")).getText());
-		assertEquals("2020-06-05 18:30:00",
+		assertEquals("2020-08-05 18:30:00",
 			driver.findElement(By.xpath("//table[@id='visitsTable'][2]/tbody/tr/td[2]")).getText());
 
 		LogOut();
