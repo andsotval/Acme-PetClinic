@@ -20,7 +20,7 @@ before_script:
   - wget https://repo.mysql.com//mysql-apt-config_0.8.10-1_all.deb
   - sudo dpkg -i mysql-apt-config_0.8.10-1_all.deb
   - sudo apt-get update -q
-  - sudo systemctl restart mysql
+  - sudo restart mysql
   - sudo mysql_upgrade
   - mysql --version  
   - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/schema.sql
