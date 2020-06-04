@@ -1,3 +1,8 @@
+/**
+ * DP2 - Grupo 8
+ * LAB F1.33
+ * Date: 17-may-2020
+ */
 
 package org.springframework.samples.petclinic.service;
 
@@ -24,8 +29,10 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.samples.petclinic.model.Suggestion;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.stereotype.Service;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+@ActiveProfiles("hsqldb")
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 public class SuggestionServiceTests {
 
@@ -100,8 +107,7 @@ public class SuggestionServiceTests {
 
 	@Test
 	public void testFindAllSuggestionsAvailableByUsernameNotPresent() {
-		Collection<Suggestion> suggestions = suggestionService
-			.findAllEntitiesAvailableByUsername(TEST_USERNAME_NOT_PRESENT);
+		Collection<Suggestion> suggestions = suggestionService.findAllEntitiesAvailableByUsername(TEST_USERNAME_NOT_PRESENT);
 		assertEquals(suggestions.size(), 0);
 	}
 
@@ -120,8 +126,7 @@ public class SuggestionServiceTests {
 
 	@Test
 	public void testUpdateAllSuggestionsToNotAvailableOfUserNotPresent() {
-		Collection<Suggestion> suggestions = suggestionService
-			.findAllEntitiesAvailableByUsername(TEST_USERNAME_NOT_PRESENT);
+		Collection<Suggestion> suggestions = suggestionService.findAllEntitiesAvailableByUsername(TEST_USERNAME_NOT_PRESENT);
 		assertEquals(suggestions.size(), 0);
 
 		suggestionService.updateAllIsAvailableFalse(TEST_USERNAME_NOT_PRESENT);

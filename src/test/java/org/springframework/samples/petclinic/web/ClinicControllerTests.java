@@ -1,3 +1,8 @@
+/**
+ * DP2 - Grupo 8
+ * LAB F1.33
+ * Date: 17-may-2020
+ */
 
 package org.springframework.samples.petclinic.web;
 
@@ -29,11 +34,15 @@ import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.samples.petclinic.service.VisitService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-@WebMvcTest(controllers = ClinicController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
+@ActiveProfiles("hsqldb")
+@WebMvcTest(controllers = ClinicController.class,
+	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
+	excludeAutoConfiguration = SecurityConfiguration.class)
 public class ClinicControllerTests {
 
 	private static final int	TEST_VET_ID					= 1;
@@ -182,7 +191,8 @@ public class ClinicControllerTests {
 		BDDMockito.given(authoritiesService.findAuthorityByUsername(authorityOwner.getUsername())).willReturn("owner");
 		BDDMockito.given(authoritiesService.findAuthorityByUsername(authorityOwner2.getUsername())).willReturn("owner");
 		BDDMockito.given(authoritiesService.findAuthorityByUsername(authorityOwner3.getUsername())).willReturn("owner");
-		BDDMockito.given(authoritiesService.findAuthorityByUsername(authorityVet.getUsername())).willReturn("veterinarian");
+		BDDMockito.given(authoritiesService.findAuthorityByUsername(authorityVet.getUsername()))
+			.willReturn("veterinarian");
 		BDDMockito.given(authoritiesService.findAuthorityByUsername("Falsepepito")).willReturn("veterinarian");
 		BDDMockito.given(authoritiesService.findAuthorityByUsername("Falsejoselito")).willReturn("owner");
 
@@ -202,7 +212,9 @@ public class ClinicControllerTests {
 	@Test
 
 	void testShowClinicAsVetPositive() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/getDetail")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("owners"))
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/getDetail"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("owners"))
 			.andExpect(MockMvcResultMatchers.view().name("/clinics/clinicDetails"));
 	}
 
@@ -212,108 +224,145 @@ public class ClinicControllerTests {
 	})
 	@Test
 	void testShowClinicAsVetNegativeNotExistingVet() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/getDetail")).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/getDetail"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	//Show Clinic as a Owner
 	@WithMockUser(value = "joselito")
 	@Test
 	void testShowClinicAsOwnerPositive() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/getDetail")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("notUnsubscribe"))
-			.andExpect(MockMvcResultMatchers.model().attributeExists("clinic")).andExpect(MockMvcResultMatchers.view().name("/clinics/clinicDetails"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/getDetail"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("notUnsubscribe"))
+			.andExpect(MockMvcResultMatchers.model().attributeExists("clinic"))
+			.andExpect(MockMvcResultMatchers.view().name("/clinics/clinicDetails"));
 	}
 
 	@WithMockUser(value = "Falsejoselito")
 	@Test
 	void testShowClinicAsOwnerNegativeNotExistingOwner() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/getDetail")).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/getDetail"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	//Show Clinic from a Owner
 	@WithMockUser(value = "manolito")
 	@Test
 	void testShowListClinicOwnerPositiveClinicNull() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("clinics"))
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner")).andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("clinics"))
 			.andExpect(MockMvcResultMatchers.view().name("/clinics/owner/clinicsList"));
 	}
 
 	@WithMockUser(value = "joselito")
 	@Test
 	void testShowListClinicOwnerPositiveClinicNotNull() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner")).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/clinics/getDetail"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/clinics/getDetail"));
 	}
 
 	@WithMockUser(value = "Falseowner")
 	@Test
 	void testShowListClinicOwnerNegativeClinicNotNull() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner")).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "joselito")
 	@Test
 	void testShowClinicDetailsAsOwnerPositive() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/{clinicId}", TEST_CLINIC_ID)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("clinic"))
-			.andExpect(MockMvcResultMatchers.model().attributeExists("owner")).andExpect(MockMvcResultMatchers.view().name("/clinics/owner/clinicDetails"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/{clinicId}", TEST_CLINIC_ID))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("clinic"))
+			.andExpect(MockMvcResultMatchers.model().attributeExists("owner"))
+			.andExpect(MockMvcResultMatchers.view().name("/clinics/owner/clinicDetails"));
 	}
 
 	@WithMockUser(value = "Falsejoselito")
 	@Test
 	void testShowClinicDetailsAsOwnerNegativeNotExistingOwner() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/{clinicId}", TEST_CLINIC_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/{clinicId}", TEST_CLINIC_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "joselito")
 	@Test
 	void testShowClinicDetailsAsOwnerNegativeNotExistingClinic() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/{clinicId}", TEST_NOT_EXISTING_CLINIC_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/{clinicId}", TEST_NOT_EXISTING_CLINIC_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "joselito")
 	@Test
 	void testShowClinicDetailsAsOwnerNegativeNotAuthorizedOtherClinic() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/{clinicId}", TEST_CLINIC_2_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/{clinicId}", TEST_CLINIC_2_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "joselito")
 	@Test
 	void testUnsubscribeFromClinicAsOwnerPositive() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/unsubscribeFromClinic")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("/clinics/owner/clinicsList"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/unsubscribeFromClinic"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("/clinics/owner/clinicsList"));
 	}
 
 	@WithMockUser(value = "manolito")
 	@Test
 	void testUnsubscribeFromClinicAsOwnerNegativeNotExistingClinic() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/unsubscribeFromClinic")).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/unsubscribeFromClinic"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "manolito2")
 	@Test
 	void testUnsubscribeFromClinicAsOwnerNegative() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/unsubscribeFromClinic")).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/clinics/getDetail"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/unsubscribeFromClinic"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/clinics/getDetail"));
 	}
 
 	@WithMockUser(value = "manolito")
 	@Test
 	void testSubscribeToClinicAsOwnerPositive() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/subscribeToClinic/{clinicId}", TEST_CLINIC_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/clinics/getDetail"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/subscribeToClinic/{clinicId}", TEST_CLINIC_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/clinics/getDetail"));
 	}
 
 	@WithMockUser(value = "manolito")
 	@Test
 	void testSubscribeToClinicAsOwnerNegativeNotExistingClinic() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/subscribeToClinic/{clinicId}", TEST_NOT_EXISTING_CLINIC_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc
+			.perform(
+				MockMvcRequestBuilders.get("/clinics/owner/subscribeToClinic/{clinicId}", TEST_NOT_EXISTING_CLINIC_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "Falseowner")
 	@Test
 	void testSubscribeToClinicAsNotExistingOwnerNegative() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/subscribeToClinic/{clinicId}", TEST_CLINIC_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/subscribeToClinic/{clinicId}", TEST_CLINIC_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "joselito")
 	@Test
 	void testSubscribeToClinicAsOwnerNegativeOwnerAlreadyInClinic() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/subscribeToClinic/{clinicId}", TEST_CLINIC_ID)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/clinics/owner/subscribeToClinic/{clinicId}", TEST_CLINIC_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 }

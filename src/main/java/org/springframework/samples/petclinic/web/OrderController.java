@@ -116,7 +116,7 @@ public class OrderController {
 
 		Order order = new Order();
 		order.setDate(LocalDate.now());
-		order.setIsAccepted(false);
+		order.setIsAccepted(null);
 		order.setManager(manager);
 
 		order = orderService.saveEntity(order);
@@ -177,6 +177,74 @@ public class OrderController {
 		return createModelOrderList(modelMap, "");
 	}
 
+	@GetMapping(path = "/listByProvider")
+	public String listByProvider(ModelMap model) {
+		return createModelListByProvider(model, "");
+	}
+
+	@GetMapping(path = "/provider/{orderId}")
+	public String showOrderByProvider(@PathVariable("orderId") int orderId, ModelMap model) {
+		Provider provider = providerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		Order order = orderService.findEntityById(orderId).get();
+
+		if (provider == null)
+			return REDIRECT_OUPS;
+		if (order == null)
+			return REDIRECT_OUPS;
+
+		Provider orderProvider = productOrderService.findProviderByOrder(orderId);
+		if (!orderProvider.getId().equals(provider.getId()))
+			return REDIRECT_OUPS;
+
+		Collection<ProductOrder> productsOrder = productOrderService.findProductOrderByOrder(orderId);
+
+		model.addAttribute("order", order);
+		model.addAttribute("productsOrder", productsOrder);
+		model.addAttribute("manager", order.getManager());
+
+		return "/orders/orderDetailsByProvider";
+	}
+
+	@GetMapping(path = "/acceptOrder/{orderId}")
+	public String acceptOrder(@PathVariable("orderId") int orderId, ModelMap model) {
+		Provider provider = providerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		Order order = orderService.findEntityById(orderId).get();
+
+		if (provider == null)
+			return REDIRECT_OUPS;
+		if (order == null)
+			return REDIRECT_OUPS;
+
+		Provider orderProvider = productOrderService.findProviderByOrder(orderId);
+		if (!orderProvider.getId().equals(provider.getId()))
+			return REDIRECT_OUPS;
+
+		order.setIsAccepted(true);
+		orderService.saveEntity(order);
+
+		return createModelListByProvider(model, "Order succesfully accepted");
+	}
+
+	@GetMapping(path = "/rejectedOrder/{orderId}")
+	public String rejectedOrder(@PathVariable("orderId") int orderId, ModelMap model) {
+		Provider provider = providerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		Order order = orderService.findEntityById(orderId).get();
+
+		if (provider == null)
+			return REDIRECT_OUPS;
+		if (order == null)
+			return REDIRECT_OUPS;
+
+		Provider orderProvider = productOrderService.findProviderByOrder(orderId);
+		if (!orderProvider.getId().equals(provider.getId()))
+			return REDIRECT_OUPS;
+
+		order.setIsAccepted(false);
+		orderService.saveEntity(order);
+
+		return createModelListByProvider(model, "Order succesfully rejected");
+	}
+
 	private String createModelOrderList(ModelMap model, String message) {
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		if (manager == null)
@@ -187,6 +255,17 @@ public class OrderController {
 		model.addAttribute("message", message);
 
 		return "/orders/orderList";
+	}
+
+	private String createModelListByProvider(ModelMap model, String message) {
+		Provider provider = providerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		if (provider == null)
+			return REDIRECT_OUPS;
+		Collection<Order> orders = orderService.findOrdersByProviderId(provider.getId());
+		model.addAttribute("orders", orders);
+		model.addAttribute("message", message);
+
+		return "/orders/orderListByProvider";
 	}
 
 	private Collection<ProductOrder> createProductsOrderByProducts(Collection<Product> products,

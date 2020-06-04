@@ -175,15 +175,15 @@ INSERT INTO vet(id, user_id, first_name, last_name, address, city, telephone, ma
 
 -- SPECIALTIES
 
-INSERT INTO specialty VALUES (1, 'radiology');
-INSERT INTO specialty VALUES (2, 'surgery');
-INSERT INTO specialty VALUES (3, 'dentistry');
-INSERT INTO specialty VALUES (4, 'traumatology');
-INSERT INTO specialty VALUES (5, 'cardiology');
-INSERT INTO specialty VALUES (6, 'ophtalmology');
-INSERT INTO specialty VALUES (7, 'neurology');
-INSERT INTO specialty VALUES (8, 'anaesthetist');
-INSERT INTO specialty VALUES (9, 'orthopedic');
+INSERT INTO specialty VALUES (1, 'radiology', true);
+INSERT INTO specialty VALUES (2, 'surgery', true);
+INSERT INTO specialty VALUES (3, 'dentistry', true);
+INSERT INTO specialty VALUES (4, 'traumatology', true);
+INSERT INTO specialty VALUES (5, 'cardiology', true);
+INSERT INTO specialty VALUES (6, 'ophtalmology', true);
+INSERT INTO specialty VALUES (7, 'neurology', true);
+INSERT INTO specialty VALUES (8, 'anaesthetist', false);
+INSERT INTO specialty VALUES (9, 'orthopedic', false);
 
 
 -- VET_SPECIALTIES

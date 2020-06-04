@@ -1,3 +1,8 @@
+/**
+ * DP2 - Grupo 8
+ * LAB F1.33
+ * Date: 17-may-2020
+ */
 
 package org.springframework.samples.petclinic.service;
 
@@ -24,21 +29,29 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.samples.petclinic.model.Manager;
 import org.springframework.samples.petclinic.model.Order;
 import org.springframework.stereotype.Service;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+@ActiveProfiles("hsqldb")
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 public class OrderServiceTests {
 
 	@Autowired
-	protected OrderService	orderService;
+	protected OrderService			orderService;
+	@Autowired
+	protected ProductOrderService	productOrderService;
 
-	private int				TEST_MANAGER_ID				= 1;
+	private int						TEST_MANAGER_ID					= 1;
 
-	private int				TEST_MANAGER_ID_NOT_PRESENT	= 100;
+	private int						TEST_MANAGER_ID_NOT_PRESENT		= 100;
 
-	private int				TEST_ORDER_ID				= 1;
+	private int						TEST_PROVIDER_ID				= 1;
 
-	private int				TEST_ORDER_ID_NOT_PRESENT	= 100;
+	private int						TEST_PROVIDER_ID_NOT_PRESENT	= 100;
+
+	private int						TEST_ORDER_ID					= 1;
+
+	private int						TEST_ORDER_ID_NOT_PRESENT		= 100;
 
 
 	private Validator createValidator() {
@@ -56,6 +69,18 @@ public class OrderServiceTests {
 	@Test
 	public void TestFindAllOrdersByManagerIdNotPresent() {
 		Collection<Order> orders = orderService.findAllOrdersByManagerId(TEST_MANAGER_ID_NOT_PRESENT);
+		assertEquals(0, orders.size());
+	}
+
+	@Test
+	public void TestFindAllOrdersByProviderId() {
+		Collection<Order> orders = orderService.findOrdersByProviderId(TEST_PROVIDER_ID);
+		orders.forEach(o -> assertTrue(productOrderService.findProviderByOrder(o.getId()).getId() == TEST_PROVIDER_ID));
+	}
+
+	@Test
+	public void TestFindOrdersByProviderIdNotPresent() {
+		Collection<Order> orders = orderService.findOrdersByProviderId(TEST_PROVIDER_ID_NOT_PRESENT);
 		assertEquals(0, orders.size());
 	}
 
@@ -113,7 +138,7 @@ public class OrderServiceTests {
 
 		Validator validator = createValidator();
 		Set<ConstraintViolation<Order>> constraintViolations = validator.validate(order);
-		assertEquals(constraintViolations.size(), 2);
+		assertEquals(constraintViolations.size(), 1);
 
 		Iterator<ConstraintViolation<Order>> it = constraintViolations.iterator();
 		while (it.hasNext()) {

@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Clinic;
@@ -114,9 +115,18 @@ public class PetController {
 		if (hasErrors)
 			return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 
-		petService.saveEntity(pet);
+		try {
+			petService.saveEntity(pet);
+			return createModelPetList(modelMap, "Pet succesfully saved");
+		} catch (RuntimeException e) {
+			if (e.getCause() instanceof ValidationException) {
+				modelMap.addAttribute("pet", pet);
+				result.rejectValue("name", "duplicate", e.getMessage());
+				return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
+			} else
+				return REDIRECT_OUPS;
+		}
 
-		return createModelPetList(modelMap, "Pet succesfully saved");
 	}
 
 	@GetMapping(path = "/delete/{petId}")

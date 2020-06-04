@@ -8,6 +8,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @Transactional
+@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 public class OrderControllerE2ETests {
 
 	private static final int	TEST_PROVIDER_ID				= 1;
@@ -27,6 +30,10 @@ public class OrderControllerE2ETests {
 	private static final int	TEST_PROVIDER_NOT_EXISTING_ID	= 99;
 
 	private static final int	TEST_ORDER_ID					= 1;
+
+	private static final int	TEST_ORDER_2_ID					= 2;
+
+	private static final int	TEST_ORDER_5_ID					= 5;
 
 	@Autowired
 	private MockMvc				mockMvc;
@@ -240,5 +247,71 @@ public class OrderControllerE2ETests {
 	void TestListOrdersAsRoleNotAuthorizated() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/orders/list"))
 			.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
+
+	@WithMockUser(value = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	void testListOrdersByProvider() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/listByProvider"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("orders"))
+			.andExpect(MockMvcResultMatchers.view().name("/orders/orderListByProvider"));
+
+	}
+
+	@WithMockUser(value = "falseProvider", authorities = {
+		"provider"
+	})
+	@Test
+	void testListOrdersByProviderNegativeNotExistingProvider() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/listByProvider"))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	void testShowOrderByProvider() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/provider/{orderId}", TEST_ORDER_ID))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("order"))
+			.andExpect(MockMvcResultMatchers.model().attributeExists("productsOrder"))
+			.andExpect(MockMvcResultMatchers.model().attributeExists("manager"))
+			.andExpect(MockMvcResultMatchers.view().name("/orders/orderDetailsByProvider"));
+
+	}
+
+	@WithMockUser(value = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	void testShowOrderByProviderNegativeAccessNotAllowedToOtherOrder() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/provider/{orderId}", TEST_ORDER_5_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+	}
+
+	@WithMockUser(value = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	void testAcceptOrder() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/acceptOrder/{orderId}", TEST_ORDER_ID))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("/orders/orderListByProvider"));
+	}
+
+	@WithMockUser(value = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	void testAcceptOrderNegativeAccessNotAllowedToOtherOrder() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/acceptOrder/{orderId}", TEST_ORDER_5_ID))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 }

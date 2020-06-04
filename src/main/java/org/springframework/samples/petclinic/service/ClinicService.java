@@ -13,18 +13,20 @@ import org.springframework.samples.petclinic.model.Clinic;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.repository.BaseRepository;
 import org.springframework.samples.petclinic.repository.ClinicRepository;
+import org.springframework.samples.petclinic.repository.NamedRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ClinicService extends BaseService<Clinic> {
+public class ClinicService extends NamedService<Clinic> {
 
 	private ClinicRepository clinicRepository;
 
 
 	@Autowired
-	public ClinicService(BaseRepository<Clinic> repository, ClinicRepository clinicRepository) {
-		super(repository);
+	public ClinicService(BaseRepository<Clinic> repository, NamedRepository<Clinic> namedRepository,
+		ClinicRepository clinicRepository) {
+		super(repository, namedRepository);
 		this.clinicRepository = clinicRepository;
 	}
 

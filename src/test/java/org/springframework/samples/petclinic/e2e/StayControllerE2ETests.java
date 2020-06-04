@@ -10,6 +10,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @Transactional
+@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 class StayControllerE2ETests {
 
 	private static final int	TEST_STAY_ID	= 1;
@@ -245,8 +248,8 @@ class StayControllerE2ETests {
 				.param("id", "").param("description", "Description").param("startDate", "2020/05/22")
 				.param("finishDate", "2020/05/29").param("pet.id", String.valueOf(TEST_PET_ID + 1))
 				.param("clinic.id", String.valueOf(TEST_CLINIC1_ID)))
-			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-			.andExpect(MockMvcResultMatchers.view().name("redirect:/stays/listByOwner"));
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("stays/createOrUpdateStayForm"));
 	}
 
 	@WithMockUser(value = "owner1", authorities = {

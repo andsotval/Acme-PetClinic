@@ -33,15 +33,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/vets")
 public class VetController {
 
-	private static final String		REDIRECT_OUPS			= "redirect:/oups";
+	private static final String	REDIRECT_OUPS			= "redirect:/oups";
 
-	private static final String		VIEWS_VETS_AVAILABLE	= "vets/vetsAvailable";
+	private static final String	VIEWS_VETS_AVAILABLE	= "vets/vetsAvailable";
 
-	private final ClinicService		clinicService;
+	private ClinicService		clinicService;
 
-	private final VetService		vetService;
+	private VetService			vetService;
 
-	private final ManagerService	managerService;
+	private ManagerService		managerService;
 
 
 	@Autowired
@@ -59,7 +59,7 @@ public class VetController {
 	}
 
 	@GetMapping(path = "/accept/{vetId}")
-	public String acceptVet(@PathVariable("vetId") final int vetId, final ModelMap modelMap) {
+	public String acceptVet(@PathVariable("vetId") int vetId, ModelMap modelMap) {
 		Optional<Vet> vet = vetService.findEntityById(vetId);
 		if (!vet.isPresent())
 			return REDIRECT_OUPS;

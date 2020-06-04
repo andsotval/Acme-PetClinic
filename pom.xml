@@ -310,6 +310,9 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
+			<properties>
+				<spring.profiles.active>hsqldb</spring.profiles.active>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>

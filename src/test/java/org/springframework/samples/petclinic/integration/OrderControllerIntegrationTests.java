@@ -1,3 +1,8 @@
+/**
+ * DP2 - Grupo 8
+ * LAB F1.33
+ * Date: 17-may-2020
+ */
 
 package org.springframework.samples.petclinic.integration;
 
@@ -40,6 +45,8 @@ public class OrderControllerIntegrationTests {
 	private static final int	TEST_PROVIDER_ID	= 1;
 
 	private static final int	TEST_ORDER_ID		= 1;
+
+	private static final int	TEST_ORDER_5_ID		= 5;
 
 	@Autowired
 	private OrderController		orderController;
@@ -143,9 +150,8 @@ public class OrderControllerIntegrationTests {
 
 		Manager manager = managerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
 		Collection<Order> orders = orderService.findAllOrdersByManagerId(manager.getId());
-		List<Order> order = orders.stream().filter(o -> o.getDate().equals(LocalDate.now())
-			&& o.getIsAccepted().equals(false) && o.getManager().getId().equals(manager.getId()))
-			.collect(Collectors.toList());
+		List<Order> order = orders.stream().filter(o -> o.getDate().equals(LocalDate.now()) && o.getIsAccepted() == null
+			&& o.getManager().getId().equals(manager.getId())).collect(Collectors.toList());
 
 		Collection<ProductOrder> productOrders = productOrderService.findProductOrderByOrder(order.get(0).getId());
 		productOrders.forEach(po -> {
@@ -374,6 +380,85 @@ public class OrderControllerIntegrationTests {
 	public void TestListOrdersAsRoleNotAuthorizated() {
 		ModelMap model = new ModelMap();
 		String view = orderController.listOrders(model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@SuppressWarnings("unchecked")
+	@WithMockUser(username = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	public void TestListOrdersByProviderPositive() {
+		ModelMap model = new ModelMap();
+		String view = orderController.listByProvider(model);
+
+		assertEquals(view, "/orders/orderListByProvider");
+
+		Provider provider = providerService.findPersonByUsername(SessionUtils.obtainUserInSession().getUsername());
+		assertNotNull(model.get("orders"));
+	}
+
+	@SuppressWarnings("unchecked")
+	@WithMockUser(username = "manager1", authorities = {
+		"manager"
+	})
+	@Test
+	public void TestListOrdersByProviderNegativeProviderNotAllowed() {
+		ModelMap model = new ModelMap();
+		String view = orderController.listByProvider(model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@SuppressWarnings("unchecked")
+	@WithMockUser(username = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	public void TestShowOrderByProvider() {
+		ModelMap model = new ModelMap();
+		String view = orderController.showOrderByProvider(TEST_ORDER_ID, model);
+
+		assertEquals(view, "/orders/orderDetailsByProvider");
+
+		assertNotNull(model.get("order"));
+		assertNotNull(model.get("productsOrder"));
+		assertNotNull(model.get("manager"));
+	}
+
+	@SuppressWarnings("unchecked")
+	@WithMockUser(username = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	public void TestShowOrderByProviderNegativeUserNotAllowed() {
+		ModelMap model = new ModelMap();
+		String view = orderController.showOrderByProvider(TEST_ORDER_5_ID, model);
+
+		assertEquals(view, "redirect:/oups");
+	}
+
+	@SuppressWarnings("unchecked")
+	@WithMockUser(username = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	public void TestAcceptOrder() {
+		ModelMap model = new ModelMap();
+		String view = orderController.acceptOrder(TEST_ORDER_ID, model);
+
+		assertEquals(view, "/orders/orderListByProvider");
+	}
+
+	@SuppressWarnings("unchecked")
+	@WithMockUser(username = "provider1", authorities = {
+		"provider"
+	})
+	@Test
+	public void TestAcceptOrderNegativeUserNotAllowed() {
+		ModelMap model = new ModelMap();
+		String view = orderController.acceptOrder(TEST_ORDER_5_ID, model);
 
 		assertEquals(view, "redirect:/oups");
 	}

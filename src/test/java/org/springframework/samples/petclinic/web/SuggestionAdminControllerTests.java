@@ -1,3 +1,8 @@
+/**
+ * DP2 - Grupo 8
+ * LAB F1.33
+ * Date: 17-may-2020
+ */
 
 package org.springframework.samples.petclinic.web;
 
@@ -25,11 +30,15 @@ import org.springframework.samples.petclinic.service.SuggestionService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-@WebMvcTest(value = SuggestionAdminController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
+@ActiveProfiles("hsqldb")
+@WebMvcTest(value = SuggestionAdminController.class,
+	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
+	excludeAutoConfiguration = SecurityConfiguration.class)
 public class SuggestionAdminControllerTests {
 
 	private static final int	TEST_SUGGESTION_ID_1	= 1;
@@ -94,9 +103,11 @@ public class SuggestionAdminControllerTests {
 		suggestion3.setIsRead(false);
 		suggestion3.setIsTrash(true);
 
-		BDDMockito.given(suggestionService.findAllEntitiesNotTrashOrderByIsReadAndCreated()).willReturn(Lists.newArrayList(suggestion1, suggestion2));
+		BDDMockito.given(suggestionService.findAllEntitiesNotTrashOrderByIsReadAndCreated())
+			.willReturn(Lists.newArrayList(suggestion1, suggestion2));
 
-		BDDMockito.given(suggestionService.findAllEntitiesTrashOrderByIsReadAndCreated()).willReturn(Lists.newArrayList(suggestion3));
+		BDDMockito.given(suggestionService.findAllEntitiesTrashOrderByIsReadAndCreated())
+			.willReturn(Lists.newArrayList(suggestion3));
 
 		Optional<Suggestion> optSuggestion1 = Optional.of(suggestion1);
 		BDDMockito.given(suggestionService.findEntityById(TEST_SUGGESTION_ID_1)).willReturn(optSuggestion1);
@@ -109,82 +120,112 @@ public class SuggestionAdminControllerTests {
 	@WithMockUser(value = "spring")
 	@Test
 	void testList() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/list")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("suggestions"))
-			.andExpect(MockMvcResultMatchers.model().attribute("isTrash", false)).andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/list"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("suggestions"))
+			.andExpect(MockMvcResultMatchers.model().attribute("isTrash", false))
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	void testListTrash() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/listTrash")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("suggestions"))
-			.andExpect(MockMvcResultMatchers.model().attribute("isTrash", true)).andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/listTrash"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("suggestions"))
+			.andExpect(MockMvcResultMatchers.model().attribute("isTrash", true))
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	void testDetailPositive() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/details/{suggestionId}", TEST_SUGGESTION_ID_1)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.model().attributeExists("suggestion"))
-			.andExpect(MockMvcResultMatchers.model().attributeExists("person")).andExpect(MockMvcResultMatchers.model().attribute("isTrash", false)).andExpect(MockMvcResultMatchers.view().name("suggestion/admin/details"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/details/{suggestionId}", TEST_SUGGESTION_ID_1))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.model().attributeExists("suggestion"))
+			.andExpect(MockMvcResultMatchers.model().attributeExists("person"))
+			.andExpect(MockMvcResultMatchers.model().attribute("isTrash", false))
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/details"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	void testDetailValueNotPresent() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/details/{suggestionId}", TEST_SUGGESTION_ID_99)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/details/{suggestionId}", TEST_SUGGESTION_ID_99))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	void testReadPositive() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/read/{suggestionId}", TEST_SUGGESTION_ID_1)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/read/{suggestionId}", TEST_SUGGESTION_ID_1))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	void testReadValueNotPresent() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/read/{suggestionId}", TEST_SUGGESTION_ID_99)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/read/{suggestionId}", TEST_SUGGESTION_ID_99))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	void testNotReadPositive() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/notRead/{suggestionId}", TEST_SUGGESTION_ID_1)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/notRead/{suggestionId}", TEST_SUGGESTION_ID_1))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	void testNotReadValueNotPresent() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/notRead/{suggestionId}", TEST_SUGGESTION_ID_99)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/notRead/{suggestionId}", TEST_SUGGESTION_ID_99))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	void testMoveTrashPositive() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/moveTrash/{suggestionId}", TEST_SUGGESTION_ID_1)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/moveTrash/{suggestionId}", TEST_SUGGESTION_ID_1))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	void testMoveTrashValueNotPresent() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/moveTrash/{suggestionId}", TEST_SUGGESTION_ID_99)).andExpect(MockMvcResultMatchers.status().is3xxRedirection()).andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/moveTrash/{suggestionId}", TEST_SUGGESTION_ID_99))
+			.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+			.andExpect(MockMvcResultMatchers.view().name("redirect:/oups"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	void testMoveAllTrash() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/moveAllTrash")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/moveAllTrash"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	void testDelete() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/delete/{suggestionId}", TEST_SUGGESTION_ID_1)).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/delete/{suggestionId}", TEST_SUGGESTION_ID_1))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	void testDeleteAllTrash() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/deleteAllTrash")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/suggestion/admin/deleteAllTrash"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.view().name("suggestion/admin/list"));
 	}
 
 }

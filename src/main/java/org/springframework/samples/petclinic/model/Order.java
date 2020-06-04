@@ -32,7 +32,6 @@ public class Order extends BaseEntity {
 	private LocalDate	date;
 
 	@Column(name = "is_accepted")
-	@NotNull
 	private Boolean		isAccepted;
 
 	@ManyToOne(optional = false)

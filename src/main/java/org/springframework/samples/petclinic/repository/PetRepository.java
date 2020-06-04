@@ -11,7 +11,7 @@ import java.util.Collection;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.samples.petclinic.model.Pet;
 
-public interface PetRepository extends BaseRepository<Pet> {
+public interface PetRepository extends NamedRepository<Pet> {
 
 	@Query("SELECT p FROM Pet p WHERE p.owner.id = ?1")
 	Collection<Pet> findPetsByOwnerId(Integer id);

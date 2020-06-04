@@ -1,3 +1,8 @@
+/**
+ * DP2 - Grupo 8
+ * LAB F1.33
+ * Date: 17-may-2020
+ */
 
 package org.springframework.samples.petclinic.web;
 
@@ -17,12 +22,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.service.PetTypeService;
+import org.springframework.test.context.ActiveProfiles;
 
-/**
- * Test class for {@link PetTypeFormatter}
- *
- * @author Colin But
- */
+@ActiveProfiles("hsqldb")
 @ExtendWith(MockitoExtension.class)
 class PetTypeFormatterTests {
 

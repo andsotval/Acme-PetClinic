@@ -8,7 +8,11 @@
 <petclinic:layout pageName="/providers">
 	<h2><c:out value="Provider: ${provider.firstName} ${provider.lastName}"/></h2>
 
-
+	<c:if test="${empty products}">
+		<h3>The provider doesn't have products available...</h3>
+	</c:if>
+	
+	<c:if test="${not empty products}">
     <table id="productsTable" class="table table-striped">
         <thead>
         <tr>
@@ -29,6 +33,7 @@
         </c:forEach>
         </tbody>
     </table>
+    </c:if>
     
    	<a class="btn btn-default"
 	href='<spring:url value="/providers/listAvailable" htmlEscape="true"/>'>Back to list of Providers</a>
