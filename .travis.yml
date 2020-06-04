@@ -20,7 +20,4 @@ before_script:
   - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/data.sql
 
 script: 
-  ./mvnw test -Dspring.profiles.active=mysql -Dtest=org.springframework.samples.petclinic.e2e.ClinicControllerE2ETests
-  
-after_script:
-  - mysql -u petclinic --password=petclinic petclinic < src/main/resources/drop-tables.sql
+  ./src/main/resources/scripts/tests.sh
