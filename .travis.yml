@@ -14,15 +14,24 @@ before_install:
   - mysql -u root -e 'CREATE DATABASE IF NOT EXISTS petclinic;'
   - mysql -u root -e "CREATE USER 'petclinic'@'localhost' IDENTIFIED BY 'petclinic';"
   - mysql -u root -e "GRANT ALL ON petclinic.* TO 'petclinic'@'localhost';"
-  - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/schema.sql
   
 before_script:
+  - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/schema.sql
   - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/data.sql
 
 script: 
   ./mvnw test -Dspring.profiles.active=mysql -Dtest=org.springframework.samples.petclinic.e2e.ClinicControllerE2ETests
+  
+after_script:
   - mysql -u petclinic --password=petclinic petclinic < src/main/resources/drop-tables.sql
+  
+before_script:
   - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/schema.sql
   - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/data.sql
+
+script: 
   ./mvnw test -Dspring.profiles.active=mysql -Dtest=org.springframework.samples.petclinic.e2e.OrderControllerE2ETests
+  
+after_script:
+  - mysql -u petclinic --password=petclinic petclinic < src/main/resources/drop-tables.sql
   
