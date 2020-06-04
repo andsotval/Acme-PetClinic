@@ -1,5 +1,4 @@
 dist: trusty
-sudo: true
 language: java
 jdk: oraclejdk8
 branches:
@@ -11,20 +10,17 @@ services:
   - mysql
 
 before_install:
-  - chmod +x mvnw
   - mysql -u root -e 'CREATE DATABASE IF NOT EXISTS petclinic;'
   - mysql -u root -e "CREATE USER 'petclinic'@'localhost' IDENTIFIED BY 'petclinic';"
   - mysql -u root -e "GRANT ALL ON petclinic.* TO 'petclinic'@'localhost';"
   
 before_script:
-  - wget https://repo.mysql.com//mysql-apt-config_0.8.10-1_all.deb
-  - sudo dpkg -i mysql-apt-config_0.8.10-1_all.deb
-  - sudo apt-get update -q
-  - sudo restart mysql
-  - sudo -force mysql_upgrade
-  - mysql --version  
   - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/schema.sql
   - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/data.sql
 
 script: 
-  ./mvnw test -Dspring.profiles.active=mysql -Dtest=org.springframework.samples.petclinic.e2e.OrderControllerE2ETests
+  - mvn clean test -Dspring.profiles.active=mysql -Dtest=org.springframework.samples.petclinic.e2e.OrderControllerE2ETests
+  
+cache:
+    directories:
+        - $HOME/.m2
