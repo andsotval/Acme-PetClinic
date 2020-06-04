@@ -25,4 +25,4 @@ script:
   - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/schema.sql && 
   - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/data.sql && 
   ./mvnw test -Dspring.profiles.active=mysql -Dtest=org.springframework.samples.petclinic.e2e.OrderControllerE2ETests && 
-  - mysql -u petclinic --password=petclinic petclinic < src/main/resources/drop-tables.sql && 
+  - mysql -u petclinic --password=petclinic petclinic < src/main/resources/drop-tables.sql 
