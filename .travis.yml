@@ -21,7 +21,7 @@ before_script:
   - sudo dpkg -i mysql-apt-config_0.8.10-1_all.deb
   - sudo apt-get update -q
   - sudo restart mysql
-  - sudo mysql_upgrade
+  - sudo --force mysql_upgrade
   - mysql --version  
   - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/schema.sql
   - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/data.sql
