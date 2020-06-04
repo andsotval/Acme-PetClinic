@@ -11,7 +11,9 @@ services:
   - mysql
   
 before_install:
+  - chmod +x mvnw
   - mysql -e 'CREATE DATABASE IF NOT EXISTS petclinic;'
   
-script: mvn test -Dspring.profiles.active=mysql-travis
+script: 
+  ./mvnw test -Dspring.profiles.active=mysql-travis
 
