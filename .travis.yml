@@ -13,6 +13,12 @@ services:
 before_install:
   - chmod +x mvnw
   - mysql -e 'CREATE DATABASE IF NOT EXISTS petclinic;'
+  - mysql -u root -e "CREATE USER 'petclinic'@'localhost' IDENTIFIED BY 'petclinic';"
+  - mysql -u root -e "GRANT ALL ON petclinic.* TO 'petclinic'@'localhost';"
+  
+before_script:
+  - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/schema.sql
+  - mysql -u petclinic --password=petclinic petclinic < src/main/resources/db/mysql/data.sql
   
 script: 
   ./mvnw test -Dspring.profiles.active=mysql-travis
